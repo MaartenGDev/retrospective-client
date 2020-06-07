@@ -20,7 +20,7 @@ const mapState = (state: RootState) => ({retrospectives: state.retrospectiveRedu
 const connector = connect(mapState)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-const Retrospectives: FC<PropsFromRedux> = (props) => {
+const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
     return (
         <main>
             <h1>Retrospectives</h1>
@@ -33,7 +33,7 @@ const Retrospectives: FC<PropsFromRedux> = (props) => {
                         <th>DATE</th>
                         <th>ACTION</th>
                     </tr>
-                    {props.retrospectives.map(retro => {
+                    {retrospectives.map(retro => {
                         const action = retro.status === RetrospectiveStatus.FINISHED
                             ? <TableLink to={'/retrospectives/' + retro.id}>View</TableLink>
                             : <TableLink to={'/retrospectives/' + retro.id + '/feedback'}>Give feedback</TableLink>;

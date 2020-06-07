@@ -9,9 +9,13 @@ import Retrospective from "./components/Retrospective";
 import './App.scss';
 import {store} from "./store/store";
 import * as retrospectiveActions from "./store/retrospective.actions";
+import RetrospectiveFeedback from "./components/RetrospectiveFeedback";
 
 const Content = styled.div`
-  padding: 20px;
+  width: 1200px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 function App() {
@@ -23,6 +27,9 @@ function App() {
 
                     <Content>
                         <Switch>
+                            <Route path="/retrospectives/:id/feedback">
+                                <RetrospectiveFeedback />
+                            </Route>
                             <Route path="/retrospectives/:id">
                                 <Retrospective/>
                             </Route>

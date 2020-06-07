@@ -1,8 +1,9 @@
-import React from 'react';
-import {IRetrospective} from "../models/IRetrospective";
+import React, {FC} from 'react';
 import {RetrospectiveStatus} from "../models/RetrospectiveStatus";
 import styled from "styled-components";
 import {Link} from "react-router-dom";
+import {connect, ConnectedProps} from "react-redux";
+import {RootState} from "../store/rootReducer";
 
 const Content = styled.div`
   background-color: #ffffff;
@@ -14,29 +15,12 @@ const TableLink = styled(Link)`
   text-decoration: none;
 `;
 
-function Retrospectives() {
-    const retrospectives: IRetrospective[] = [
-        {
-            id: 1,
-            name: 'Retro WEB #57',
-            status: RetrospectiveStatus.OPEN,
-            startDate: new Date(),
-            endDate: new Date(),
-            agenda: [],
-            actions: []
-        },
-        {
-            id: 2,
-            name: 'Retro WEB #56',
-            status: RetrospectiveStatus.FINISHED,
-            startDate: new Date(),
-            endDate: new Date(),
-            agenda: [],
-            actions: []
-        }
-    ];
 
+const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
+const connector = connect(mapState)
+type PropsFromRedux = ConnectedProps<typeof connector>
 
+const Retrospectives: FC<PropsFromRedux> = (props) => {
     return (
         <main>
             <h1>Retrospectives</h1>
@@ -49,7 +33,7 @@ function Retrospectives() {
                         <th>DATE</th>
                         <th>ACTION</th>
                     </tr>
-                    {retrospectives.map(retro => {
+                    {props.retrospectives.map(retro => {
                         const action = retro.status === RetrospectiveStatus.FINISHED
                             ? <TableLink to={'/retrospectives/' + retro.id}>View</TableLink>
                             : <TableLink to={'/retrospectives/' + retro.id + '/feedback'}>Give feedback</TableLink>;
@@ -68,4 +52,4 @@ function Retrospectives() {
     );
 }
 
-export default Retrospectives;
+export default connector(Retrospectives);

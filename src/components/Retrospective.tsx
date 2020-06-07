@@ -1,39 +1,25 @@
-import React from 'react';
-import {IRetrospective} from "../models/IRetrospective";
-import {RetrospectiveStatus} from "../models/RetrospectiveStatus";
+import React, {FC} from 'react';
 import styled from "styled-components";
+import {RootState} from "../store/rootReducer";
+import {connect, ConnectedProps} from "react-redux";
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 const Content = styled.div`
   padding: 20px;
   background-color: #ffffff;
 `
 
-function Retrospective() {
-    const retrospective: IRetrospective = {
-        id: 2,
-        name: 'Retro WEB #56',
-        status: RetrospectiveStatus.FINISHED,
-        startDate: new Date(),
-        endDate: new Date(),
-        agenda: [
-            {
-                id: 1,
-                description: 'Product demo\'s in the following order: 1. New product page, 2. Updated overview pages.',
-                durationInMinutes: 30
-            },
-            {id: 2, description: 'Retrospective.', durationInMinutes: 60},
-        ],
-        actions: [
-            {
-                id: 1,
-                completed: false,
-                description: 'Ask for release dates from release manager',
-                responsible: 'Web team'
-            },
-            {id: 2, completed: true, description: 'Add example snippet to docs', responsible: 'Developer 1'},
-        ]
-    };
+const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
+const connector = connect(mapState)
+type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{id: string}>
 
+
+const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
+    const retrospective = retrospectives.find(r => r.id === parseInt(match.params.id))!;
+
+    if(!retrospective){
+        return <main>Not found</main>
+    }
 
     return (
         <main>
@@ -80,4 +66,4 @@ function Retrospective() {
     );
 }
 
-export default Retrospective;
+export default withRouter(connector(Retrospective));

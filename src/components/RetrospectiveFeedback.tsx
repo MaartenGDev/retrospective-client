@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import styled from "styled-components";
 import {RootState} from "../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
@@ -80,10 +80,6 @@ type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ i
 const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
     const retrospective = retrospectives.find(r => r.id === parseInt(match.params.id))!;
 
-    if (!retrospective) {
-        return <main>Not found</main>
-    }
-
     const timeUsage = [
         {name: 'Meetings', value: 20, color: '#4A92E6'},
         {name: 'focus', value: 60, color: '#4AE6AA'},
@@ -92,22 +88,30 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
 
     const inputGrid = [
         {
+            id: 1,
             minValues: 1,
             icon: {label: '+', color: '#4AE6AA'},
             inputs: [{label: 'Good'}, {label: 'Good'}, {label: 'Good'}]
         },
         {
+            id: 2,
             minValues: 1,
             icon: {label: '~', color: '#D67F28'},
             inputs: [{label: 'Room for improvement'}, {label: 'Room for improvement'}, {label: 'Room for improvement'}]
         },
         {
+            id: 3,
             minValues: 0,
             icon: {label: 'I', color: '#4A92E6'},
             inputs: [{label: 'Thinking about'}, {label: 'Thinking about'}, {label: 'Thinking about'}]
         },
     ];
 
+    const [categories, setCategories] = useState(timeUsage);
+
+    if (!retrospective) {
+        return <main>Not found</main>
+    }
 
     return (
         <main>
@@ -117,7 +121,7 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
                 <p><b>Balance</b></p>
                 <p>Adjust the slider to indicate how your sprint was spent such as how much time was available to
                     focus.</p>
-                <CategorySlider categories={timeUsage}/>
+                <CategorySlider categories={categories} onCategoriesChange={(c: any[]) => setCategories(c)}/>
 
                 <p><b>Sprint rating</b></p>
                 <p>What grade would you give this sprint? Base it on the status of your set goals and the achieved
@@ -130,10 +134,10 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
                     description brief because it will be discussed in full detail during the retrospective.</p>
 
                 <InputGrid>
-                    {inputGrid.map(row => <GridColumn>
-                        {row.inputs.map(input => (
-                            <InputRow>
-                                <Icon style={{backgroundColor: row.icon.color}}>{row.icon.label}</Icon>
+                    {inputGrid.map(column => <GridColumn key={column.id}>
+                        {column.inputs.map((input, index) => (
+                            <InputRow key={index}>
+                                <Icon style={{backgroundColor: column.icon.color}}>{column.icon.label}</Icon>
                                 <Input type='text' placeholder={input.label}/>
                             </InputRow>
                         ))}

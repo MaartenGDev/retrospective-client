@@ -47,69 +47,79 @@ interface IProps {
 }
 
 interface IState {
-    categories: ICategory[]
+    categories: ICategory[],
+    isDragging: boolean,
+    dragStartX: number,
+    categoryIndexToUpdate: number;
 }
 
 
 export class CategorySlider extends Component<IProps, IState> {
-    startPosition = 0;
-    categoryNameToUpdate = "";
-    isDragging = false;
-    bar: RefObject<HTMLDivElement> = React.createRef();
+    private bar: RefObject<HTMLDivElement> = React.createRef();
 
     state: IState = {
-        categories: []
+        categories: [],
+        isDragging: false,
+        dragStartX: 0,
+        categoryIndexToUpdate: -1
     }
 
     componentDidMount() {
-        document.addEventListener('mousedown', this.handleDocumentMouseDown);
-        document.addEventListener('mouseup', this.handleDragFinished);
+        document.addEventListener('mousedown', this.handleDragStart);
         document.addEventListener('mousemove', this.updateCategoryWidths);
+        document.addEventListener('mouseup', this.handleDragFinished);
 
         this.setState({categories: this.props.categories})
     }
 
     componentWillUnmount() {
-        document.removeEventListener('Event', this.handleDocumentMouseDown);
-        document.removeEventListener('Event', this.handleDragFinished);
+        document.removeEventListener('Event', this.handleDragStart);
         document.removeEventListener('Event', this.updateCategoryWidths);
+        document.removeEventListener('Event', this.handleDragFinished);
     }
 
-    private handleDocumentMouseDown = (event: Event) => {
+    private handleDragStart = (event: Event) => {
+        const categoryIndexToUpdate = parseInt(((event as MouseEvent).target! as HTMLSpanElement).id, 10);
+        if(isNaN(categoryIndexToUpdate)) return;
+
         event.preventDefault();
-        this.startPosition = ((event as MouseEvent).x);
-        this.categoryNameToUpdate = ((event as MouseEvent).target! as HTMLSpanElement).id;
-        this.isDragging = true;
+
+        this.setState({
+            isDragging: true,
+            dragStartX: (event as MouseEvent).x,
+            categoryIndexToUpdate
+        })
     };
 
     private handleDragFinished = (event: Event) => {
-        const {categories} = this.state
-        this.props.onCategoriesChange(categories);
         this.updateCategoryWidths(event);
-        this.isDragging = false;
+        this.setState({isDragging: false, categoryIndexToUpdate: -1})
+        this.props.onCategoriesChange(this.state.categories);
     }
 
     private updateCategoryWidths = (event: Event) => {
-        if (!this.categoryNameToUpdate || !this.isDragging) {
-            return;
-        }
-        const endPosition = (event as MouseEvent).x;
-        const sliderDimensions = (this.bar.current! as HTMLDivElement).getBoundingClientRect();
-        const differenceFromStart = endPosition - this.startPosition;
+        const {categories, isDragging, dragStartX, categoryIndexToUpdate} = this.state
+        if (categoryIndexToUpdate === -1 || !isDragging) return;
 
+
+        // Slider
+        const sliderDimensions = (this.bar.current! as HTMLDivElement).getBoundingClientRect();
         const totalWidth = sliderDimensions.right - sliderDimensions.left;
 
+        // Movement
+        const currentX = (event as MouseEvent).x;
+        const differenceFromStart = currentX - dragStartX;
         const percentageChange = (differenceFromStart / totalWidth) * 100;
 
-        const updatedCategories = this.state.categories.map(c => ({...c}));
-        const changedCategoryIndex = updatedCategories.findIndex(c => c.name === this.categoryNameToUpdate);
-
-
+        // Update categories
         let pendingChange = Math.abs(percentageChange);
 
-        const categoryIndexToReduce = percentageChange > 0 ? changedCategoryIndex : changedCategoryIndex - 1;
-        const categoryIndexToIncrease = percentageChange > 0 ? changedCategoryIndex - 1 : changedCategoryIndex;
+        const categoryIndexToReduce = percentageChange > 0 ? categoryIndexToUpdate : categoryIndexToUpdate - 1;
+        const categoryIndexToIncrease = percentageChange > 0 ? categoryIndexToUpdate - 1 : categoryIndexToUpdate;
 
+        const updatedCategories = categories.map(c => ({...c}));
+
+        // Prevent dragging category over entire other category
         if(updatedCategories[categoryIndexToReduce].value < pendingChange){
             pendingChange = updatedCategories[categoryIndexToReduce].value;
         }
@@ -117,21 +127,20 @@ export class CategorySlider extends Component<IProps, IState> {
         updatedCategories[categoryIndexToReduce].value = updatedCategories[categoryIndexToReduce].value - pendingChange;
         updatedCategories[categoryIndexToIncrease].value = updatedCategories[categoryIndexToIncrease].value + pendingChange;
 
-        this.startPosition = endPosition;
-        this.setState({categories: updatedCategories});
+        this.setState({categories: updatedCategories, dragStartX: currentX});
     };
 
     render() {
         const {categories} = this.state
 
         return (<Bar ref={this.bar}>
-            {categories.map((category, index) => {
-                const showHandle = index !== (categories.length - 1);
-                const categoryId = showHandle ? categories[index + 1].name : '';
+            {categories.map((category, categoryIndex) => {
+                const showHandle = categoryIndex !== (categories.length - 1);
+                const categoryId = categoryIndex + 1 + '';
 
                 return (
                     <Section key={category.name} style={{width: `${category.value}%`, backgroundColor: category.color}}>
-                        <span>{category.name}</span> {showHandle ? <SlidingHandle id={categoryId}/> : null}
+                        <span>{category.name} ({category.value.toFixed(0)}%)</span> {showHandle ? <SlidingHandle id={categoryId}/> : null}
                     </Section>);
             })}
         </Bar>);

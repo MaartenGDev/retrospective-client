@@ -1,38 +1,24 @@
 import React, {FC, useState} from 'react';
 import styled from "styled-components";
-import {RootState} from "../store/rootReducer";
+import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter} from 'react-router-dom';
-import {CategorySlider} from "./common/CategorySlider";
-import {ValueSlider} from "./common/ValueSlider";
+import {CategorySlider} from "../common/CategorySlider";
+import {ValueSlider} from "../common/ValueSlider";
+import {IEvaluation} from "../../models/IEvaluation";
+import * as retrospectiveActions from "../../store/retrospective.actions";
+import {TextArea} from "../Styling/Input";
+import {RoundedButton} from "../Styling/Buttons";
 
 const Content = styled.div`
   padding: 20px;
   background-color: #ffffff;
 `
 
-const TextArea = styled.textarea`
-  border-radius: 5px;
-  padding: 10px;
-  width: calc(100% - 20px);
-  min-width: calc(100% - 20px);
-  max-width: calc(100% - 20px);
-  min-height: 50px;
-  font-family: inherit;
-`
-
 const ButtonRow = styled.div`
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
-`
-
-const Button = styled.button`
-  background-color: #4A92E6;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  color: white;
 `
 
 const InputGrid = styled.div`
@@ -73,15 +59,15 @@ const InputRow = styled.div`
 `
 
 const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
-const connector = connect(mapState)
 
-interface IFeedbackForm {
-    timeUsage: {name: string, value: number, color: string}[],
-    sprintRating: number,
-    actions: string,
-    discussionTopics: string,
-    feedback: {[category: string]: string[]}
+const mapDispatch = {
+    saveEvaluation: (evaluation: IEvaluation) => retrospectiveActions.AddEvaluation(evaluation)
 }
+
+
+const connector = connect(mapState, mapDispatch)
+
+
 
 interface IProps {
 }
@@ -89,8 +75,7 @@ interface IProps {
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }> & IProps;
 
 
-
-const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
+const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, saveEvaluation}) => {
     const retrospective = retrospectives.find(r => r.id === parseInt(match.params.id))!;
 
     const timeUsage = [
@@ -123,11 +108,12 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
         },
     ];
 
-    const [form, setForm] = useState<IFeedbackForm>({
+    const [form, setForm] = useState<IEvaluation>({
+        retrospectiveId: retrospective?.id!,
         timeUsage,
         sprintRating: 50,
-        actions: '',
-        discussionTopics: '',
+        suggestedActions: '',
+        suggestedTopics: '',
         feedback: inputGrid.reduce((acc, cur) => ({...acc, [cur.category]: ['']}), {})
     });
 
@@ -137,7 +123,7 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
 
     return (
         <main>
-            <h1>Retrospective #{retrospective.id}</h1>
+            <h1>Retrospective: {retrospective.name}</h1>
             <Content>
                 <p>TIME USAGE</p>
                 <p><b>Balance</b></p>
@@ -176,19 +162,19 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match}) => {
                 <p>SUGGESTIONS</p>
                 <p>What actions should be taken for the next sprint?</p>
                 <TextArea placeholder='E.g changing the workflow or appointing a single person to hide it.'
-                          value={form.actions}
-                          onChange={e => setForm({...form, actions: e.target.value})}
+                          value={form.suggestedActions}
+                          onChange={e => setForm({...form, suggestedActions: e.target.value})}
                 />
                 <hr/>
                 <p>FEEDBACK</p>
                 <p>What should be discussed during the retrospective?</p>
                 <TextArea placeholder='E.g how we handle onboarding'
-                          value={form.discussionTopics}
-                          onChange={e => setForm({...form, discussionTopics: e.target.value})}
+                          value={form.suggestedTopics}
+                          onChange={e => setForm({...form, suggestedTopics: e.target.value})}
                 />
 
                 <ButtonRow>
-                    <Button onClick={() => console.log(form)}>Submit</Button>
+                    <RoundedButton onClick={() => saveEvaluation(form)}>Submit</RoundedButton>
                 </ButtonRow>
             </Content>
         </main>

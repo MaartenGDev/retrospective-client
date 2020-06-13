@@ -20,6 +20,8 @@ const Section = styled.div`
   position: relative;
   color: white;
   padding: 10px;
+  display: flex;
+  align-items: center;
 `;
 
 const SlidingHandle = styled.span`

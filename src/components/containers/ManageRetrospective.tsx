@@ -1,8 +1,10 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import styled from "styled-components";
-import {RootState} from "../store/rootReducer";
+import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {IRetrospective} from "../../models/IRetrospective";
+import {TextInput} from "../Styling/Input";
 
 const Content = styled.div`
   padding: 20px;
@@ -15,16 +17,26 @@ type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{id
 
 
 const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
-    const retrospective = retrospectives.find(r => r.id === parseInt(match.params.id))!;
+    const initialRetrospective: IRetrospective = retrospectives.find(r => r.id === parseInt(match.params.id)) || {
+        name: '',
+        startDate: new Date().toISOString(),
+        endDate: new Date().toISOString(),
+        actions: [],
+        topics: []
+    };
 
-    if(!retrospective){
-        return <main>Not found</main>
-    }
+    const [retrospective, setRetrospective] = useState<IRetrospective>(initialRetrospective);
 
     return (
         <main>
-            <h1>Retrospective #{retrospective.id}</h1>
+            <h1>Retrospective: {retrospective.name}</h1>
             <Content>
+                <p>NAME</p>
+                <TextInput placeholder='E.g Retrospective #12'
+                          value={retrospective.name}
+                          onChange={e => setRetrospective({...retrospective, name: e.target.value})}
+                />
+
                 <p>AGENDA</p>
                 <table>
                     <tbody>
@@ -32,7 +44,7 @@ const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
                         <th>Description</th>
                         <th>Duration</th>
                     </tr>
-                    {retrospective.agenda.map(event => {
+                    {retrospective.topics.map(event => {
                         return <tr key={event.id}>
                             <td>{event.description}</td>
                             <td>{event.durationInMinutes}</td>
@@ -52,7 +64,7 @@ const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
                     </tr>
                     {retrospective.actions.map(event => {
                         return <tr key={event.id}>
-                            <td><input readOnly type='checkbox' checked={event.completed}/></td>
+                            <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
                             <td>{event.description}</td>
                             <td>{event.responsible}</td>
                         </tr>

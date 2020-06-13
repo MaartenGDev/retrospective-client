@@ -1,12 +1,16 @@
 import React, {FC} from 'react';
-import {RetrospectiveStatus} from "../models/RetrospectiveStatus";
 import styled from "styled-components";
 import {Link} from "react-router-dom";
 import {connect, ConnectedProps} from "react-redux";
-import {RootState} from "../store/rootReducer";
+import {RootState} from "../../store/rootReducer";
+import {RoundedButtonLink} from "../Styling/Buttons";
 
 const Content = styled.div`
   background-color: #ffffff;
+`
+
+const Title = styled.h1`
+  margin: 0;
 `
 
 const TableLink = styled(Link)`
@@ -14,6 +18,13 @@ const TableLink = styled(Link)`
   text-transform: uppercase;
   text-decoration: none;
 `;
+
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+`
 
 
 const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
@@ -23,7 +34,10 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
     return (
         <main>
-            <h1>Retrospectives</h1>
+            <Row>
+                <Title>Retrospectives</Title>
+                <RoundedButtonLink to='/retrospectives/create'>Create</RoundedButtonLink>
+            </Row>
             <Content>
                 <table>
                     <tbody>
@@ -34,14 +48,15 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
                         <th>ACTION</th>
                     </tr>
                     {retrospectives.map(retro => {
-                        const action = retro.status === RetrospectiveStatus.FINISHED
+                        const isCompleted = new Date(retro.endDate).getTime() < new Date().getTime();
+                        const action = isCompleted
                             ? <TableLink to={'/retrospectives/' + retro.id}>View</TableLink>
                             : <TableLink to={'/retrospectives/' + retro.id + '/feedback'}>Give feedback</TableLink>;
 
                         return <tr key={retro.id}>
                             <td>{retro.name}</td>
-                            <td>{retro.status}</td>
-                            <td>{retro.startDate.toLocaleString()} {retro.endDate.toLocaleString()}</td>
+                            <td>{isCompleted ? 'COMPLETED' : 'OPEN'}</td>
+                            <td>{new Date(retro.startDate).toDateString()} - {new Date(retro.endDate).toDateString()}</td>
                             <td>{action}</td>
                         </tr>
                     })}

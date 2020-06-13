@@ -2,16 +2,19 @@ import {IRetrospective} from "../models/IRetrospective";
 import {Action} from "redux";
 import {RetrospectiveService} from "../services/RetrospectiveService";
 import {AppThunk} from "./store";
+import {IEvaluation} from "../models/IEvaluation";
 
 export enum RetrospectiveActionTypes {
-    LOAD_ALL = '[RETROSPECTIVES] LOAD ALL',
     LOADED = '[RETROSPECTIVES] LOADED',
     ADD = '[RETROSPECTIVES] ADD',
     ADDED = '[RETROSPECTIVES] ADDED',
+    ADDED_EVALUATION = '[RETROSPECTIVES] ADDED EVALUATION',
 }
 
+const service = new RetrospectiveService();
+
 export const LoadAll = (): AppThunk => async dispatch => {
-    const retrospectives = await new RetrospectiveService().getAll()
+    const retrospectives = await service.getAll()
     dispatch(new Loaded(retrospectives))
 }
 
@@ -35,8 +38,21 @@ export class Added implements Action {
     }
 }
 
+export const AddEvaluation = (evaluation: IEvaluation): AppThunk => async dispatch => {
+    const persistedEvaluation = await service.addEvaluation(evaluation)
+    dispatch(new AddedEvaluation(persistedEvaluation))
+}
+
+export class AddedEvaluation implements Action {
+    readonly type = RetrospectiveActionTypes.ADDED_EVALUATION;
+
+    constructor(public evaluation: IEvaluation) {}
+}
+
+
 export type RetrospectiveTypes
     = Loaded
     | Add
     | Added
+    | AddedEvaluation
     ;

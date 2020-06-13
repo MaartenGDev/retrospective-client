@@ -1,13 +1,11 @@
-import {RetrospectiveStatus} from "./RetrospectiveStatus";
-import {IEvent} from "./IEvent";
+import {ITopic} from "./ITopic";
 import {IAction} from "./IAction";
 
 export interface IRetrospective {
-    id: number;
+    id?: number;
     name: string;
-    status: RetrospectiveStatus;
-    startDate: Date;
-    endDate: Date;
-    agenda: IEvent[],
+    startDate: string;
+    endDate: string;
+    topics: ITopic[],
     actions: IAction[],
 }

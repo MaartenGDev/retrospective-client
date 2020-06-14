@@ -9,6 +9,10 @@ export class RetrospectiveService {
         return http.get('retrospectives');
     }
 
+    create(retrospective: IRetrospective): Promise<IRetrospective> {
+        return http.post(`retrospectives`, retrospective);
+    }
+
     addEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
         return http.post(`retrospectives/${evaluation.retrospectiveId}/evaluations`, evaluation);
     }

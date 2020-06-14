@@ -28,6 +28,7 @@ const Row = styled.div`
 
 
 const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
+
 const connector = connect(mapState)
 type PropsFromRedux = ConnectedProps<typeof connector>
 

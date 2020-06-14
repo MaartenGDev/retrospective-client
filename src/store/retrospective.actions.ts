@@ -24,18 +24,16 @@ export class Loaded implements Action {
     constructor(public retrospectives: IRetrospective[]) {}
 }
 
-export class Add implements Action {
-    readonly type = RetrospectiveActionTypes.ADD;
-
-    constructor(public retrospective: IRetrospective) {
-    }
-}
-
 export class Added implements Action {
     readonly type = RetrospectiveActionTypes.ADDED;
 
     constructor(public retrospective: IRetrospective) {
     }
+}
+
+export const CreateOrUpdate = (retrospective: IRetrospective): AppThunk => async dispatch => {
+    const persistedRetrospective = await service.create(retrospective)
+    dispatch(new Added(persistedRetrospective))
 }
 
 export const AddEvaluation = (evaluation: IEvaluation): AppThunk => async dispatch => {
@@ -52,7 +50,6 @@ export class AddedEvaluation implements Action {
 
 export type RetrospectiveTypes
     = Loaded
-    | Add
     | Added
     | AddedEvaluation
     ;

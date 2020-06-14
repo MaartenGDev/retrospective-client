@@ -16,6 +16,11 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 ...state,
                 retrospectives: action.retrospectives
             }
+        case RetrospectiveActionTypes.ADDED:
+            return {
+                ...state,
+                retrospectives: [action.retrospective, ...state.retrospectives]
+            }
         default:
             return state
     }

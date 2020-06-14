@@ -61,7 +61,7 @@ const InputRow = styled.div`
 const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
 
 const mapDispatch = {
-    saveEvaluation: (evaluation: IEvaluation) => retrospectiveActions.AddEvaluation(evaluation)
+    create: (evaluation: IEvaluation) => retrospectiveActions.AddEvaluation(evaluation)
 }
 
 
@@ -75,7 +75,7 @@ interface IProps {
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }> & IProps;
 
 
-const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, saveEvaluation}) => {
+const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, create}) => {
     const retrospective = retrospectives.find(r => r.id === parseInt(match.params.id))!;
 
     const timeUsage = [
@@ -174,7 +174,7 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, saveE
                 />
 
                 <ButtonRow>
-                    <RoundedButton onClick={() => saveEvaluation(form)}>Submit</RoundedButton>
+                    <RoundedButton onClick={() => create(form)}>Submit</RoundedButton>
                 </ButtonRow>
             </Content>
         </main>

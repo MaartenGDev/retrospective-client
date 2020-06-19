@@ -67,15 +67,13 @@ const mapDispatch = {
 
 const connector = connect(mapState, mapDispatch)
 
-
-
 interface IProps {
 }
 
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }> & IProps;
 
 
-const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, create}) => {
+const RetrospectiveEvaluation: FC<PropsFromRedux> = ({retrospectives, match, create}) => {
     const retrospective = retrospectives.find(r => r.id === parseInt(match.params.id))!;
 
     const timeUsage = [
@@ -114,7 +112,7 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, creat
         sprintRating: 50,
         suggestedActions: '',
         suggestedTopics: '',
-        feedback: inputGrid.reduce((acc, cur) => ({...acc, [cur.category]: ['']}), {})
+        comments: []
     });
 
     if (!retrospective) {
@@ -148,10 +146,6 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, creat
                                 <Icon style={{backgroundColor: column.icon.color}}>{column.icon.label}</Icon>
                                 <Input type='text' placeholder={input.label} onChange={e => {
 
-                                    const latestFeedbackForCategory = [...form.feedback[column.category]];
-                                    latestFeedbackForCategory[index] = e.target.value;
-
-                                    setForm({...form, feedback: {...form.feedback, [column.category]: latestFeedbackForCategory}})
                                 }}/>
                             </InputRow>
                         ))}
@@ -181,4 +175,4 @@ const RetrospectiveFeedback: FC<PropsFromRedux> = ({retrospectives, match, creat
     );
 }
 
-export default withRouter(connector(RetrospectiveFeedback));
+export default withRouter(connector(RetrospectiveEvaluation));

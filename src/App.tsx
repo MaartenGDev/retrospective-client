@@ -9,7 +9,8 @@ import Retrospective from "./components/containers/Retrospective";
 import './App.scss';
 import {store} from "./store/store";
 import * as retrospectiveActions from "./store/retrospective.actions";
-import RetrospectiveFeedback from "./components/containers/RetrospectiveFeedback";
+import * as commentCategoryActions from "./store/comment-category.actions";
+import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluation";
 import ManageRetrospective from "./components/containers/ManageRetrospective";
 
 const Content = styled.div`
@@ -55,5 +56,6 @@ function App() {
 }
 
 store.dispatch(retrospectiveActions.LoadAll())
+store.dispatch(commentCategoryActions.LoadAll())
 
 export default App;

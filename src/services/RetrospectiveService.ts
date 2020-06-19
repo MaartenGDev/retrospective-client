@@ -14,6 +14,6 @@ export class RetrospectiveService {
     }
 
     addEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
-        return http.post(`retrospectives/${evaluation.retrospectiveId}/evaluations`, evaluation);
+        return http.post(`evaluations`, evaluation);
     }
 }

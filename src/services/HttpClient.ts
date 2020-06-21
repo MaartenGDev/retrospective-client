@@ -2,10 +2,18 @@ import config from '../Config'
 
 export class HttpClient {
     public async post<T>(url: string, body: any): Promise<T> {
+        return this.request(url, body);
+    }
+
+    public async patch<T>(url: string, body: any): Promise<T> {
+        return this.request(url, body, 'PATCH');
+    }
+
+    private async request<T>(url: string, body: any, method = 'POST'): Promise<T> {
         const absoluteUrl = this.getAbsoluteUrl(url);
 
         const response = await fetch(absoluteUrl, {
-            method: 'POST',
+            method: method,
             headers: {
                 'Content-Type': 'application/json'
             },

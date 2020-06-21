@@ -1,8 +1,8 @@
 import {RetrospectiveActionTypes, RetrospectiveTypes} from "./retrospective.actions";
-import {IRetrospective} from "../models/IRetrospective";
+import {IUserRetrospective} from "../models/IUserRetrospective";
 
 export interface IRetrospectivesState {
-    retrospectives: IRetrospective[]
+    retrospectives: IUserRetrospective[]
 }
 
 const initialState: IRetrospectivesState = {
@@ -20,6 +20,14 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
             return {
                 ...state,
                 retrospectives: [action.retrospective, ...state.retrospectives]
+            }
+        case RetrospectiveActionTypes.UPDATED_EVALUATION:
+        case RetrospectiveActionTypes.ADDED_EVALUATION:
+            const otherRetrospectives = state.retrospectives.filter(r => r.id !== action.evaluation.retrospectiveId);
+            const retrospectiveToUpdate = state.retrospectives.find(r => r.id === action.evaluation.retrospectiveId)!;
+            return {
+                ...state,
+                retrospectives: [...otherRetrospectives, {...retrospectiveToUpdate, evaluation: action.evaluation}]
             }
         default:
             return state

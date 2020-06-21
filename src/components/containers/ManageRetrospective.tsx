@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
-import {IRetrospective} from "../../models/IRetrospective";
+import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {Input, Select, TextInput} from "../Styling/Input";
 import * as retrospectiveActions from "../../store/retrospective.actions";
 import {RoundedButton, TextButton} from "../Styling/Buttons";
@@ -24,13 +24,13 @@ const InputRow = styled.div`
 const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
 
 const mapDispatch = {
-    createOrUpdate: (retrospective: IRetrospective) => retrospectiveActions.CreateOrUpdate(retrospective)
+    createOrUpdate: (retrospective: IUserRetrospective) => retrospectiveActions.CreateOrUpdate(retrospective)
 }
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>
 
 interface IState {
-    retrospective: IRetrospective,
+    retrospective: IUserRetrospective,
     topic: ITopic,
     topicBeingEdited?: ITopic & { editIndex: number },
     finishedEditing: boolean,
@@ -56,7 +56,7 @@ class ManageRetrospective extends Component<IProps, IState> {
             startDate: DateHelper.format(new Date()),
             endDate: DateHelper.format(new Date()),
             actions: [],
-            topics: []
+            topics: [],
         },
         topic: this._defaultTopic,
         topicBeingEdited: undefined,
@@ -125,7 +125,7 @@ class ManageRetrospective extends Component<IProps, IState> {
         });
     }
 
-    private createOrUpdate = (retrospective: IRetrospective) => {
+    private createOrUpdate = (retrospective: IUserRetrospective) => {
         const {createOrUpdate} = this.props
         createOrUpdate(retrospective);
         this.setState({finishedEditing: true})

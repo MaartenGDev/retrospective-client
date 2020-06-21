@@ -2,6 +2,7 @@ import {ICommentCategory} from "./ICommentCategory";
 
 export interface IComment {
     id: number;
-    name: string;
+    body: string;
+    categoryId: number;
     category: ICommentCategory;
 }

@@ -1,10 +1,12 @@
 import {IComment} from "./IComment";
+import {ITimeUsage} from "./ITimeUsage";
 
 export interface IEvaluation {
+    id: number;
     retrospectiveId: number;
-    timeUsage: {name: string, value: number, color: string}[],
     sprintRating: number,
     suggestedActions: string,
     suggestedTopics: string,
-    comments: IComment[]
+    comments: IComment[],
+    timeUsage: ITimeUsage[],
 }

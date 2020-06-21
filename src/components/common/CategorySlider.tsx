@@ -1,5 +1,6 @@
 import React, {Component, RefObject} from 'react';
 import styled from "styled-components";
+import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 
 const Bar = styled.div`
   display: flex;
@@ -37,7 +38,8 @@ const SlidingHandle = styled.span`
  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 `;
 
-interface ICategory {
+export interface ICategory {
+    id: number,
     name: string,
     value: number,
     color: string
@@ -80,9 +82,17 @@ export class CategorySlider extends Component<IProps, IState> {
         document.removeEventListener('Event', this.handleDragFinished);
     }
 
+    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
+        if(prevProps.categories !== this.props.categories){
+            this.setState({
+                categories: this.props.categories
+            });
+        }
+    }
+
     private handleDragStart = (event: Event) => {
         const categoryIndexToUpdate = parseInt(((event as MouseEvent).target! as HTMLSpanElement).id, 10);
-        if(isNaN(categoryIndexToUpdate)) return;
+        if (isNaN(categoryIndexToUpdate)) return;
 
         event.preventDefault();
 
@@ -122,14 +132,17 @@ export class CategorySlider extends Component<IProps, IState> {
         const updatedCategories = categories.map(c => ({...c}));
 
         // Prevent dragging category over entire other category
-        if(updatedCategories[categoryIndexToReduce].value < pendingChange){
+        if (updatedCategories[categoryIndexToReduce].value < pendingChange) {
             pendingChange = updatedCategories[categoryIndexToReduce].value;
         }
 
         updatedCategories[categoryIndexToReduce].value = updatedCategories[categoryIndexToReduce].value - pendingChange;
         updatedCategories[categoryIndexToIncrease].value = updatedCategories[categoryIndexToIncrease].value + pendingChange;
 
-        this.setState({categories: updatedCategories, dragStartX: currentX});
+        this.setState({
+            categories: updatedCategories.map(category => ({...category, value: Math.round(category.value)})),
+            dragStartX: currentX
+        });
     };
 
     render() {
@@ -142,7 +155,8 @@ export class CategorySlider extends Component<IProps, IState> {
 
                 return (
                     <Section key={category.name} style={{width: `${category.value}%`, backgroundColor: category.color}}>
-                        <span>{category.name} ({category.value.toFixed(0)}%)</span> {showHandle ? <SlidingHandle id={categoryId}/> : null}
+                        <span>{category.name} ({category.value.toFixed(0)}%)</span> {showHandle ?
+                        <SlidingHandle id={categoryId}/> : null}
                     </Section>);
             })}
         </Bar>);

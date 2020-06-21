@@ -52,7 +52,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
                         const isCompleted = new Date(retro.endDate).getTime() < new Date().getTime();
                         const action = isCompleted
                             ? <TableLink to={'/retrospectives/' + retro.id}>View</TableLink>
-                            : <TableLink to={'/retrospectives/' + retro.id + '/feedback'}>Give feedback</TableLink>;
+                            : <TableLink to={'/retrospectives/' + retro.id + '/feedback'}>{retro.evaluation ? 'Edit' : 'Give'} feedback</TableLink>;
 
                         return <tr key={retro.id}>
                             <td>{retro.name}</td>

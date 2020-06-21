@@ -10,6 +10,7 @@ import './App.scss';
 import {store} from "./store/store";
 import * as retrospectiveActions from "./store/retrospective.actions";
 import * as commentCategoryActions from "./store/comment-category.actions";
+import * as timeUsageCategoryActions from "./store/time-usage-category.actions";
 import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluation";
 import ManageRetrospective from "./components/containers/ManageRetrospective";
 
@@ -57,5 +58,6 @@ function App() {
 
 store.dispatch(retrospectiveActions.LoadAll())
 store.dispatch(commentCategoryActions.LoadAll())
+store.dispatch(timeUsageCategoryActions.LoadAll())
 
 export default App;

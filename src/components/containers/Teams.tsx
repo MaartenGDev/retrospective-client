@@ -46,13 +46,11 @@ const Teams: FC<PropsFromRedux> = ({teams}) => {
                     <tbody>
                     <tr>
                         <th>NAME</th>
-                        <th>VIEW</th>
                         <th>ACTION</th>
                     </tr>
                     {teams.map(team => {
                         return <tr key={team.id}>
                             <td>{team.name}</td>
-                            <td><TableLink to={'/teams/' + team.id}>View</TableLink></td>
                             <td><TableLink to={`/teams/${team.id}/edit`}>Edit</TableLink></td>
                         </tr>
                     })}

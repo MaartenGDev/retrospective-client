@@ -95,8 +95,10 @@ class ManageTeam extends Component<IProps, IState> {
                                onChange={this.updateTeam}
                     />
 
-                    <p>Invite Link</p>
-                    <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)} />
+                    {team.inviteCode && <React.Fragment>
+                        <p>Invite Link</p>
+                        <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)} />
+                    </React.Fragment>}
 
                     <RoundedButton style={{marginTop: '10px'}} onClick={() => this.createOrUpdate(team)}>Save</RoundedButton>
                 </Content>

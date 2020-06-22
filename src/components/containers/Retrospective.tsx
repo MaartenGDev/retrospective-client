@@ -37,6 +37,11 @@ margin-top: 5px;
 align-items: center;
 `
 
+const Spacer = styled.hr`
+  margin: 30px 0;
+  border: 1px solid #dad7d7;
+`
+
 const mapState = (state: RootState) => ({
     commentCategories: state.commentCategoryReducer.commentCategories,
     retrospectiveReport: state.retrospectiveReducer.retrospectiveReport,
@@ -59,7 +64,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
 
     useEffect(() => {
         loadReport(retrospectiveId)
-    })
+    }, [retrospectiveId, loadReport])
 
     if (!retrospectiveReport || commentCategories.length === 0) {
         return <main>Loading</main>
@@ -99,7 +104,8 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
         <main>
             <Row>
                 <Title>Retrospective: {retrospective.name}</Title>
-                {canEditRetrospective && <RoundedButtonLink to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
+                {canEditRetrospective &&
+                <RoundedButtonLink to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
             </Row>
             <Content>
                 <p>AGENDA</p>
@@ -108,37 +114,57 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                     <tr>
                         <th>Description</th>
                         <th>Duration</th>
+                        <th>Type</th>
                     </tr>
                     {retrospective.topics.map(topic => {
                         return <tr key={topic.id}>
                             <td>{topic.description}</td>
                             <td>{topic.durationInMinutes} minutes</td>
+                            <td>Provided</td>
+                        </tr>
+                    })}
+                    {retrospectiveReport.suggestedTopics.map((topic, index) => {
+                        return <tr key={-index}>
+                            <td>{topic.description}</td>
+                            <td>{topic.durationInMinutes} minutes</td>
+                            <td>Suggested</td>
                         </tr>
                     })}
                     </tbody>
                 </table>
 
-                {retrospective.actions.length > 0 && <React.Fragment>
-                    <hr/>
+                <Spacer/>
 
-                    <p>ACTIONS LAST SPRINT</p>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <th>Done</th>
-                            <th>Description</th>
-                            <th>Responsible</th>
+                <p>ACTIONS</p>
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>Done</th>
+                        <th>Description</th>
+                        <th>Responsible</th>
+                        <th>Type</th>
+                    </tr>
+                    {retrospective.actions.map(event => {
+                        return <tr key={event.id}>
+                            <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
+                            <td>{event.description}</td>
+                            <td>{event.responsible}</td>
+                            <td>Provided</td>
                         </tr>
-                        {retrospective.actions.map(event => {
-                            return <tr key={event.id}>
-                                <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
-                                <td>{event.description}</td>
-                                <td>{event.responsible}</td>
-                            </tr>
-                        })}
-                        </tbody>
-                    </table>
-                </React.Fragment>}
+                    })}
+                    {retrospectiveReport.suggestedActions.map((action, index) => {
+                        return <tr key={-index}>
+                            <td><input readOnly type='checkbox' checked={action.isCompleted}/></td>
+                            <td>{action.description}</td>
+                            <td>{action.responsible}</td>
+                            <td>Suggested</td>
+                        </tr>
+                    })}
+                    </tbody>
+                </table>
+
+                <Spacer/>
+
 
                 <p>TO DISCUSS</p>
                 {Object.values(commentsByCategoryAndUser).map(categoryGroup => {

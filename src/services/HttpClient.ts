@@ -43,8 +43,9 @@ export class HttpClient {
         const response = await request;
 
         if(response.status === 0 || response.status === 401){
-            console.log(response)
-            // window.location.href = `${Config.API_URL}account/login`
+            window.location.href = `${Config.API_URL}account/login`
+
+            return Promise.resolve({} as T);
         }
 
         return response.json();

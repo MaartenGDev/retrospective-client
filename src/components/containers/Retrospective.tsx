@@ -21,8 +21,6 @@ const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
         return <main>Not found</main>
     }
 
-    console.log(retrospective)
-
     return (
         <main>
             <h1>Retrospective: {retrospective.name}</h1>
@@ -34,7 +32,7 @@ const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
                         <th>Description</th>
                         <th>Duration</th>
                     </tr>
-                    {retrospective.topics.map(topic => {
+                    {(retrospective.topics || []).map(topic => {
                         return <tr key={topic.id}>
                             <td>{topic.description}</td>
                             <td>{topic.durationInMinutes}</td>
@@ -52,7 +50,7 @@ const Retrospective: FC<PropsFromRedux> = ({retrospectives, match}) => {
                         <th>Description</th>
                         <th>Responsible</th>
                     </tr>
-                    {retrospective.actions.map(event => {
+                    {(retrospective.actions || []).map(event => {
                         return <tr key={event.id}>
                             <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
                             <td>{event.description}</td>

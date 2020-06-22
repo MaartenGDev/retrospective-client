@@ -7,6 +7,7 @@ import {TextInput} from "../Styling/Input";
 import * as teamActions from "../../store/team.actions";
 import {RoundedButton} from "../Styling/Buttons";
 import {ITeam} from "../../models/ITeam";
+import Config from "../../Config";
 
 const Content = styled.div`
   padding: 20px;
@@ -80,7 +81,7 @@ class ManageTeam extends Component<IProps, IState> {
         const {team, finishedEditing} = this.state
 
         if (finishedEditing) {
-            return <Redirect to={'/'}/>
+            return <Redirect to={'/teams'}/>
         }
 
         return (
@@ -93,6 +94,9 @@ class ManageTeam extends Component<IProps, IState> {
                                name='name'
                                onChange={this.updateTeam}
                     />
+
+                    <p>Invite Link</p>
+                    <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)} />
 
                     <RoundedButton style={{marginTop: '10px'}} onClick={() => this.createOrUpdate(team)}>Save</RoundedButton>
                 </Content>

@@ -2,7 +2,7 @@ import React, {ChangeEvent, Component} from 'react';
 import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
-import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {CategorySlider, ICategory} from "../common/CategorySlider";
 import {ValueSlider} from "../common/ValueSlider";
 import {IEvaluation} from "../../models/IEvaluation";
@@ -81,7 +81,8 @@ type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ i
 interface IState {
     evaluation: IEvaluation,
     retrospective: IUserRetrospective,
-    commentsById: { [id: number]: IComment }
+    commentsById: { [id: number]: IComment },
+    finishedEditing: boolean,
 }
 
 class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
@@ -97,7 +98,8 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         retrospective: {
             name: ''
         } as IUserRetrospective,
-        commentsById: {}
+        commentsById: {},
+        finishedEditing: false,
     }
 
     componentDidMount() {
@@ -210,10 +212,13 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         });
 
         createOrUpdate({...evaluation, comments: transformedComments})
+        this.setState({
+            finishedEditing: true
+        })
     }
 
     render() {
-        const {retrospective, evaluation, commentsById} = this.state
+        const {retrospective, evaluation, commentsById, finishedEditing} = this.state
         const {timeUsageCategories, commentCategories} = this.props
 
         const sliderCategories = timeUsageCategories.map((c: ITimeUsageCategory) => {
@@ -225,6 +230,10 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
             acc[cur.categoryId] = [...acc[cur.categoryId] || [], cur];
             return acc;
         }, {})
+
+        if (finishedEditing) {
+            return <Redirect to={`/retrospectives/${retrospective.id}`}/>
+        }
 
         return (
             <main>

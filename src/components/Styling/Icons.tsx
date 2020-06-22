@@ -1,8 +1,8 @@
 import styled from "styled-components";
 
 export const Icon = styled.span`
-  width: 25px;
-  height: 25px;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;

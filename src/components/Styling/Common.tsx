@@ -23,6 +23,10 @@ export const Row = styled.div`
   margin: 20px 0;
 `
 
+export const Spacer = styled.hr`
+  margin: 30px 0;
+  border: 1px solid #dad7d7;
+`
 
 export const Container = styled.div`
   width: 1200px;
@@ -30,3 +34,13 @@ export const Container = styled.div`
   margin-left: auto;
   margin-right: auto;
 `;
+
+export const SectionTitle = styled.p`
+  font-weight: bold;
+`
+
+export const ButtonRow = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
+`

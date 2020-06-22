@@ -15,16 +15,11 @@ import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 import {Icon} from "../Styling/Icons";
+import {ButtonRow} from "../Styling/Common";
 
 const Content = styled.div`
   padding: 20px;
   background-color: #ffffff;
-`
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
 `
 
 const InputGrid = styled.div`

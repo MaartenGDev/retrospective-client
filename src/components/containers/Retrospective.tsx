@@ -9,9 +9,8 @@ import {ICommentCategory} from "../../models/ICommentCategory";
 import {Icon} from "../Styling/Icons";
 import {Text, TextHeader} from "../Styling/Text";
 import {IUser} from "../../models/IUser";
-import {Row, Title} from "../Styling/Common";
+import {Row, SectionTitle, Spacer, Title} from "../Styling/Common";
 import {RoundedButtonLink} from "../Styling/Buttons";
-import {TextInput} from "../Styling/Input";
 
 const Content = styled.div`
   padding: 20px;
@@ -36,15 +35,6 @@ const CommentRow = styled.div`
 display: flex;
 margin-top: 5px;
 align-items: center;
-`
-
-const SectionTitle = styled.p`
-  font-weight: bold;
-`
-
-const Spacer = styled.hr`
-  margin: 30px 0;
-  border: 1px solid #dad7d7;
 `
 
 const mapState = (state: RootState) => ({
@@ -129,7 +119,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                         </tr>
                     })}
                     {retrospectiveReport.suggestedTopics.map((topic, index) => {
-                        return <tr key={-index}>
+                        return <tr key={-index} style={{backgroundColor: '#f1f1f1'}}>
                             <td>{topic.description}</td>
                             <td>{topic.durationInMinutes} minutes</td>
                             <td>Suggested</td>
@@ -141,21 +131,19 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                 <Spacer/>
 
                 {retrospective.actions.length > 0&& <>
-                    <p>ACTIONS PREVIOUS SPRINT</p>
+                    <SectionTitle>ACTIONS PREVIOUS SPRINT</SectionTitle>
                     <table>
                         <tbody>
                         <tr>
                             <th>Done</th>
                             <th>Description</th>
                             <th>Responsible</th>
-                            <th>Type</th>
                         </tr>
                         {retrospective.actions.map(event => {
                             return <tr key={event.id}>
-                                <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
+                                <td><input readOnly type='checkbox' /></td>
                                 <td>{event.description}</td>
                                 <td>{event.responsible}</td>
-                                <td>Provided</td>
                             </tr>
                         })}
                         </tbody>
@@ -186,7 +174,6 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                         </div>
                     }
                 )}
-
 
                 <Spacer/>
 

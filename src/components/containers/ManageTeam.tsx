@@ -8,6 +8,7 @@ import * as teamActions from "../../store/team.actions";
 import {RoundedButton} from "../Styling/Buttons";
 import {ITeam} from "../../models/ITeam";
 import Config from "../../Config";
+import {ButtonRow} from "../Styling/Common";
 
 const Content = styled.div`
   padding: 20px;
@@ -100,7 +101,9 @@ class ManageTeam extends Component<IProps, IState> {
                         <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)} />
                     </React.Fragment>}
 
-                    <RoundedButton style={{marginTop: '10px'}} onClick={() => this.createOrUpdate(team)}>Save</RoundedButton>
+                    <ButtonRow>
+                        <RoundedButton onClick={() => this.createOrUpdate(team)}>Save</RoundedButton>
+                    </ButtonRow>
                 </Content>
             </main>
         );

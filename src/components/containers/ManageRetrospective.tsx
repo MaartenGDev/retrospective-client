@@ -9,7 +9,8 @@ import * as retrospectiveActions from "../../store/retrospective.actions";
 import {RoundedButton, TextButton} from "../Styling/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
-import {Row, Title} from "../Styling/Common";
+import {ButtonRow, Row, SectionTitle, Spacer, Title} from "../Styling/Common";
+import {IAction} from "../../models/IAction";
 
 const Content = styled.div`
   padding: 20px;
@@ -36,10 +37,13 @@ type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: stri
 interface IState {
     retrospective: IUserRetrospective,
     topic: ITopic,
+    action: IAction,
     topicBeingEdited?: ITopic & { editIndex: number },
+    actionBeingEdited?: IAction & { editIndex: number },
     finishedEditing: boolean,
     selectedSprintDuration: number,
     nextTopicId: number
+    nextActionId: number
 }
 
 class ManageRetrospective extends Component<IProps, IState> {
@@ -47,6 +51,13 @@ class ManageRetrospective extends Component<IProps, IState> {
         id: 0,
         description: '',
         durationInMinutes: 0
+    }
+
+    private _defaultAction: IAction = {
+        id: 0,
+        description: '',
+        responsible: '',
+        isCompleted: false
     }
 
     private _sprintDurations = [
@@ -66,10 +77,13 @@ class ManageRetrospective extends Component<IProps, IState> {
             teamId: 0
         },
         topic: this._defaultTopic,
+        action: this._defaultAction,
         topicBeingEdited: undefined,
+        actionBeingEdited: undefined,
         finishedEditing: false,
         selectedSprintDuration: 2,
-        nextTopicId: -1
+        nextTopicId: -1,
+        nextActionId: -1
     }
 
     componentDidMount() {
@@ -133,6 +147,37 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.setState({topicBeingEdited: {...topic, editIndex: index}});
     }
 
+    private removeAction = (action: IAction, index: number) => {
+        const {retrospective} = this.state
+
+        this.setState({
+            retrospective: {...retrospective, actions: retrospective.actions.filter(t => t.id !== action.id)}
+        });
+    }
+
+    private toggleActionEditing = (action: IAction, index: number) => {
+        const {actionBeingEdited, retrospective} = this.state
+        const isInEditMode = actionBeingEdited?.editIndex === index;
+
+        if (isInEditMode) {
+            const updatedActions = [...retrospective.actions];
+            delete actionBeingEdited?.editIndex;
+
+            updatedActions[index] = actionBeingEdited!;
+
+            this.setState({
+                topicBeingEdited: undefined,
+                retrospective: {...retrospective, actions: updatedActions}
+            });
+
+            return;
+        }
+
+        this.setState({actionBeingEdited: {...action, editIndex: index}});
+    }
+
+
+
     private handleSprintDurationChange = (startDate: string, durationInWeeks: number) => {
         this.setState(state => ({
             selectedSprintDuration: durationInWeeks,
@@ -163,20 +208,40 @@ class ManageRetrospective extends Component<IProps, IState> {
         });
     }
 
+    private addAction = (action: IAction) => {
+        const {retrospective, nextActionId} = this.state;
+
+        const nextAction = {...action, id: nextActionId};
+
+        this.setState({
+            retrospective: {...retrospective, actions: [...retrospective.actions, nextAction]},
+            action: this._defaultAction,
+            nextActionId: nextActionId - 1
+        });
+    }
+
     private createOrUpdate = (retrospective: IUserRetrospective) => {
         const {createOrUpdate} = this.props
 
-        const updatedTopics = retrospective.topics.map(t => {
-            const topic = {...t};
-            if(t.id <= 0){
-                delete topic.id;
-            }
-            return topic;
-        })
 
-        createOrUpdate({...retrospective, topics: updatedTopics});
+        createOrUpdate({
+            ...retrospective,
+            topics: this.removeTemporaryIds(retrospective.topics),
+            actions: this.removeTemporaryIds(retrospective.actions),
+        });
         this.setState({finishedEditing: true})
     }
+
+    private removeTemporaryIds(items: any[]): any {
+        return items.map(item => {
+            const clone = {...item};
+            if(item.id <= 0){
+                delete clone.id;
+            }
+            return clone;
+        });
+    }
+
 
     private handleSprintStartChange = (event: ChangeEvent<HTMLInputElement>) => {
         const {value} = event.target;
@@ -197,14 +262,16 @@ class ManageRetrospective extends Component<IProps, IState> {
 
     private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, mutator: (value: any) => any = value => value) => {
         const {name, value} = event.target
+        console.log(key, name, value, this.state[key])
         this.setState({[key]: {...this.state[key] as any, [name]: mutator(value)}} as IState);
     }
 
     render() {
-        const {retrospective, topic, topicBeingEdited, finishedEditing, selectedSprintDuration} = this.state
+        const {retrospective, topic, action, topicBeingEdited, actionBeingEdited,finishedEditing, selectedSprintDuration} = this.state
         const {teams} = this.props
 
         const canAddTopic = topic.description.length > 0;
+        const canAddAction = action.description.length > 0;
 
         const isExistingRetrospective = !!retrospective.id;
 
@@ -219,18 +286,18 @@ class ManageRetrospective extends Component<IProps, IState> {
                 </Row>
 
                 <Content>
-                    <p>NAME</p>
+                    <SectionTitle>NAME</SectionTitle>
                     <TextInput placeholder='E.g Retrospective #12'
                                value={retrospective.name}
                                name='name'
                                onChange={this.updateRetrospective}
                     />
 
-                    <p>TEAM</p>
+                    <SectionTitle>TEAM</SectionTitle>
                     <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
                         {teams.map(t => <option key={t.id}>{t.name}</option>)}
                     </Select>
-                    <p>SPRINT</p>
+                    <SectionTitle>SPRINT</SectionTitle>
 
                     <InputRow>
                         <Select value={selectedSprintDuration}
@@ -244,7 +311,9 @@ class ManageRetrospective extends Component<IProps, IState> {
                                onChange={this.updateRetrospective}/>
                     </InputRow>
 
-                    <p>TOPICS</p>
+                    <Spacer />
+
+                    <SectionTitle>TOPICS</SectionTitle>
                     <table>
                         <tbody>
                         <tr>
@@ -259,12 +328,12 @@ class ManageRetrospective extends Component<IProps, IState> {
                             return <tr key={index}>
                                 <td>{isInReadMode
                                     ? event.description
-                                    : <TextInput value={topicBeingEdited!.description}
+                                    : <TextInput name='description' value={topicBeingEdited!.description}
                                                  onChange={e => this.updateState('topicBeingEdited', e)}/>
                                 }</td>
                                 <td>{isInReadMode
                                     ? event.durationInMinutes
-                                    : <TextInput value={topicBeingEdited!.durationInMinutes}
+                                    : <TextInput name='durationInMinutes' value={topicBeingEdited!.durationInMinutes}
                                                  onChange={e => this.updateState('topicBeingEdited', e, parseInt)}/>
                                 }</td>
                                 <td><TextButton
@@ -293,9 +362,60 @@ class ManageRetrospective extends Component<IProps, IState> {
                         </tbody>
                     </table>
 
-                    <hr/>
+                    <Spacer/>
 
-                    <RoundedButton onClick={() => this.createOrUpdate(retrospective)}>Save</RoundedButton>
+                    <SectionTitle>ACTIONS</SectionTitle>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>Description</th>
+                            <th>Duration</th>
+                            <th>Edit</th>
+                            <th>Remove</th>
+                        </tr>
+                        {retrospective.actions.map((action, index) => {
+                            const isInReadMode = actionBeingEdited?.editIndex !== index;
+
+                            return <tr key={index}>
+                                <td>{isInReadMode
+                                    ? action.description
+                                    : <TextInput name='description' value={actionBeingEdited!.description}
+                                                 onChange={e => this.updateState('actionBeingEdited', e)}/>
+                                }</td>
+                                <td>{isInReadMode
+                                    ? action.responsible
+                                    : <TextInput name='responsible' value={actionBeingEdited!.responsible}
+                                                 onChange={e => this.updateState('actionBeingEdited', e)}/>
+                                }</td>
+                                <td><TextButton
+                                    onClick={() => this.toggleActionEditing(action, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
+                                </td>
+                                <td><TextButton color='#e53935'
+                                                onClick={() => this.removeAction(action, index)}>REMOVE</TextButton>
+                                </td>
+                            </tr>
+                        })}
+                        <tr>
+                            <td><TextInput value={action.description}
+                                           name='description'
+                                           onChange={e => this.updateState('action', e)}/>
+                            </td>
+                            <td><TextInput
+                                           value={action.responsible}
+                                           name='responsible'
+                                           onChange={e => this.updateState('action', e)}/>
+                            </td>
+                            <td colSpan={2}>
+                                <TextButton disabled={!canAddAction}
+                                            onClick={() => this.addAction(action)}>ADD</TextButton>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <ButtonRow>
+                        <RoundedButton onClick={() => this.createOrUpdate(retrospective)}>Save</RoundedButton>
+                    </ButtonRow>
                 </Content>
             </main>
         );

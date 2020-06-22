@@ -11,6 +11,7 @@ import {Text, TextHeader} from "../Styling/Text";
 import {IUser} from "../../models/IUser";
 import {Row, Title} from "../Styling/Common";
 import {RoundedButtonLink} from "../Styling/Buttons";
+import {TextInput} from "../Styling/Input";
 
 const Content = styled.div`
   padding: 20px;
@@ -35,6 +36,10 @@ const CommentRow = styled.div`
 display: flex;
 margin-top: 5px;
 align-items: center;
+`
+
+const SectionTitle = styled.p`
+  font-weight: bold;
 `
 
 const Spacer = styled.hr`
@@ -108,7 +113,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                 <RoundedButtonLink to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
             </Row>
             <Content>
-                <p>AGENDA</p>
+                <SectionTitle>AGENDA</SectionTitle>
                 <table>
                     <tbody>
                     <tr>
@@ -135,38 +140,31 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
 
                 <Spacer/>
 
-                <p>ACTIONS</p>
-                <table>
-                    <tbody>
-                    <tr>
-                        <th>Done</th>
-                        <th>Description</th>
-                        <th>Responsible</th>
-                        <th>Type</th>
-                    </tr>
-                    {retrospective.actions.map(event => {
-                        return <tr key={event.id}>
-                            <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
-                            <td>{event.description}</td>
-                            <td>{event.responsible}</td>
-                            <td>Provided</td>
+                {retrospective.actions.length > 0&& <>
+                    <p>ACTIONS PREVIOUS SPRINT</p>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>Done</th>
+                            <th>Description</th>
+                            <th>Responsible</th>
+                            <th>Type</th>
                         </tr>
-                    })}
-                    {retrospectiveReport.suggestedActions.map((action, index) => {
-                        return <tr key={-index}>
-                            <td><input readOnly type='checkbox' checked={action.isCompleted}/></td>
-                            <td>{action.description}</td>
-                            <td>{action.responsible}</td>
-                            <td>Suggested</td>
-                        </tr>
-                    })}
-                    </tbody>
-                </table>
+                        {retrospective.actions.map(event => {
+                            return <tr key={event.id}>
+                                <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
+                                <td>{event.description}</td>
+                                <td>{event.responsible}</td>
+                                <td>Provided</td>
+                            </tr>
+                        })}
+                        </tbody>
+                    </table>
 
-                <Spacer/>
+                    <Spacer/>
+                </>}
 
-
-                <p>TO DISCUSS</p>
+                <SectionTitle>TO DISCUSS</SectionTitle>
                 {Object.values(commentsByCategoryAndUser).map(categoryGroup => {
                         const category = commentCategoriesById[categoryGroup.id];
 
@@ -188,6 +186,28 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                         </div>
                     }
                 )}
+
+
+                <Spacer/>
+
+                <SectionTitle>ACTIONS NEXT SPRINT</SectionTitle>
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>Description</th>
+                        <th>Responsible</th>
+                        <th>Type</th>
+                    </tr>
+                    {retrospectiveReport.suggestedActions.map((action, index) => {
+                        return <tr key={-index}>
+                            <td>{action.description}</td>
+                            <td></td>
+                            <td>Suggested</td>
+                        </tr>
+                    })}
+                    </tbody>
+                </table>
+
             </Content>
         </main>
     );

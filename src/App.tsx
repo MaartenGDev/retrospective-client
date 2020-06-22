@@ -16,13 +16,8 @@ import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluati
 import ManageRetrospective from "./components/containers/ManageRetrospective";
 import Teams from "./components/containers/Teams";
 import ManageTeam from "./components/containers/ManageTeam";
+import {Container} from "./components/Styling/Common";
 
-const Content = styled.div`
-  width: 1200px;
-  max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
-`;
 
 function App() {
     return (
@@ -31,7 +26,7 @@ function App() {
                 <Provider store={store}>
                     <Header/>
 
-                    <Content>
+                    <Container>
                         <Switch>
                             <Route path="/retrospectives/:id/feedback">
                                 <RetrospectiveFeedback />
@@ -64,7 +59,7 @@ function App() {
                                 <Retrospectives/>
                             </Route>
                         </Switch>
-                    </Content>
+                    </Container>
                 </Provider>
             </div>
         </Router>

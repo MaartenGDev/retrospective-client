@@ -22,3 +22,11 @@ export const Row = styled.div`
   align-items: center;
   margin: 20px 0;
 `
+
+
+export const Container = styled.div`
+  width: 1200px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+`;

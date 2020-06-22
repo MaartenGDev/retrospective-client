@@ -14,6 +14,7 @@ import {IComment} from "../../models/IComment";
 import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
+import {Icon} from "../Styling/Icons";
 
 const Content = styled.div`
   padding: 20px;
@@ -35,17 +36,6 @@ const GridColumn = styled.div`
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-`
-
-const Icon = styled.span`
-  width: 25px;
-  height: 25px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  align-content: center;
-  border-radius: 100%;
 `
 
 const Input = styled.input`

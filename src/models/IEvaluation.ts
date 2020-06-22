@@ -4,9 +4,10 @@ import {ITimeUsage} from "./ITimeUsage";
 export interface IEvaluation {
     id?: number;
     retrospectiveId: number;
-    sprintRating: number,
-    suggestedActions: string,
-    suggestedTopics: string,
-    comments: IComment[],
-    timeUsage: ITimeUsage[],
+    sprintRating: number;
+    suggestedActions: string;
+    suggestedTopics: string;
+    comments: IComment[];
+    timeUsage: ITimeUsage[];
+    userId?: string;
 }

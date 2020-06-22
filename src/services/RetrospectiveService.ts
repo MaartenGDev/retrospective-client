@@ -1,6 +1,7 @@
 import {IUserRetrospective} from "../models/IUserRetrospective";
 import {HttpClient} from "./HttpClient";
 import {IEvaluation} from "../models/IEvaluation";
+import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 
 const http = new HttpClient();
 
@@ -19,5 +20,9 @@ export class RetrospectiveService {
 
     updateEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
         return http.patch(`evaluations/${evaluation.id!}`, evaluation);
+    }
+
+    getReport(retrospectiveId: number): Promise<IRetrospectiveReport> {
+        return http.get(`retrospectives/${retrospectiveId}/report`);
     }
 }

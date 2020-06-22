@@ -3,20 +3,18 @@ import {Action} from "redux";
 import {RetrospectiveService} from "../services/RetrospectiveService";
 import {AppThunk} from "./store";
 import {IEvaluation} from "../models/IEvaluation";
+import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 
 export enum RetrospectiveActionTypes {
     LOADED = '[RETROSPECTIVES] LOADED',
     ADDED = '[RETROSPECTIVES] ADDED',
     ADDED_EVALUATION = '[RETROSPECTIVES] ADDED EVALUATION',
     UPDATED_EVALUATION = '[RETROSPECTIVES] UPDATED EVALUATION',
+    LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
 }
 
 const service = new RetrospectiveService();
 
-export const LoadAll = (): AppThunk => async dispatch => {
-    const retrospectives = await service.getAll()
-    dispatch(new Loaded(retrospectives))
-}
 
 export class Loaded implements Action {
     public readonly type = RetrospectiveActionTypes.LOADED;
@@ -29,6 +27,30 @@ export class Added implements Action {
 
     constructor(public retrospective: IUserRetrospective) {
     }
+}
+
+export class AddedEvaluation implements Action {
+    readonly type = RetrospectiveActionTypes.ADDED_EVALUATION;
+
+    constructor(public evaluation: IEvaluation) {}
+}
+
+export class UpdatedEvaluation implements Action {
+    readonly type = RetrospectiveActionTypes.UPDATED_EVALUATION;
+
+    constructor(public evaluation: IEvaluation) {}
+}
+
+export class LoadedReport implements Action {
+    public readonly type = RetrospectiveActionTypes.LOADED_REPORT;
+
+    constructor(public retrospectiveReport: IRetrospectiveReport) {}
+}
+
+
+export const LoadAll = (): AppThunk => async dispatch => {
+    const retrospectives = await service.getAll()
+    dispatch(new Loaded(retrospectives))
 }
 
 export const CreateOrUpdate = (retrospective: IUserRetrospective): AppThunk => async dispatch => {
@@ -49,23 +71,15 @@ export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => a
     )
 }
 
-export class AddedEvaluation implements Action {
-    readonly type = RetrospectiveActionTypes.ADDED_EVALUATION;
-
-    constructor(public evaluation: IEvaluation) {}
+export const LoadReport = (retrospectiveId: number): AppThunk => async dispatch => {
+    const report = await service.getReport(retrospectiveId)
+    dispatch(new LoadedReport(report))
 }
-
-export class UpdatedEvaluation implements Action {
-    readonly type = RetrospectiveActionTypes.UPDATED_EVALUATION;
-
-    constructor(public evaluation: IEvaluation) {}
-}
-
-
 
 export type RetrospectiveTypes
     = Loaded
     | Added
     | AddedEvaluation
     | UpdatedEvaluation
+    | LoadedReport
     ;

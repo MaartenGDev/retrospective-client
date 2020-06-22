@@ -1,5 +1,6 @@
 import {IComment} from "./IComment";
 import {ITimeUsage} from "./ITimeUsage";
+import {IUser} from "./IUser";
 
 export interface IEvaluation {
     id?: number;
@@ -10,4 +11,5 @@ export interface IEvaluation {
     comments: IComment[];
     timeUsage: ITimeUsage[];
     userId?: string;
+    user?: IUser;
 }

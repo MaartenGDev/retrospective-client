@@ -50,4 +50,6 @@ export const CreateOrUpdate = (team: ITeam): AppThunk => async dispatch => {
 
 export type TeamTypes
     = Loaded
+    | Added
+    | Updated
     ;

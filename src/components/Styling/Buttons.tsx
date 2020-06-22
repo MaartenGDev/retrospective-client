@@ -21,7 +21,7 @@ export const RoundedButtonLink = styled(Link)`
 `
 
 export const TextButton = styled.button`
-  color: #4A92E6;
+  color: ${props => props.color || '#4A92E6'};
   border: none;
   background: none;
   display: inline-block;

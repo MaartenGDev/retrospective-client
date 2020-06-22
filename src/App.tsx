@@ -39,6 +39,9 @@ function App() {
                             <Route path="/retrospectives/create">
                                 <ManageRetrospective/>
                             </Route>
+                            <Route path="/retrospectives/:id/edit">
+                                <ManageRetrospective/>
+                            </Route>
                             <Route path="/retrospectives/:id">
                                 <Retrospective/>
                             </Route>

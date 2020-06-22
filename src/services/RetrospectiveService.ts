@@ -14,6 +14,10 @@ export class RetrospectiveService {
         return http.post(`retrospectives`, retrospective);
     }
 
+    update(retrospective: IUserRetrospective): Promise<IUserRetrospective> {
+        return http.patch(`retrospectives/${retrospective.id}`, retrospective);
+    }
+
     addEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
         return http.post(`evaluations`, evaluation);
     }

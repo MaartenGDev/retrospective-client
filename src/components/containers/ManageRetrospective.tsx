@@ -9,6 +9,7 @@ import * as retrospectiveActions from "../../store/retrospective.actions";
 import {RoundedButton, TextButton} from "../Styling/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
+import {Row, Title} from "../Styling/Common";
 
 const Content = styled.div`
   padding: 20px;
@@ -37,11 +38,13 @@ interface IState {
     topic: ITopic,
     topicBeingEdited?: ITopic & { editIndex: number },
     finishedEditing: boolean,
-    selectedSprintDuration: number
+    selectedSprintDuration: number,
+    nextTopicId: number
 }
 
 class ManageRetrospective extends Component<IProps, IState> {
     private _defaultTopic: ITopic = {
+        id: 0,
         description: '',
         durationInMinutes: 0
     }
@@ -65,33 +68,48 @@ class ManageRetrospective extends Component<IProps, IState> {
         topic: this._defaultTopic,
         topicBeingEdited: undefined,
         finishedEditing: false,
-        selectedSprintDuration: 2
+        selectedSprintDuration: 2,
+        nextTopicId: -1
     }
 
     componentDidMount() {
-        const {retrospectives, match} = this.props;
         const {selectedSprintDuration, retrospective} = this.state
 
-        if (match.params.id) {
-            this.setState({
-                retrospective: retrospectives.find(r => r.id === parseInt(match.params.id!))!
-            });
-        }
-
         this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration);
+        this.decorateRetrospective();
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
         if (this.props === prevProps) return;
-        const {teams} = this.props;
 
-        if(teams.length > 0){
-            this.setState(state => ({
-                retrospective: {...state.retrospective, teamId: teams[0].id!}
-            }))
-        }
+        this.decorateRetrospective();
     }
 
+    private decorateRetrospective() {
+        const {retrospective} = this.state
+        const {teams, match, retrospectives} = this.props;
+
+        const nextRetrospective = match.params.id && retrospectives.length
+            ? {...retrospective, ...retrospectives.find(r => r.id === parseInt(match.params.id!))!}
+            : retrospective;
+
+
+        const nextTeamId = teams.length
+            ? teams[0].id!
+            : retrospective.teamId;
+
+        this.setState({
+            retrospective: {...nextRetrospective, teamId: nextTeamId}
+        });
+    }
+
+    private removeTopic = (topic: ITopic, index: number) => {
+        const {retrospective} = this.state
+
+        this.setState({
+            retrospective: {...retrospective, topics: retrospective.topics.filter(t => t.id !== topic.id)}
+        });
+    }
 
     private toggleTopicEditing = (topic: ITopic, index: number) => {
         const {topicBeingEdited, retrospective} = this.state
@@ -134,16 +152,29 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     private addTopic = (topic: ITopic) => {
-        const {retrospective} = this.state;
+        const {retrospective, nextTopicId} = this.state;
+
+        const nextTopic = {...topic, id: nextTopicId};
+
         this.setState({
-            retrospective: {...retrospective, topics: [...retrospective.topics, topic]},
-            topic: this._defaultTopic
+            retrospective: {...retrospective, topics: [...retrospective.topics, nextTopic]},
+            topic: this._defaultTopic,
+            nextTopicId: nextTopicId - 1
         });
     }
 
     private createOrUpdate = (retrospective: IUserRetrospective) => {
         const {createOrUpdate} = this.props
-        createOrUpdate(retrospective);
+
+        const updatedTopics = retrospective.topics.map(t => {
+            const topic = {...t};
+            if(t.id <= 0){
+                delete topic.id;
+            }
+            return topic;
+        })
+
+        createOrUpdate({...retrospective, topics: updatedTopics});
         this.setState({finishedEditing: true})
     }
 
@@ -175,13 +206,18 @@ class ManageRetrospective extends Component<IProps, IState> {
 
         const canAddTopic = topic.description.length > 0;
 
+        const isExistingRetrospective = !!retrospective.id;
+
         if (finishedEditing) {
             return <Redirect to={'/'}/>
         }
 
         return (
             <main>
-                <h1>Retrospective: {retrospective.name}</h1>
+                <Row>
+                    <Title>Retrospective: {retrospective.name}</Title>
+                </Row>
+
                 <Content>
                     <p>NAME</p>
                     <TextInput placeholder='E.g Retrospective #12'
@@ -191,15 +227,15 @@ class ManageRetrospective extends Component<IProps, IState> {
                     />
 
                     <p>TEAM</p>
-                    <Select value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
-                        {teams.map(t => <option>{t.name}</option>)}
+                    <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
+                        {teams.map(t => <option key={t.id}>{t.name}</option>)}
                     </Select>
                     <p>SPRINT</p>
 
                     <InputRow>
                         <Select value={selectedSprintDuration}
                                 onChange={e => this.handleSprintDurationChange(retrospective.startDate, parseInt(e.target.value))}>
-                            {this._sprintDurations.map(duration => <option
+                            {this._sprintDurations.map(duration => <option key={duration.value}
                                 value={duration.value}>{duration.name}</option>)}
                         </Select>
                         <Input type='date' name='startDate' value={retrospective.startDate}
@@ -214,12 +250,13 @@ class ManageRetrospective extends Component<IProps, IState> {
                         <tr>
                             <th>Description</th>
                             <th>Duration</th>
-                            <th>Action</th>
+                            <th>Edit</th>
+                            <th>Remove</th>
                         </tr>
                         {retrospective.topics.map((event, index) => {
                             const isInReadMode = topicBeingEdited?.editIndex !== index;
 
-                            return <tr key={event.id}>
+                            return <tr key={index}>
                                 <td>{isInReadMode
                                     ? event.description
                                     : <TextInput value={topicBeingEdited!.description}
@@ -233,6 +270,9 @@ class ManageRetrospective extends Component<IProps, IState> {
                                 <td><TextButton
                                     onClick={() => this.toggleTopicEditing(event, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
                                 </td>
+                                <td><TextButton color='#e53935'
+                                    onClick={() => this.removeTopic(event, index)}>REMOVE</TextButton>
+                                </td>
                             </tr>
                         })}
                         <tr>
@@ -245,8 +285,9 @@ class ManageRetrospective extends Component<IProps, IState> {
                                            name='durationInMinutes'
                                            onChange={e => this.updateState('topic', e, parseInt)}/>
                             </td>
-                            <td>
-                                <TextButton disabled={!canAddTopic} onClick={() =>this.addTopic(topic)}>ADD</TextButton>
+                            <td colSpan={2}>
+                                <TextButton disabled={!canAddTopic}
+                                            onClick={() => this.addTopic(topic)}>ADD</TextButton>
                             </td>
                         </tr>
                         </tbody>

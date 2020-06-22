@@ -7,6 +7,10 @@ import * as retrospectiveActions from "../../store/retrospective.actions";
 import {IComment} from "../../models/IComment";
 import {ICommentCategory} from "../../models/ICommentCategory";
 import {Icon} from "../Styling/Icons";
+import {Text, TextHeader} from "../Styling/Text";
+import {IUser} from "../../models/IUser";
+import {Row, Title} from "../Styling/Common";
+import {RoundedButtonLink} from "../Styling/Buttons";
 
 const Content = styled.div`
   padding: 20px;
@@ -14,7 +18,7 @@ const Content = styled.div`
 `
 
 const CommentSection = styled.div`
-  border: 1px solid gray;
+  border: 1px solid #dad7d7;
   border-radius: 3px;
   
   div:last-of-type {
@@ -24,7 +28,7 @@ const CommentSection = styled.div`
 
 const CommentGroup = styled.div`
   padding: 10px;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid #dad7d7;
 `
 
 const CommentRow = styled.div`
@@ -35,26 +39,27 @@ align-items: center;
 
 const mapState = (state: RootState) => ({
     commentCategories: state.commentCategoryReducer.commentCategories,
-    retrospectiveReport: state.retrospectiveReducer.retrospectiveReport
+    retrospectiveReport: state.retrospectiveReducer.retrospectiveReport,
+    teams: state.teamReducer.teams,
 });
 
 const mapDispatch = {
     loadReport: (retrospectiveId: number) => retrospectiveActions.LoadReport(retrospectiveId)
 }
 
-type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: { [userId: string]: { id: string, comments: IComment[] } } } };
+type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: { [userId: string]: { user: IUser, comments: IComment[] } } } };
 
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>
 
 
-const Retrospective: FC<PropsFromRedux> = ({commentCategories, match, retrospectiveReport, loadReport}) => {
+const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, retrospectiveReport, loadReport}) => {
     const retrospectiveId = parseInt(match.params.id);
 
 
     useEffect(() => {
         loadReport(retrospectiveId)
-    }, [retrospectiveId])
+    })
 
     if (!retrospectiveReport || commentCategories.length === 0) {
         return <main>Loading</main>
@@ -74,23 +79,28 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, match, retrospect
                 users: {}
             }
         }
-        const ownerId = comment.evaluation!.userId!;
 
-        if (!acc[comment.categoryId].users.hasOwnProperty(ownerId)) {
-            acc[comment.categoryId].users[ownerId] = {
-                id: ownerId,
+        const owner = comment.evaluation!.user!;
+
+        if (!acc[comment.categoryId].users.hasOwnProperty(owner.id)) {
+            acc[comment.categoryId].users[owner.id] = {
+                user: owner,
                 comments: []
             }
         }
-
-        acc[comment.categoryId].users[ownerId].comments = [...acc[comment.categoryId].users[ownerId].comments, comment];
+        acc[comment.categoryId].users[owner.id].comments = [...acc[comment.categoryId].users[owner.id].comments, comment];
 
         return acc;
     }, {});
 
+    const canEditRetrospective = teams.some(team => team.id === retrospective.teamId);
+
     return (
         <main>
-            <h1>Retrospective: {retrospective.name}</h1>
+            <Row>
+                <Title>Retrospective: {retrospective.name}</Title>
+                {canEditRetrospective && <RoundedButtonLink to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
+            </Row>
             <Content>
                 <p>AGENDA</p>
                 <table>
@@ -102,42 +112,45 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, match, retrospect
                     {retrospective.topics.map(topic => {
                         return <tr key={topic.id}>
                             <td>{topic.description}</td>
-                            <td>{topic.durationInMinutes}</td>
+                            <td>{topic.durationInMinutes} minutes</td>
                         </tr>
                     })}
                     </tbody>
                 </table>
 
-                <hr/>
-                <p>ACTIONS LAST SPRINT</p>
-                <table>
-                    <tbody>
-                    <tr>
-                        <th>Done</th>
-                        <th>Description</th>
-                        <th>Responsible</th>
-                    </tr>
-                    {retrospective.actions.map(event => {
-                        return <tr key={event.id}>
-                            <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
-                            <td>{event.description}</td>
-                            <td>{event.responsible}</td>
+                {retrospective.actions.length > 0 && <React.Fragment>
+                    <hr/>
+
+                    <p>ACTIONS LAST SPRINT</p>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>Done</th>
+                            <th>Description</th>
+                            <th>Responsible</th>
                         </tr>
-                    })}
-                    </tbody>
-                </table>
-                <hr/>
+                        {retrospective.actions.map(event => {
+                            return <tr key={event.id}>
+                                <td><input readOnly type='checkbox' checked={event.isCompleted}/></td>
+                                <td>{event.description}</td>
+                                <td>{event.responsible}</td>
+                            </tr>
+                        })}
+                        </tbody>
+                    </table>
+                </React.Fragment>}
+
                 <p>TO DISCUSS</p>
                 {Object.values(commentsByCategoryAndUser).map(categoryGroup => {
                         const category = commentCategoriesById[categoryGroup.id];
 
-                        return <div>
-                            {category.name}
+                        return <div key={categoryGroup.id}>
+                            <TextHeader>{category.description}</TextHeader>
                             <CommentSection>
-                                {Object.values(categoryGroup.users).map(user => <CommentGroup>
-                                    <b>{user.id}</b>
+                                {Object.values(categoryGroup.users).map(userGroup => <CommentGroup key={userGroup.user.id}>
+                                    <Text>{userGroup.user.name}</Text>
                                     <div>
-                                        {user.comments.map(c => <CommentRow><Icon
+                                        {userGroup.comments.map(c => <CommentRow key={c.id}><Icon
                                             style={{
                                                 backgroundColor: category.iconColor,
                                                 marginRight: '5px'

@@ -16,6 +16,16 @@ export function teamReducer(state: ITeamState = initialState, action: TeamTypes)
                 ...state,
                 teams: action.teams
             }
+        case TeamActionTypes.ADDED:
+            return {
+                ...state,
+                teams: [...state.teams, action.team]
+            }
+        case TeamActionTypes.UPDATED:
+            return {
+                ...state,
+                teams: [...state.teams.filter(t => t.id !== action.team.id), action.team]
+            }
         default:
             return state
     }

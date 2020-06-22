@@ -5,7 +5,10 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  color: #919191;
+
+  th {
+    color: #919191;
+  }
 
   th, td {
     padding: 10px;

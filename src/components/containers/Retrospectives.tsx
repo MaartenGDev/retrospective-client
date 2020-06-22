@@ -4,14 +4,12 @@ import {Link} from "react-router-dom";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
 import {RoundedButtonLink} from "../Styling/Buttons";
+import {Row, Title} from "../Styling/Common";
 
 const Content = styled.div`
   background-color: #ffffff;
 `
 
-const Title = styled.h1`
-  margin: 0;
-`
 
 const TableLink = styled(Link)`
   color: #4A92E6;
@@ -19,12 +17,7 @@ const TableLink = styled(Link)`
   text-decoration: none;
 `;
 
-const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px 0;
-`
+
 
 
 const mapState = (state: RootState) => ({

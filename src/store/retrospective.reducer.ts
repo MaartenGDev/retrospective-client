@@ -24,6 +24,11 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 ...state,
                 retrospectives: [action.retrospective, ...state.retrospectives]
             }
+        case RetrospectiveActionTypes.UPDATED:
+            return {
+                ...state,
+                retrospectives: [...state.retrospectives.filter(r => r.id !== action.retrospective.id), action.retrospective]
+            }
         case RetrospectiveActionTypes.UPDATED_EVALUATION:
         case RetrospectiveActionTypes.ADDED_EVALUATION:
             const otherRetrospectives = state.retrospectives.filter(r => r.id !== action.evaluation.retrospectiveId);

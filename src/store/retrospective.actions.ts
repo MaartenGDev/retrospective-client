@@ -8,6 +8,7 @@ import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 export enum RetrospectiveActionTypes {
     LOADED = '[RETROSPECTIVES] LOADED',
     ADDED = '[RETROSPECTIVES] ADDED',
+    UPDATED = '[RETROSPECTIVES] UPDATED',
     ADDED_EVALUATION = '[RETROSPECTIVES] ADDED EVALUATION',
     UPDATED_EVALUATION = '[RETROSPECTIVES] UPDATED EVALUATION',
     LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
@@ -28,6 +29,14 @@ export class Added implements Action {
     constructor(public retrospective: IUserRetrospective) {
     }
 }
+
+export class Updated implements Action {
+    readonly type = RetrospectiveActionTypes.UPDATED;
+
+    constructor(public retrospective: IUserRetrospective) {
+    }
+}
+
 
 export class AddedEvaluation implements Action {
     readonly type = RetrospectiveActionTypes.ADDED_EVALUATION;
@@ -54,8 +63,15 @@ export const LoadAll = (): AppThunk => async dispatch => {
 }
 
 export const CreateOrUpdate = (retrospective: IUserRetrospective): AppThunk => async dispatch => {
-    const persistedRetrospective = await service.create(retrospective)
-    dispatch(new Added(persistedRetrospective))
+    const isExistingRetrospective = !!retrospective.id;
+
+    const persistedRetrospective = isExistingRetrospective
+        ? await service.update(retrospective)
+        : await service.create(retrospective);
+
+    dispatch(isExistingRetrospective
+        ? new Updated(persistedRetrospective)
+        : new Added(persistedRetrospective));
 }
 
 export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => async dispatch => {
@@ -79,6 +95,7 @@ export const LoadReport = (retrospectiveId: number): AppThunk => async dispatch 
 export type RetrospectiveTypes
     = Loaded
     | Added
+    | Updated
     | AddedEvaluation
     | UpdatedEvaluation
     | LoadedReport

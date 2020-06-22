@@ -11,8 +11,11 @@ import {store} from "./store/store";
 import * as retrospectiveActions from "./store/retrospective.actions";
 import * as commentCategoryActions from "./store/comment-category.actions";
 import * as timeUsageCategoryActions from "./store/time-usage-category.actions";
+import * as teamActions from "./store/team.actions";
 import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluation";
 import ManageRetrospective from "./components/containers/ManageRetrospective";
+import Teams from "./components/containers/Teams";
+import ManageTeam from "./components/containers/ManageTeam";
 
 const Content = styled.div`
   width: 1200px;
@@ -42,6 +45,15 @@ function App() {
                             <Route path="/retrospectives">
                                 <Retrospectives/>
                             </Route>
+                            <Route path="/teams/create">
+                                <ManageTeam />
+                            </Route>
+                            <Route path="/teams/:id/edit">
+                                <ManageTeam />
+                            </Route>
+                            <Route path="/teams">
+                                <Teams />
+                            </Route>
                             <Route path="/overview">
                                 <Overview/>
                             </Route>
@@ -59,5 +71,6 @@ function App() {
 store.dispatch(retrospectiveActions.LoadAll())
 store.dispatch(commentCategoryActions.LoadAll())
 store.dispatch(timeUsageCategoryActions.LoadAll())
+store.dispatch(teamActions.LoadAll())
 
 export default App;

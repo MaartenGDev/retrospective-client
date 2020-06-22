@@ -9,5 +9,6 @@ export interface IUserRetrospective {
     endDate: string;
     topics: ITopic[];
     actions: IAction[];
-    evaluation?: IEvaluation,
+    evaluation?: IEvaluation;
+    teamId: number;
 }

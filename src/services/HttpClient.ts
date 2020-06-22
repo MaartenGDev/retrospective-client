@@ -1,4 +1,4 @@
-import config from '../Config'
+import Config from "../Config";
 
 export class HttpClient {
     public async post<T>(url: string, body: any): Promise<T> {
@@ -12,20 +12,40 @@ export class HttpClient {
     private async request<T>(url: string, body: any, method = 'POST'): Promise<T> {
         const absoluteUrl = this.getAbsoluteUrl(url);
 
-        const response = await fetch(absoluteUrl, {
+        const request = fetch(absoluteUrl, {
+            credentials: "include",
             method: method,
+            redirect: "manual",
             headers: {
+                'X-Requested-With': 'XMLHttpRequest',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
         });
 
-        return response.json();
+        return this.runThroughMiddleware(request);
     }
 
     public async get<T>(url: string): Promise<T> {
         const absoluteUrl = this.getAbsoluteUrl(url);
-        const response = await fetch(absoluteUrl);
+        const request = fetch(absoluteUrl, {
+            credentials: "include",
+            redirect: "manual",
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+        });
+
+        return this.runThroughMiddleware(request);
+    }
+
+    private async runThroughMiddleware<T>(request: Promise<Response>): Promise<T>{
+        const response = await request;
+
+        if(response.status === 0 || response.status === 401){
+            console.log(response)
+            window.location.href = `${Config.API_URL}account/login`
+        }
 
         return response.json();
     }
@@ -35,6 +55,6 @@ export class HttpClient {
 
         return isAbsoluteUrl
             ? url
-            : `${config.API_URL}${url}`;
+            : `${Config.API_URL}${url}`;
     }
 }

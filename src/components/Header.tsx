@@ -23,7 +23,7 @@ function Header() {
             <NavLink to="/">Retro</NavLink>
             <div className='flex'>
                 <NavLink to="/retrospectives">Retrospectives</NavLink>
-                <NavLink to="/overview">Overview</NavLink>
+                <NavLink to="/teams">Teams</NavLink>
             </div>
         </Wrapper>
     );

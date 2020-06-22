@@ -21,7 +21,10 @@ const InputRow = styled.div`
   }
 `
 
-const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
+const mapState = (state: RootState) => ({
+    retrospectives: state.retrospectiveReducer.retrospectives,
+    teams: state.teamReducer.teams,
+});
 
 const mapDispatch = {
     createOrUpdate: (retrospective: IUserRetrospective) => retrospectiveActions.CreateOrUpdate(retrospective)
@@ -57,6 +60,7 @@ class ManageRetrospective extends Component<IProps, IState> {
             endDate: DateHelper.format(new Date()),
             actions: [],
             topics: [],
+            teamId: 0
         },
         topic: this._defaultTopic,
         topicBeingEdited: undefined,
@@ -76,6 +80,18 @@ class ManageRetrospective extends Component<IProps, IState> {
 
         this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration);
     }
+
+    componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any) {
+        if (this.props === prevProps) return;
+        const {teams} = this.props;
+
+        if(teams.length > 0){
+            this.setState(state => ({
+                retrospective: {...state.retrospective, teamId: teams[0].id!}
+            }))
+        }
+    }
+
 
     private toggleTopicEditing = (topic: ITopic, index: number) => {
         const {topicBeingEdited, retrospective} = this.state
@@ -144,17 +160,18 @@ class ManageRetrospective extends Component<IProps, IState> {
         ));
     }
 
-    private updateRetrospective = (event: ChangeEvent<HTMLInputElement>) => {
+    private updateRetrospective = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
         this.updateState('retrospective', event);
     }
 
-    private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement>, mutator: (value: any) => any = value => value) => {
+    private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, mutator: (value: any) => any = value => value) => {
         const {name, value} = event.target
         this.setState({[key]: {...this.state[key] as any, [name]: mutator(value)}} as IState);
     }
 
     render() {
         const {retrospective, topic, topicBeingEdited, finishedEditing, selectedSprintDuration} = this.state
+        const {teams} = this.props
 
         const canAddTopic = topic.description.length > 0;
 
@@ -172,6 +189,11 @@ class ManageRetrospective extends Component<IProps, IState> {
                                name='name'
                                onChange={this.updateRetrospective}
                     />
+
+                    <p>TEAM</p>
+                    <Select value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
+                        {teams.map(t => <option>{t.name}</option>)}
+                    </Select>
                     <p>SPRINT</p>
 
                     <InputRow>

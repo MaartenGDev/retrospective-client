@@ -87,7 +87,6 @@ interface IState {
 class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
     state: IState = {
         evaluation: {
-            id: 0,
             retrospectiveId: 0,
             timeUsage: [],
             sprintRating: 50,
@@ -106,19 +105,23 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
     }
 
     componentDidUpdate(prevProps: Readonly<PropsFromRedux>, prevState: Readonly<IState>, snapshot?: any) {
-        if(this.props != prevProps){
+        if(this.props !== prevProps){
             this.loadEvaluation();
         }
     }
 
     private loadEvaluation() {
-        const {retrospective: initialRetrospective, evaluation} = this.state
+        const {retrospective: initialRetrospective, evaluation: initialEvaluation} = this.state
         const {match, retrospectives, commentCategories} = this.props
         const retrospectiveId = parseInt(match.params.id);
 
         const retrospective: IUserRetrospective = retrospectives.find(r => r.id === retrospectiveId) || initialRetrospective;
         const hasProvidedEvaluation = retrospective && retrospective.evaluation;
-        const commentsState = this.getCommentsState(hasProvidedEvaluation ? retrospective!.evaluation! : evaluation, commentCategories);
+
+        let evaluation = hasProvidedEvaluation ? retrospective!.evaluation! : initialEvaluation;
+        evaluation.retrospectiveId = retrospectiveId;
+
+        const commentsState = this.getCommentsState(evaluation, commentCategories);
 
         this.setState({
             ...commentsState,

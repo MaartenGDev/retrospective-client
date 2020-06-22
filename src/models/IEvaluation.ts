@@ -2,7 +2,7 @@ import {IComment} from "./IComment";
 import {ITimeUsage} from "./ITimeUsage";
 
 export interface IEvaluation {
-    id: number;
+    id?: number;
     retrospectiveId: number;
     sprintRating: number,
     suggestedActions: string,

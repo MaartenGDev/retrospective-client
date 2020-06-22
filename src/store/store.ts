@@ -1,6 +1,5 @@
 import rootReducer, {RootState} from './rootReducer'
 import thunkMiddleware, {ThunkAction, ThunkDispatch} from "redux-thunk";
-import logger from "redux-logger";
 import {Action, AnyAction, applyMiddleware, createStore, Middleware} from "redux";
 
 type DispatchFunctionType = ThunkDispatch<RootState, undefined, AnyAction>
@@ -16,7 +15,6 @@ export const store = createStore(
     applyMiddleware<DispatchFunctionType, RootState>(
         thunkMiddleware,
         clazzActions,
-        logger
     )
 )
 export type AppThunk<ReturnType = void> = ThunkAction<

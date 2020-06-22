@@ -27,17 +27,22 @@ const Row = styled.div`
 `
 
 
-const mapState = (state: RootState) => ({retrospectives: state.retrospectiveReducer.retrospectives});
+const mapState = (state: RootState) => ({
+    retrospectives: state.retrospectiveReducer.retrospectives,
+    teams: state.teamReducer.teams,
+});
 
 const connector = connect(mapState)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
+const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams}) => {
+    const canCreateRetrospective = teams.length > 0;
+
     return (
         <main>
             <Row>
                 <Title>Retrospectives</Title>
-                <RoundedButtonLink to='/retrospectives/create'>Create</RoundedButtonLink>
+                {canCreateRetrospective && <RoundedButtonLink to='/retrospectives/create'>Create</RoundedButtonLink>}
             </Row>
             <Content>
                 <table>
@@ -46,6 +51,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
                         <th>NAME</th>
                         <th>STATUS</th>
                         <th>DATE</th>
+                        <th>VIEW</th>
                         <th>ACTION</th>
                     </tr>
                     {retrospectives.map(retro => {
@@ -58,6 +64,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives}) => {
                             <td>{retro.name}</td>
                             <td>{isCompleted ? 'COMPLETED' : 'OPEN'}</td>
                             <td>{new Date(retro.startDate).toDateString()} - {new Date(retro.endDate).toDateString()}</td>
+                            <td><TableLink to={'/retrospectives/' + retro.id}>View</TableLink></td>
                             <td>{action}</td>
                         </tr>
                     })}

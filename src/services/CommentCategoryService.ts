@@ -1,6 +1,4 @@
-import {IUserRetrospective} from "../models/IUserRetrospective";
 import {HttpClient} from "./HttpClient";
-import {IEvaluation} from "../models/IEvaluation";
 import {ICommentCategory} from "../models/ICommentCategory";
 
 const http = new HttpClient();

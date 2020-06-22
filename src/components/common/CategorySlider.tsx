@@ -1,6 +1,5 @@
 import React, {Component, RefObject} from 'react';
 import styled from "styled-components";
-import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 
 const Bar = styled.div`
   display: flex;

@@ -18,13 +18,14 @@ const Content = styled.div`
 const mapState = (state: RootState) => ({
     retrospectives: state.retrospectiveReducer.retrospectives,
     teams: state.teamReducer.teams,
+    user: state.authenticationReducer.user,
 });
 
 const mapDispatch = {
     createOrUpdate: (team: ITeam) => teamActions.CreateOrUpdate(team)
 }
 const connector = connect(mapState, mapDispatch)
-type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>
+type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>;
 
 interface IState {
     team: ITeam,
@@ -80,6 +81,10 @@ class ManageTeam extends Component<IProps, IState> {
 
     render() {
         const {team, finishedEditing} = this.state
+        const {user} = this.props
+
+        const isAdminOfTeam = team.members.some(m => m.userId === user?.id && m.isAdmin);
+        const showInviteCode = isAdminOfTeam && team.inviteCode;
 
         if (finishedEditing) {
             return <Redirect to={'/teams'}/>
@@ -96,7 +101,7 @@ class ManageTeam extends Component<IProps, IState> {
                                onChange={this.updateTeam}
                     />
 
-                    {team.inviteCode && <React.Fragment>
+                    {showInviteCode && <React.Fragment>
                         <p>Invite Link</p>
                         <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)} />
                     </React.Fragment>}

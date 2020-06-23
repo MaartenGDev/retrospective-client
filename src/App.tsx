@@ -17,6 +17,7 @@ import ManageRetrospective from "./components/containers/ManageRetrospective";
 import Teams from "./components/containers/Teams";
 import ManageTeam from "./components/containers/ManageTeam";
 import {Container} from "./components/Styling/Common";
+import Team from "./components/containers/Team";
 
 
 function App() {
@@ -45,6 +46,9 @@ function App() {
                             </Route>
                             <Route path="/teams/create">
                                 <ManageTeam />
+                            </Route>
+                            <Route path="/teams/:id">
+                                <Team />
                             </Route>
                             <Route path="/teams/:id/edit">
                                 <ManageTeam />

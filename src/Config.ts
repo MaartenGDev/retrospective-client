@@ -1,4 +1,4 @@
 export default {
-    API_URL: 'https://localhost:5001/',
-    TEAM_INVITE_URL: (code: string) => `https://localhost:5001/teams/invites/${code}`,
+    API_URL: 'https://retrospective-api.maartendev.me/',
+    TEAM_INVITE_URL: (code: string) => `https://retrospective-api.maartendev.me/teams/invites/${code}`,
 }

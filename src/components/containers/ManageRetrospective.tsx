@@ -369,7 +369,7 @@ class ManageRetrospective extends Component<IProps, IState> {
                         <tbody>
                         <tr>
                             <th>Description</th>
-                            <th>Duration</th>
+                            <th>Responsible</th>
                             <th>Edit</th>
                             <th>Remove</th>
                         </tr>

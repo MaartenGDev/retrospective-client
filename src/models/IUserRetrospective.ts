@@ -1,6 +1,7 @@
 import {ITopic} from "./ITopic";
 import {IAction} from "./IAction";
 import {IEvaluation} from "./IEvaluation";
+import {ITeam} from "./ITeam";
 
 export interface IUserRetrospective {
     id?: number;
@@ -11,4 +12,5 @@ export interface IUserRetrospective {
     actions: IAction[];
     evaluation?: IEvaluation;
     teamId: number;
+    team?: ITeam;
 }

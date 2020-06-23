@@ -42,6 +42,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams}) => {
                     <tbody>
                     <tr>
                         <th>NAME</th>
+                        <th>TEAM</th>
                         <th>STATUS</th>
                         <th>DATE</th>
                         <th>VIEW</th>
@@ -55,6 +56,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams}) => {
 
                         return <tr key={retro.id}>
                             <td>{retro.name}</td>
+                            <td>{retro.team?.name}</td>
                             <td>{isCompleted ? 'COMPLETED' : 'OPEN'}</td>
                             <td>{new Date(retro.startDate).toDateString()} - {new Date(retro.endDate).toDateString()}</td>
                             <td><TableLink to={'/retrospectives/' + retro.id}>View</TableLink></td>

@@ -28,13 +28,14 @@ const Row = styled.div`
 
 
 const mapState = (state: RootState) => ({
-    teams: state.teamReducer.teams
+    teams: state.teamReducer.teams,
+    user: state.authenticationReducer.user,
 });
 
 const connector = connect(mapState)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-const Teams: FC<PropsFromRedux> = ({teams}) => {
+const Teams: FC<PropsFromRedux> = ({teams, user}) => {
     return (
         <main>
             <Row>
@@ -46,11 +47,13 @@ const Teams: FC<PropsFromRedux> = ({teams}) => {
                     <tbody>
                     <tr>
                         <th>NAME</th>
+                        <th>ROLE</th>
                         <th>ACTION</th>
                     </tr>
                     {teams.map(team => {
                         return <tr key={team.id}>
                             <td>{team.name}</td>
+                            <td>{team.members.some(m => m.userId === user?.id && m.isAdmin) ? 'Admin' : 'Member'}</td>
                             <td><TableLink to={`/teams/${team.id}/edit`}>Edit</TableLink></td>
                         </tr>
                     })}

@@ -3,7 +3,6 @@ import { Provider } from 'react-redux'
 import Header from "./components/Header";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Retrospectives from "./components/containers/Retrospectives";
-import styled from "styled-components";
 import Overview from "./components/Overview";
 import Retrospective from "./components/containers/Retrospective";
 import './App.scss';
@@ -12,6 +11,7 @@ import * as retrospectiveActions from "./store/retrospective.actions";
 import * as commentCategoryActions from "./store/comment-category.actions";
 import * as timeUsageCategoryActions from "./store/time-usage-category.actions";
 import * as teamActions from "./store/team.actions";
+import * as authenticationActions from "./store/authentication.actions";
 import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluation";
 import ManageRetrospective from "./components/containers/ManageRetrospective";
 import Teams from "./components/containers/Teams";
@@ -70,5 +70,6 @@ store.dispatch(retrospectiveActions.LoadAll())
 store.dispatch(commentCategoryActions.LoadAll())
 store.dispatch(timeUsageCategoryActions.LoadAll())
 store.dispatch(teamActions.LoadAll())
+store.dispatch(authenticationActions.Load())
 
 export default App;

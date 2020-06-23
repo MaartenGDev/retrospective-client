@@ -10,6 +10,6 @@ export interface IEvaluation {
     suggestedTopics: string;
     comments: IComment[];
     timeUsage: ITimeUsage[];
-    userId?: string;
+    userId?: number;
     user?: IUser;
 }

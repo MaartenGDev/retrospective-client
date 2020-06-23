@@ -1,6 +1,6 @@
 export interface ITeamMember {
     id?: number;
     name: string;
-    userId: string;
+    userId: number;
     isAdmin: boolean;
 }

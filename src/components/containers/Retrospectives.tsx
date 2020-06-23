@@ -23,13 +23,14 @@ const TableLink = styled(Link)`
 const mapState = (state: RootState) => ({
     retrospectives: state.retrospectiveReducer.retrospectives,
     teams: state.teamReducer.teams,
+    user: state.authenticationReducer.user
 });
 
 const connector = connect(mapState)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
-const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams}) => {
-    const canCreateRetrospective = teams.length > 0;
+const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
+    const canCreateRetrospective = teams.some(t => t.members.some(m => m.userId === user?.id && m.isAdmin));
 
     return (
         <main>

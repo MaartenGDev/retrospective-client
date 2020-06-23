@@ -26,6 +26,7 @@ const InputRow = styled.div`
 const mapState = (state: RootState) => ({
     retrospectives: state.retrospectiveReducer.retrospectives,
     teams: state.teamReducer.teams,
+    user: state.authenticationReducer.user,
 });
 
 const mapDispatch = {
@@ -223,7 +224,6 @@ class ManageRetrospective extends Component<IProps, IState> {
     private createOrUpdate = (retrospective: IUserRetrospective) => {
         const {createOrUpdate} = this.props
 
-
         createOrUpdate({
             ...retrospective,
             topics: this.removeTemporaryIds(retrospective.topics),
@@ -262,13 +262,14 @@ class ManageRetrospective extends Component<IProps, IState> {
 
     private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, mutator: (value: any) => any = value => value) => {
         const {name, value} = event.target
-        console.log(key, name, value, this.state[key])
         this.setState({[key]: {...this.state[key] as any, [name]: mutator(value)}} as IState);
     }
 
     render() {
         const {retrospective, topic, action, topicBeingEdited, actionBeingEdited,finishedEditing, selectedSprintDuration} = this.state
-        const {teams} = this.props
+        const {teams, user} = this.props
+        const teamsWhereUserIdAdmin = teams.filter(t => t.members.some(m => m.userId === user?.id && m.isAdmin))
+
 
         const canAddTopic = topic.description.length > 0;
         const canAddAction = action.description.length > 0;
@@ -295,7 +296,7 @@ class ManageRetrospective extends Component<IProps, IState> {
 
                     <SectionTitle>TEAM</SectionTitle>
                     <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
-                        {teams.map(t => <option key={t.id}>{t.name}</option>)}
+                        {teamsWhereUserIdAdmin.map(t => <option key={t.id}>{t.name}</option>)}
                     </Select>
                     <SectionTitle>SPRINT</SectionTitle>
 

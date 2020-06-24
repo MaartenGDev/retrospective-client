@@ -1,14 +1,14 @@
-import React, {ChangeEvent, Component, FC} from 'react';
+import React, {FC, useState} from 'react';
 import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
-import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
-import {TextInput} from "../Styling/Input";
+import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
+import {TextInput} from "../shared/Input";
 import * as teamActions from "../../store/team.actions";
-import {RoundedButton} from "../Styling/Buttons";
 import {ITeam} from "../../models/ITeam";
 import Config from "../../Config";
-import {ButtonRow, SectionTitle, Spacer} from "../Styling/Common";
+import {Row, SectionTitle, Title} from "../shared/Common";
+import {RoundedButton, RoundedButtonLink} from "../shared/Buttons";
 
 const Content = styled.div`
   padding: 20px;
@@ -22,25 +22,46 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = {
-    createOrUpdate: (team: ITeam) => teamActions.CreateOrUpdate(team)
+    createOrUpdate: (team: ITeam) => teamActions.CreateOrUpdate(team),
+    deleteTeam: (teamId: number) => teamActions.Delete(teamId)
 }
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>;
 
 
-const Team: FC<IProps> = ({teams, user, match}) => {
+const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
     const team = teams.find(t => t.id === parseInt(match.params.id!));
+    const [redirectToOverview, setShouldRedirect] = useState(false);
 
     if (!team) {
         return <main>Loading..</main>
     }
 
+    const promptDelete = (teamId: number) => {
+        if (!window.confirm('Are you sure?')) return;
+        deleteTeam(teamId);
+        setShouldRedirect(true);
+    }
+
     const isAdminOfTeam = team!.members.some(m => m.userId === user?.id && m.isAdmin);
     const showInviteCode = isAdminOfTeam && team.inviteCode;
 
+    if (redirectToOverview) {
+        return <Redirect to={'/teams'}/>
+    }
+
     return (
         <main>
-            <h1>Team: {team.name}</h1>
+            <Row>
+                <Title>Team: {team.name}</Title>
+
+                {isAdminOfTeam && <div>
+                    <RoundedButton style={{marginRight: '10px'}} onClick={e => promptDelete(team.id!)}
+                                   color='#e53935'>Remove</RoundedButton>
+                    <RoundedButtonLink to={`/teams/${team.id}/edit`}>Edit</RoundedButtonLink>
+                </div>}
+            </Row>
+
             <Content>
                 <SectionTitle>Members</SectionTitle>
                 <table>
@@ -60,7 +81,7 @@ const Team: FC<IProps> = ({teams, user, match}) => {
 
                 {showInviteCode && <React.Fragment>
                     <SectionTitle>Invite Link</SectionTitle>
-                    <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)}/>
+                    <TextInput disabled={true} value={Config.LOCAL_TEAM_INVITE_URL(team.inviteCode)}/>
                 </React.Fragment>}
             </Content>
         </main>

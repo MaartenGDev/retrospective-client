@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {Link} from "react-router-dom";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
-import {RoundedButtonLink} from "../Styling/Buttons";
+import {RoundedButtonLink} from "../shared/Buttons";
 
 const Content = styled.div`
   background-color: #ffffff;

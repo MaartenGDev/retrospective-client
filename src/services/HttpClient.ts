@@ -1,18 +1,28 @@
 import Config from "../Config";
 
 export class HttpClient {
+    private readonly HTTP_METHODS_WITH_BODY = ['POST', 'PATCH'];
+
+    public async get<T>(url: string): Promise<T> {
+        return this.request(url);
+    }
+
     public async post<T>(url: string, body: any): Promise<T> {
-        return this.request(url, body);
+        return this.request(url, body, 'POST');
     }
 
     public async patch<T>(url: string, body: any): Promise<T> {
         return this.request(url, body, 'PATCH');
     }
 
-    private async request<T>(url: string, body: any, method = 'POST'): Promise<T> {
+    public async delete<T>(url: string): Promise<T> {
+        return this.request(url, undefined, 'DELETE');
+    }
+
+    private async request<T>(url: string, body?: any, method = 'GET'): Promise<T> {
         const absoluteUrl = this.getAbsoluteUrl(url);
 
-        const request = fetch(absoluteUrl, {
+        const requestConfig: any = {
             credentials: "include",
             method: method,
             redirect: "manual",
@@ -20,22 +30,14 @@ export class HttpClient {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(body)
-        });
+            body: body ? JSON.stringify(body) : undefined
+        };
 
-        return this.runThroughMiddleware(request);
-    }
+        if(!this.HTTP_METHODS_WITH_BODY.includes(method)){
+            delete requestConfig.body;
+        }
 
-    public async get<T>(url: string): Promise<T> {
-        const absoluteUrl = this.getAbsoluteUrl(url);
-        const request = fetch(absoluteUrl, {
-            credentials: "include",
-            redirect: "manual",
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        });
-
+        const request = fetch(absoluteUrl, requestConfig);
         return this.runThroughMiddleware(request);
     }
 

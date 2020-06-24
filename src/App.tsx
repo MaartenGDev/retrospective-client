@@ -1,5 +1,5 @@
 import React from 'react';
-import { Provider } from 'react-redux'
+import {Provider} from 'react-redux'
 import Header from "./components/Header";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Retrospectives from "./components/containers/Retrospectives";
@@ -16,8 +16,9 @@ import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluati
 import ManageRetrospective from "./components/containers/ManageRetrospective";
 import Teams from "./components/containers/Teams";
 import ManageTeam from "./components/containers/ManageTeam";
-import {Container} from "./components/Styling/Common";
 import Team from "./components/containers/Team";
+import TeamInvite from "./components/containers/TeamInvite";
+import {Container} from "./components/shared/Common";
 
 
 function App() {
@@ -25,45 +26,53 @@ function App() {
         <Router>
             <div>
                 <Provider store={store}>
-                    <Header/>
+                    <Switch>
+                        <Route path="/teams/invites/:code">
+                            <TeamInvite/>
+                        </Route>
 
-                    <Container>
-                        <Switch>
-                            <Route path="/retrospectives/:id/feedback">
-                                <RetrospectiveFeedback />
-                            </Route>
-                            <Route path="/retrospectives/create">
-                                <ManageRetrospective/>
-                            </Route>
-                            <Route path="/retrospectives/:id/edit">
-                                <ManageRetrospective/>
-                            </Route>
-                            <Route path="/retrospectives/:id">
-                                <Retrospective/>
-                            </Route>
-                            <Route path="/retrospectives">
-                                <Retrospectives/>
-                            </Route>
-                            <Route path="/teams/create">
-                                <ManageTeam />
-                            </Route>
-                            <Route path="/teams/:id">
-                                <Team />
-                            </Route>
-                            <Route path="/teams/:id/edit">
-                                <ManageTeam />
-                            </Route>
-                            <Route path="/teams">
-                                <Teams />
-                            </Route>
-                            <Route path="/overview">
-                                <Overview/>
-                            </Route>
-                            <Route path="/">
-                                <Retrospectives/>
-                            </Route>
-                        </Switch>
-                    </Container>
+                        <Route path="*">
+                            <Header/>
+
+                            <Container>
+                                <Switch>
+                                    <Route path="/teams/create">
+                                        <ManageTeam/>
+                                    </Route>
+                                    <Route path="/teams/:id/edit">
+                                        <ManageTeam/>
+                                    </Route>
+                                    <Route path="/teams/:id">
+                                        <Team/>
+                                    </Route>
+                                    <Route path="/teams">
+                                        <Teams/>
+                                    </Route>
+                                    <Route path="/overview">
+                                        <Overview/>
+                                    </Route>
+                                    <Route path="/retrospectives/:id/feedback">
+                                        <RetrospectiveFeedback/>
+                                    </Route>
+                                    <Route path="/retrospectives/create">
+                                        <ManageRetrospective/>
+                                    </Route>
+                                    <Route path="/retrospectives/:id/edit">
+                                        <ManageRetrospective/>
+                                    </Route>
+                                    <Route path="/retrospectives/:id">
+                                        <Retrospective/>
+                                    </Route>
+                                    <Route path="/retrospectives">
+                                        <Retrospectives/>
+                                    </Route>
+                                    <Route path="/">
+                                        <Retrospectives/>
+                                    </Route>
+                                </Switch>
+                            </Container>
+                        </Route>
+                    </Switch>
                 </Provider>
             </div>
         </Router>

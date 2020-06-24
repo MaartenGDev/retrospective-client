@@ -7,15 +7,15 @@ import {CategorySlider, ICategory} from "../common/CategorySlider";
 import {ValueSlider} from "../common/ValueSlider";
 import {IEvaluation} from "../../models/IEvaluation";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {TextArea} from "../Styling/Input";
-import {RoundedButton} from "../Styling/Buttons";
+import {TextArea} from "../shared/Input";
+import {RoundedButton} from "../shared/Buttons";
 import {ICommentCategory} from "../../models/ICommentCategory";
 import {IComment} from "../../models/IComment";
 import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
-import {Icon} from "../Styling/Icons";
-import {ButtonRow} from "../Styling/Common";
+import {Icon} from "../shared/Icons";
+import {ButtonRow} from "../shared/Common";
 
 const Content = styled.div`
   padding: 20px;

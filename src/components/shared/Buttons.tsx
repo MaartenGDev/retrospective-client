@@ -2,19 +2,20 @@ import styled from "styled-components";
 import {Link} from "react-router-dom";
 
 export const RoundedButton = styled.button`
-  background-color: #4A92E6;
+  background-color: ${props => props.color || '#4A92E6'};
   color: white;
   border-radius: 25px;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border: none;
   display: inline-block;
+  font-size: inherit;
 `
 
 export const RoundedButtonLink = styled(Link)`
-  background-color: #4A92E6;
+  background-color: ${props => props.color || '#4A92E6'};
   color: white;
   border-radius: 25px;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border: none;
   display: inline-block;
   text-decoration: none;

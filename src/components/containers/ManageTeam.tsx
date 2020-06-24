@@ -3,12 +3,11 @@ import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
-import {TextInput} from "../Styling/Input";
+import {TextInput} from "../shared/Input";
 import * as teamActions from "../../store/team.actions";
-import {RoundedButton} from "../Styling/Buttons";
+import {RoundedButton} from "../shared/Buttons";
 import {ITeam} from "../../models/ITeam";
-import Config from "../../Config";
-import {ButtonRow} from "../Styling/Common";
+import {ButtonRow} from "../shared/Common";
 
 const Content = styled.div`
   padding: 20px;
@@ -54,7 +53,7 @@ class ManageTeam extends Component<IProps, IState> {
 
     private loadTeamFromRoute(){
         const {match, teams} = this.props
-        if(teams.length === 0) return;
+        if(teams.length === 0 || !match.params.id) return;
 
 
         this.setState({
@@ -81,10 +80,6 @@ class ManageTeam extends Component<IProps, IState> {
 
     render() {
         const {team, finishedEditing} = this.state
-        const {user} = this.props
-
-        const isAdminOfTeam = team.members.some(m => m.userId === user?.id && m.isAdmin);
-        const showInviteCode = isAdminOfTeam && team.inviteCode;
 
         if (finishedEditing) {
             return <Redirect to={'/teams'}/>
@@ -100,11 +95,6 @@ class ManageTeam extends Component<IProps, IState> {
                                name='name'
                                onChange={this.updateTeam}
                     />
-
-                    {showInviteCode && <React.Fragment>
-                        <p>Invite Link</p>
-                        <TextInput disabled={true} value={Config.TEAM_INVITE_URL(team.inviteCode)} />
-                    </React.Fragment>}
 
                     <ButtonRow>
                         <RoundedButton onClick={() => this.createOrUpdate(team)}>Save</RoundedButton>

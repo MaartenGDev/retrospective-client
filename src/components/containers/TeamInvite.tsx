@@ -122,7 +122,7 @@ const TeamInvite: FC<IProps> = ({team, loadTeam, match}) => {
             </OnboardingImage>
             <OnboardingForm>
                 <LoginCard>
-                    <LoginHeader>You have been invited to the {team?.name}</LoginHeader>
+                    <LoginHeader>You have been invited to {team?.name}</LoginHeader>
                     <LoginSubHeader>Login with your favorite account to get started.</LoginSubHeader>
 
                     <LoginBox href={loginUrl}>

@@ -1,6 +1,7 @@
 import Config from "../Config";
 
 export class HttpClient {
+    private readonly anonymousLaunchUrlParts = ['/teams/invites/'];
     private readonly HTTP_METHODS_WITH_BODY = ['POST', 'PATCH'];
 
     public async get<T>(url: string): Promise<T> {
@@ -44,13 +45,20 @@ export class HttpClient {
     private async runThroughMiddleware<T>(request: Promise<Response>): Promise<T>{
         const response = await request;
 
-        if(response.status === 0 || response.status === 401){
-            window.location.href = `${Config.API_URL}account/login`
+        const launchUrlPath  = window.location.pathname;
+        const hasLaunchedFromAnonymousPath = this.anonymousLaunchUrlParts.some(path => launchUrlPath.startsWith(path))
 
-            return Promise.resolve({} as T);
+        const isUnauthenticatedResponse = response.status === 0 || response.status === 401;
+
+        if(!isUnauthenticatedResponse){
+            return response.json();
         }
 
-        return response.json();
+        if(!hasLaunchedFromAnonymousPath){
+            window.location.href = `${Config.API_URL}account/login`
+        }
+
+        return Promise.reject('Unauthorized');
     }
 
     private getAbsoluteUrl(url: string): string{

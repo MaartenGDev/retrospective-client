@@ -126,7 +126,7 @@ const TeamInvite: FC<IProps> = ({team, loadTeam, match}) => {
                     <LoginSubHeader>Login with your favorite account to get started.</LoginSubHeader>
 
                     <LoginBox href={loginUrl}>
-                        <LoginLogo src={loginSvg} /><LoginLabel>Login with microsoft</LoginLabel>
+                        <LoginLogo src={loginSvg} /><LoginLabel>Login with Microsoft</LoginLabel>
                     </LoginBox>
                 </LoginCard>
             </OnboardingForm>

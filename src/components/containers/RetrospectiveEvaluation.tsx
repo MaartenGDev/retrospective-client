@@ -15,7 +15,7 @@ import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 import {Icon} from "../shared/Icons";
-import {ButtonRow} from "../shared/Common";
+import {ButtonRow, Container} from "../shared/Common";
 
 const Content = styled.div`
   padding: 20px;
@@ -221,7 +221,7 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         }
 
         return (
-            <main>
+            <Container>
                 <h1>Retrospective: {retrospective.name}</h1>
                 <Content>
                     <form onSubmit={e => e.preventDefault()}>
@@ -282,7 +282,7 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
                         </ButtonRow>
                     </form>
                 </Content>
-            </main>
+            </Container>
         );
     }
 }

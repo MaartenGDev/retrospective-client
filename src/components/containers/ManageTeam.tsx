@@ -7,7 +7,7 @@ import {TextInput} from "../shared/Input";
 import * as teamActions from "../../store/team.actions";
 import {RoundedButton} from "../shared/Buttons";
 import {ITeam} from "../../models/ITeam";
-import {ButtonRow} from "../shared/Common";
+import {ButtonRow, Container} from "../shared/Common";
 
 const Content = styled.div`
   padding: 20px;
@@ -86,7 +86,7 @@ class ManageTeam extends Component<IProps, IState> {
         }
 
         return (
-            <main>
+            <Container>
                 <h1>Team: {team.name}</h1>
                 <Content>
                     <p>NAME</p>
@@ -100,7 +100,7 @@ class ManageTeam extends Component<IProps, IState> {
                         <RoundedButton onClick={() => this.createOrUpdate(team)}>Save</RoundedButton>
                     </ButtonRow>
                 </Content>
-            </main>
+            </Container>
         );
     }
 }

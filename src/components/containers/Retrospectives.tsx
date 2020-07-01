@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
 import {RoundedButtonLink} from "../shared/Buttons";
-import {Row, Title} from "../shared/Common";
+import {Container, Row, Title} from "../shared/Common";
 
 const Content = styled.div`
   background-color: #ffffff;
@@ -16,8 +16,6 @@ const TableLink = styled(Link)`
   text-transform: uppercase;
   text-decoration: none;
 `;
-
-
 
 
 const mapState = (state: RootState) => ({
@@ -33,7 +31,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
     const canCreateRetrospective = teams.some(t => t.members.some(m => m.userId === user?.id && m.isAdmin));
 
     return (
-        <main>
+        <Container>
             <Row>
                 <Title>Retrospectives</Title>
                 {canCreateRetrospective && <RoundedButtonLink to='/retrospectives/create'>Create</RoundedButtonLink>}
@@ -67,7 +65,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
                     </tbody>
                 </table>
             </Content>
-        </main>
+        </Container>
     );
 }
 

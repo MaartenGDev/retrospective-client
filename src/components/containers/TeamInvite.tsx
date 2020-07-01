@@ -103,7 +103,7 @@ const TeamInvite: FC<IProps> = ({team, loadTeam, match}) => {
 
     useEffect(() => {
         loadTeam(match.params.code);
-    }, [match.params.code]);
+    }, [match.params.code, loadTeam]);
 
     const loginUrl = Config.TEAM_INVITE_URL(team?.inviteCode!);
 

@@ -9,7 +9,7 @@ import * as retrospectiveActions from "../../store/retrospective.actions";
 import {RoundedButton, TextButton} from "../shared/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
-import {ButtonRow, Row, SectionTitle, Spacer, Title} from "../shared/Common";
+import {ButtonRow, Container, Row, SectionTitle, Spacer, Title} from "../shared/Common";
 import {IAction} from "../../models/IAction";
 
 const Content = styled.div`
@@ -281,7 +281,7 @@ class ManageRetrospective extends Component<IProps, IState> {
         }
 
         return (
-            <main>
+            <Container>
                 <Row>
                     <Title>Retrospective: {retrospective.name}</Title>
                 </Row>
@@ -418,7 +418,7 @@ class ManageRetrospective extends Component<IProps, IState> {
                         <RoundedButton onClick={() => this.createOrUpdate(retrospective)}>Save</RoundedButton>
                     </ButtonRow>
                 </Content>
-            </main>
+            </Container>
         );
     }
 }

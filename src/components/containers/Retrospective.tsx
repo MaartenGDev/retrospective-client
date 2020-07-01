@@ -9,7 +9,7 @@ import {ICommentCategory} from "../../models/ICommentCategory";
 import {Icon} from "../shared/Icons";
 import {Text, TextHeader} from "../shared/Text";
 import {IUser} from "../../models/IUser";
-import {Row, SectionTitle, Spacer, Title} from "../shared/Common";
+import {Container, Row, SectionTitle, Spacer, Title} from "../shared/Common";
 import {RoundedButtonLink} from "../shared/Buttons";
 
 const Content = styled.div`
@@ -41,6 +41,7 @@ const mapState = (state: RootState) => ({
     commentCategories: state.commentCategoryReducer.commentCategories,
     retrospectiveReport: state.retrospectiveReducer.retrospectiveReport,
     teams: state.teamReducer.teams,
+    user: state.authenticationReducer.user,
 });
 
 const mapDispatch = {
@@ -53,7 +54,7 @@ const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>
 
 
-const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, retrospectiveReport, loadReport}) => {
+const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport}) => {
     const retrospectiveId = parseInt(match.params.id);
 
 
@@ -93,10 +94,10 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
         return acc;
     }, {});
 
-    const canEditRetrospective = teams.some(team => team.id === retrospective.teamId);
+    const canEditRetrospective = teams.some(team => team.id === retrospective.teamId && team.members.some(m => m.isAdmin && m.userId === user?.id));
 
     return (
-        <main>
+        <Container>
             <Row>
                 <Title>Retrospective: {retrospective.name}</Title>
                 {canEditRetrospective &&
@@ -196,7 +197,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, match, ret
                 </table>
 
             </Content>
-        </main>
+        </Container>
     );
 }
 

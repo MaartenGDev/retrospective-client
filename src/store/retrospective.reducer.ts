@@ -12,6 +12,10 @@ const initialState: IRetrospectivesState = {
     retrospectiveReport: undefined
 }
 
+const sort = (retrospectives: IUserRetrospective[]) => [...retrospectives]
+    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+
+
 export function retrospectiveReducer(state: IRetrospectivesState = initialState, action: RetrospectiveTypes) {
     switch (action.type) {
         case RetrospectiveActionTypes.LOADED:
@@ -22,12 +26,13 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
         case RetrospectiveActionTypes.ADDED:
             return {
                 ...state,
-                retrospectives: [action.retrospective, ...state.retrospectives]
+                retrospectives: sort([action.retrospective, ...state.retrospectives])
+
             }
         case RetrospectiveActionTypes.UPDATED:
             return {
                 ...state,
-                retrospectives: [...state.retrospectives.filter(r => r.id !== action.retrospective.id), action.retrospective]
+                retrospectives: sort([...state.retrospectives.filter(r => r.id !== action.retrospective.id), action.retrospective])
             }
         case RetrospectiveActionTypes.UPDATED_EVALUATION:
         case RetrospectiveActionTypes.ADDED_EVALUATION:
@@ -36,7 +41,7 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
 
             return {
                 ...state,
-                retrospectives: [...otherRetrospectives, {...retrospectiveToUpdate, evaluation: action.evaluation}]
+                retrospectives: sort([...otherRetrospectives, {...retrospectiveToUpdate, evaluation: action.evaluation}])
             }
         case RetrospectiveActionTypes.LOADED_REPORT:
             return {

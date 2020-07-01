@@ -7,7 +7,7 @@ import {TextInput} from "../shared/Input";
 import * as teamActions from "../../store/team.actions";
 import {ITeam} from "../../models/ITeam";
 import Config from "../../Config";
-import {Row, SectionTitle, Title} from "../shared/Common";
+import {Container, Row, SectionTitle, Title} from "../shared/Common";
 import {RoundedButton, RoundedButtonLink} from "../shared/Buttons";
 
 const Content = styled.div`
@@ -51,7 +51,7 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
     }
 
     return (
-        <main>
+        <Container>
             <Row>
                 <Title>Team: {team.name}</Title>
 
@@ -84,7 +84,7 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
                     <TextInput disabled={true} value={Config.LOCAL_TEAM_INVITE_URL(team.inviteCode)}/>
                 </React.Fragment>}
             </Content>
-        </main>
+        </Container>
     );
 }
 

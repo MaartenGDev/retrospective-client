@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
 import {RoundedButtonLink} from "../shared/Buttons";
+import {Container} from "../shared/Common";
 
 const Content = styled.div`
   background-color: #ffffff;
@@ -37,7 +38,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>
 
 const Teams: FC<PropsFromRedux> = ({teams, user}) => {
     return (
-        <main>
+        <Container>
             <Row>
                 <Title>Teams</Title>
                 <RoundedButtonLink to='/teams/create'>Create</RoundedButtonLink>
@@ -62,7 +63,7 @@ const Teams: FC<PropsFromRedux> = ({teams, user}) => {
                     </tbody>
                 </table>
             </Content>
-        </main>
+        </Container>
     );
 }
 

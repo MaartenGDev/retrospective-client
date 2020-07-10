@@ -161,7 +161,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
                             <TextHeader>{category.description}</TextHeader>
                             <CommentSection>
                                 {Object.values(categoryGroup.users).map(userGroup => <CommentGroup key={userGroup.user.id}>
-                                    <Text>{userGroup.user.name}</Text>
+                                    <Text>{userGroup.user.fullName}</Text>
                                     <div>
                                         {userGroup.comments.map(c => <CommentRow key={c.id}><Icon
                                             style={{

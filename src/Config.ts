@@ -1,12 +1,5 @@
-const isDevelopmentBuild = process.env.NODE_ENV === 'development';
-
-const localUrl = isDevelopmentBuild
-    ? 'http://localhost:3000/'
-    : 'https://retrospective.maartendev.me/';
-
-const apiUrl = isDevelopmentBuild
-    ? 'https://localhost:5001/'
-    : 'https://retrospective-api.maartendev.me/';
+const localUrl = `${window.location.origin}/`;
+const apiUrl = process.env.REACT_APP_API_URL || 'https://localhost:5001/';
 
 export default {
     API_URL: apiUrl,

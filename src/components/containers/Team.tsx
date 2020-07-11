@@ -71,7 +71,7 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
                         <th>Role</th>
                     </tr>
                     {team.members.map(m => {
-                        return <tr>
+                        return <tr key={m.userId}>
                             <td>{m.user.fullName}</td>
                             <td>{m.isAdmin ? 'Admin' : 'Member'}</td>
                         </tr>

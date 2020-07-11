@@ -33,7 +33,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "run-s deploy:*",
-    "deploy:js": "REACT_APP_API_URL=https://retrospective.maartendev.me/ && npm run build",
+    "deploy:js": "REACT_APP_API_URL=https://retrospective.maartendev.me/ npm run build",
     "deploy:s3": "aws s3 sync --acl public-read --delete build/ s3://retrospective.maartendev.me"
   },
   "eslintConfig": {

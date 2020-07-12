@@ -46,11 +46,11 @@ const Teams: FC<PropsFromRedux> = ({teams, user}) => {
                         <th>VIEW</th>
                     </tr>
                     {teams.map(team => {
-                        const isAdminOfTeam = team.members.some(m => m.userId === user?.id && m.role.canManageTeam);
+                        const currentUser = team.members.find(m => m.userId === user?.id);
 
                         return <tr key={team.id}>
                             <td>{team.name}</td>
-                            <td>{isAdminOfTeam ? 'Admin' : 'Member'}</td>
+                            <td>{currentUser ? currentUser!.role.name : ''}</td>
                             <td><TableLink to={`/teams/${team.id}`}>View</TableLink></td>
                         </tr>
                     })}

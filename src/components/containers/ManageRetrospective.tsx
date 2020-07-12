@@ -102,15 +102,16 @@ class ManageRetrospective extends Component<IProps, IState> {
 
     private decorateRetrospective() {
         const {retrospective} = this.state
-        const {teams, match, retrospectives} = this.props;
+        const {teams, match, retrospectives, user} = this.props;
 
         const nextRetrospective = match.params.id && retrospectives.length
             ? {...retrospective, ...retrospectives.find(r => r.id === parseInt(match.params.id!))!}
             : retrospective;
 
+        const possibleTeams = teams.filter(t => t.members.some(m => m.userId === user?.id && m.role.canManageRetrospective));
 
-        const nextTeamId = teams.length
-            ? teams[0].id!
+        const nextTeamId = possibleTeams.length
+            ? possibleTeams[0].id!
             : retrospective.teamId;
 
         this.setState({

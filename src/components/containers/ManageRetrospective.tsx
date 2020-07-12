@@ -296,7 +296,7 @@ class ManageRetrospective extends Component<IProps, IState> {
 
                     <SectionTitle>TEAM</SectionTitle>
                     <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
-                        {teamsWhereUserIdAdmin.map(t => <option key={t.id}>{t.name}</option>)}
+                        {teamsWhereUserIdAdmin.map(t => <option value={t.id} key={t.id}>{t.name}</option>)}
                     </Select>
                     <SectionTitle>SPRINT</SectionTitle>
 

@@ -43,7 +43,7 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
         setShouldRedirect(true);
     }
 
-    const isAdminOfTeam = team!.members.some(m => m.userId === user?.id && m.isAdmin);
+    const isAdminOfTeam = team!.members.some(m => m.userId === user?.id && m.role.canManageTeam);
     const showInviteCode = isAdminOfTeam && team.inviteCode;
 
     if (redirectToOverview) {
@@ -73,7 +73,7 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
                     {team.members.map(m => {
                         return <tr key={m.userId}>
                             <td>{m.user.fullName}</td>
-                            <td>{m.isAdmin ? 'Admin' : 'Member'}</td>
+                            <td>{m.role.name}</td>
                         </tr>
                     })}
                     </tbody>

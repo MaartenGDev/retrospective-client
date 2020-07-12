@@ -56,13 +56,13 @@ const TeamMemberInsights: FC<PropsFromRedux> = ({loadForTeamMembers, match, team
                         <tr>
                             <th>Name</th>
                             <th>Sprint rating</th>
-                            {timeUsageCategories.map(category => <th>{category.name}</th>)}
+                            {timeUsageCategories.map(category => <th key={category.id}>{category.name}</th>)}
                             <th>View</th>
                         </tr>
                         </thead>
                         <tbody>
                         {teamMemberInsights.map(memberInsight => {
-                            return <tr>
+                            return <tr key={memberInsight.userId}>
                                 <td>{memberInsight.fullName}</td>
                                 <td>
                                     <FlexRow>{memberInsight.latestSprintRating}

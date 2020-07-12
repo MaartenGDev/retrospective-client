@@ -28,7 +28,7 @@ const connector = connect(mapState)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
-    const canCreateRetrospective = teams.some(t => t.members.some(m => m.userId === user?.id && m.isAdmin));
+    const canCreateRetrospective = teams.some(t => t.members.some(m => m.userId === user?.id && m.role.canManageRetrospective));
 
     return (
         <Container>

@@ -46,7 +46,7 @@ const Teams: FC<PropsFromRedux> = ({teams, user}) => {
                         <th>VIEW</th>
                     </tr>
                     {teams.map(team => {
-                        const isAdminOfTeam = team.members.some(m => m.userId === user?.id && m.isAdmin);
+                        const isAdminOfTeam = team.members.some(m => m.userId === user?.id && m.role.canManageTeam);
 
                         return <tr key={team.id}>
                             <td>{team.name}</td>

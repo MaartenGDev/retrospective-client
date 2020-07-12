@@ -268,7 +268,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     render() {
         const {retrospective, topic, action, topicBeingEdited, actionBeingEdited,finishedEditing, selectedSprintDuration} = this.state
         const {teams, user} = this.props
-        const teamsWhereUserIdAdmin = teams.filter(t => t.members.some(m => m.userId === user?.id && m.isAdmin))
+        const teamsWhereUserIdAdmin = teams.filter(t => t.members.some(m => m.userId === user?.id && m.role.canManageRetrospective))
 
 
         const canAddTopic = topic.description.length > 0;

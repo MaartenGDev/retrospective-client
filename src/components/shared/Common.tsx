@@ -7,12 +7,6 @@ export const Text = styled.p`
     font-size: 14px;
 `
 
-export const TextHeader = styled.p`
-  font-weight: bold;
-  color: #919191;
-  margin: 15px 0 10px 0;
-`;
-
 export const Title = styled.h1`
   margin: 0;
 `

@@ -17,7 +17,9 @@ import Teams from "./components/containers/Teams";
 import ManageTeam from "./components/containers/ManageTeam";
 import Team from "./components/containers/Team";
 import TeamInvite from "./components/containers/TeamInvite";
-import Insights from "./components/containers/Insights";
+import TrendInsights from "./components/containers/TeamInsights";
+import TeamMemberInsights from "./components/containers/TeamMemberInsights";
+import DefaultInsights from "./components/containers/DefaultInsights";
 
 
 function App() {
@@ -61,8 +63,17 @@ function App() {
                                 <Route path="/retrospectives">
                                     <Retrospectives/>
                                 </Route>
+                                <Route path="/insights/teams/:teamId/members/:userId">
+                                    <TrendInsights />
+                                </Route>
+                                <Route path="/insights/teams/:teamId/members">
+                                    <TeamMemberInsights />
+                                </Route>
+                                <Route path="/insights/teams/:teamId/:filter">
+                                    <TrendInsights />
+                                </Route>
                                 <Route path="/insights">
-                                    <Insights/>
+                                    <DefaultInsights />
                                 </Route>
                                 <Route path="/">
                                     <Retrospectives/>

@@ -1,12 +1,15 @@
 import {IInsight} from "../models/IInsight";
 import {InsightActionTypes, InsightTypes} from "./insight.actions";
+import {ITeamMemberInsight} from "../models/ITeamMemberInsight";
 
 export interface IInsightState {
-    insight?: IInsight
+    insight?: IInsight,
+    teamMemberInsights: ITeamMemberInsight[]
 }
 
 const initialState: IInsightState = {
-    insight: undefined
+    insight: undefined,
+    teamMemberInsights: []
 }
 
 export function insightReducer(state: IInsightState = initialState, action: InsightTypes) {
@@ -15,6 +18,11 @@ export function insightReducer(state: IInsightState = initialState, action: Insi
             return {
                 ...state,
                 insight: action.insight
+            }
+        case InsightActionTypes.LOADED_FOR_TEAM_MEMBERS:
+            return {
+                ...state,
+                teamMemberInsights: action.teamMemberInsights
             }
         default:
             return state

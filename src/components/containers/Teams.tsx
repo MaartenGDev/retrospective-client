@@ -1,10 +1,10 @@
 import React, {FC} from 'react';
 import styled from "styled-components";
-import {Link} from "react-router-dom";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
 import {RoundedButtonLink} from "../shared/Buttons";
 import {Container} from "../shared/Common";
+import {TableLink} from "../shared/Text";
 
 const Content = styled.div`
   background-color: #ffffff;
@@ -13,12 +13,6 @@ const Content = styled.div`
 const Title = styled.h1`
   margin: 0;
 `
-
-const TableLink = styled(Link)`
-  color: #4A92E6;
-  text-transform: uppercase;
-  text-decoration: none;
-`;
 
 const Row = styled.div`
   display: flex;

@@ -3,4 +3,5 @@ export interface ITimeUsageCategory {
     name: string;
     color: string;
     initialPercentage: number;
+    increaseIsPositive: boolean;
 }

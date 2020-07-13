@@ -1,11 +1,11 @@
 import {IComment} from "./IComment";
 import {IUserRetrospective} from "./IUserRetrospective";
-import {ITopic} from "./ITopic";
 import {IAction} from "./IAction";
+import {ISuggestedTopic} from "./ISuggestedTopic";
 
 export interface IRetrospectiveReport {
     retrospective: IUserRetrospective;
     comments: IComment[];
-    suggestedTopics: ITopic[];
+    suggestedTopics: ISuggestedTopic[];
     suggestedActions: IAction[];
 }

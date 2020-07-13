@@ -3,11 +3,11 @@ import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
-import {TextInput} from "../shared/Input";
+import {Select, TextInput} from "../shared/Input";
 import * as teamActions from "../../store/team.actions";
 import {RoundedButton} from "../shared/Buttons";
 import {ITeam} from "../../models/ITeam";
-import {ButtonRow, Container} from "../shared/Common";
+import {ButtonRow, Container, SectionTitle} from "../shared/Common";
 
 const Content = styled.div`
   padding: 20px;
@@ -18,6 +18,7 @@ const mapState = (state: RootState) => ({
     retrospectives: state.retrospectiveReducer.retrospectives,
     teams: state.teamReducer.teams,
     user: state.authenticationReducer.user,
+    teamMemberRoles: state.teamMemberRoleReducer.roles,
 });
 
 const mapDispatch = {
@@ -77,9 +78,23 @@ class ManageTeam extends Component<IProps, IState> {
         }))
     }
 
+    handleTeamMemberRoleChange = (memberId: number, nextRoleId: number) => {
+        const {team} = this.state
+        const updatedMembers = team.members.map(m => {
+           if(m.id === memberId){
+               return {...m, roleId: nextRoleId}
+           }
+           return m;
+        });
+
+        this.setState((state) => ({
+            team: {...state.team, members: updatedMembers}
+        }))
+    }
 
     render() {
         const {team, finishedEditing} = this.state
+        const {teamMemberRoles} = this.props
 
         if (finishedEditing) {
             return <Redirect to={'/teams'}/>
@@ -89,6 +104,24 @@ class ManageTeam extends Component<IProps, IState> {
             <Container>
                 <h1>Team: {team.name}</h1>
                 <Content>
+                    <SectionTitle>Members</SectionTitle>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                        </tr>
+                        {team.members.map(m => {
+                            return <tr key={m.userId}>
+                                <td>{m.user.fullName}</td>
+                                <td><Select value={m.roleId} onChange={e => this.handleTeamMemberRoleChange(m.id!, parseInt(e.target.value))}>
+                                    {teamMemberRoles.map(role => <option key={role.id} value={role.id}>{role.name}</option>)}
+                                </Select></td>
+                            </tr>
+                        })}
+                        </tbody>
+                    </table>
+
                     <p>NAME</p>
                     <TextInput placeholder='E.g Development Team #1'
                                value={team.name}

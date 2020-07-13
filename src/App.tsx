@@ -11,6 +11,7 @@ import * as commentCategoryActions from "./store/comment-category.actions";
 import * as timeUsageCategoryActions from "./store/time-usage-category.actions";
 import * as teamActions from "./store/team.actions";
 import * as authenticationActions from "./store/authentication.actions";
+import * as teamMemberRoleActions from "./store/team-member-roles.actions";
 import RetrospectiveFeedback from "./components/containers/RetrospectiveEvaluation";
 import ManageRetrospective from "./components/containers/ManageRetrospective";
 import Teams from "./components/containers/Teams";
@@ -92,5 +93,6 @@ store.dispatch(commentCategoryActions.LoadAll())
 store.dispatch(timeUsageCategoryActions.LoadAll())
 store.dispatch(teamActions.LoadAll())
 store.dispatch(authenticationActions.Load())
+store.dispatch(teamMemberRoleActions.LoadAll())
 
 export default App;

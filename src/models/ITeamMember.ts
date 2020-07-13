@@ -6,5 +6,6 @@ export interface ITeamMember {
     name: string;
     userId: number;
     user: IUser;
+    roleId: number;
     role: IRole;
 }

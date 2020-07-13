@@ -5,6 +5,7 @@ import {timeUsageCategoryReducer} from "./time-usage-category.reducer";
 import {teamReducer} from "./team.reducer";
 import {authenticationReducer} from "./authentication.reducer";
 import {insightReducer} from "./insight.reducer";
+import {teamMemberRoleReducer} from "./team-member-roles.reducer";
 
 const rootReducer = combineReducers({
     retrospectiveReducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     teamReducer,
     authenticationReducer,
     insightReducer,
+    teamMemberRoleReducer
 })
 
 export type RootState = ReturnType<typeof rootReducer>

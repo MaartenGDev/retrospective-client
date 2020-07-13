@@ -122,8 +122,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
                     {retrospectiveReport.suggestedTopics.map((topic, index) => {
                         return <tr key={-index} style={{backgroundColor: '#f1f1f1'}}>
                             <td>{topic.description}</td>
-                            <td>-</td>
-                            <td>Suggested (By {topic.suggestedBy.fullName})</td>
+                            <td colSpan={2}>Suggested (By {topic.suggestedBy.fullName})</td>
                         </tr>
                     })}
                     </tbody>

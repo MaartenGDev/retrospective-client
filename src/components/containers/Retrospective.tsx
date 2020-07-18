@@ -6,11 +6,11 @@ import {RouteComponentProps, withRouter} from 'react-router-dom';
 import * as retrospectiveActions from "../../store/retrospective.actions";
 import {IComment} from "../../models/IComment";
 import {ICommentCategory} from "../../models/ICommentCategory";
-import {Icon} from "../shared/Icons";
-import {Text, TextHeader} from "../shared/Text";
+import {Icon} from "../styles/Icons";
+import {Text, TextHeader} from "../styles/Text";
 import {IUser} from "../../models/IUser";
-import {Container, Row, SectionTitle, Spacer, Title} from "../shared/Common";
-import {RoundedButtonLink} from "../shared/Buttons";
+import {Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
+import {RoundedButtonLink} from "../styles/Buttons";
 
 const Content = styled.div`
   padding: 20px;

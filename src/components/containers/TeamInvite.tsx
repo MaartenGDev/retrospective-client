@@ -2,7 +2,7 @@ import React, {FC, useEffect} from 'react';
 import styled from 'styled-components'
 import backgroundPath from '../../assets/background.jpg'
 import loginSvg from '../../assets/login.svg'
-import Logo from "../common/Logo";
+import Logo from "../presentation/common/Logo";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import {RootState} from "../../store/rootReducer";
 import * as teamActions from "../../store/team.actions";

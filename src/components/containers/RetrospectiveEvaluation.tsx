@@ -3,19 +3,19 @@ import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
-import {CategorySlider, ICategory} from "../common/CategorySlider";
-import {ValueSlider} from "../common/ValueSlider";
+import {CategorySlider, ICategory} from "../presentation/common/CategorySlider";
+import {ValueSlider} from "../presentation/common/ValueSlider";
 import {IEvaluation} from "../../models/IEvaluation";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {TextArea} from "../shared/Input";
-import {RoundedButton} from "../shared/Buttons";
+import {TextArea} from "../styles/Input";
+import {RoundedButton} from "../styles/Buttons";
 import {ICommentCategory} from "../../models/ICommentCategory";
 import {IComment} from "../../models/IComment";
 import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
-import {Icon} from "../shared/Icons";
-import {ButtonRow, Container} from "../shared/Common";
+import {Icon} from "../styles/Icons";
+import {ButtonRow, Container} from "../styles/Common";
 
 const Content = styled.div`
   padding: 20px;

@@ -3,11 +3,11 @@ import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
-import {Select, TextInput} from "../shared/Input";
+import {Select, TextInput} from "../styles/Input";
 import * as teamActions from "../../store/team.actions";
-import {RoundedButton} from "../shared/Buttons";
+import {RoundedButton} from "../styles/Buttons";
 import {ITeam} from "../../models/ITeam";
-import {ButtonRow, Container, SectionTitle} from "../shared/Common";
+import {ButtonRow, Container, SectionTitle} from "../styles/Common";
 
 const Content = styled.div`
   padding: 20px;

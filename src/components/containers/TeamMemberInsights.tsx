@@ -5,9 +5,9 @@ import * as insightActions from "../../store/insight.actions";
 import styled from "styled-components";
 import {RouteComponentProps, withRouter} from 'react-router-dom';
 import InsightTabs from "./InsightTabs";
-import {Container} from "../shared/Common";
-import {TableLink} from "../shared/Text";
-import ChangeLabel from "../common/data/ChangeLabel";
+import {Container} from "../styles/Common";
+import {TableLink} from "../styles/Text";
+import ChangeLabel from "../presentation/common/data/ChangeLabel";
 
 const TableSection = styled.main`
   margin-top: 30px;

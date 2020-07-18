@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import styled from "styled-components";
-import DownwardArrow from "../common/icons/DownwardArrow";
-import UpwardArrow from "../common/icons/UpwardArrow";
+import DownwardArrow from "./common/icons/DownwardArrow";
+import UpwardArrow from "./common/icons/UpwardArrow";
 import {IMetric} from "../../models/IMetric";
 
 interface IProps {

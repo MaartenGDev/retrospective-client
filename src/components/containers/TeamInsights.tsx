@@ -6,7 +6,7 @@ import Tile from "../presentation/Tile";
 import {Line} from 'react-chartjs-2'
 import * as insightActions from "../../store/insight.actions";
 import {ColorHelper} from "../../helpers/ColorHelper";
-import {Container} from "../shared/Common";
+import {Container} from "../styles/Common";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import InsightTabs from "./InsightTabs";
 

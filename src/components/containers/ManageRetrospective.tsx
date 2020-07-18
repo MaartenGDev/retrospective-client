@@ -4,12 +4,12 @@ import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
 import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
 import {IUserRetrospective} from "../../models/IUserRetrospective";
-import {Input, Select, TextInput} from "../shared/Input";
+import {Input, Select, TextInput} from "../styles/Input";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {RoundedButton, TextButton} from "../shared/Buttons";
+import {RoundedButton, TextButton} from "../styles/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
-import {ButtonRow, Container, Row, SectionTitle, Spacer, Title} from "../shared/Common";
+import {ButtonRow, Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
 import {IAction} from "../../models/IAction";
 
 const Content = styled.div`

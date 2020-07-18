@@ -2,9 +2,9 @@ import React, {FC} from 'react';
 import styled from "styled-components";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
-import {RoundedButtonLink} from "../shared/Buttons";
-import {Container} from "../shared/Common";
-import {TableLink} from "../shared/Text";
+import {RoundedButtonLink} from "../styles/Buttons";
+import {Container} from "../styles/Common";
+import {TableLink} from "../styles/Text";
 
 const Content = styled.div`
   background-color: #ffffff;

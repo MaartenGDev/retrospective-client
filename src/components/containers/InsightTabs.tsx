@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import styled from "styled-components";
 import {connect, ConnectedProps} from "react-redux";
 import {RootState} from "../../store/rootReducer";
-import {Container} from "../shared/Common";
+import {Container} from "../styles/Common";
 import {Link, Redirect} from "react-router-dom";
 import {ITeam} from "../../models/ITeam";
 

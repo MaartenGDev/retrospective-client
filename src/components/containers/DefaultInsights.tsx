@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Container} from "../shared/Common";
+import {Container} from "../styles/Common";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import InsightTabs from "./InsightTabs";
 

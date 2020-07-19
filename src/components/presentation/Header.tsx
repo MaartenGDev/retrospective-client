@@ -32,6 +32,7 @@ function Header() {
                     <NavLink to="/retrospectives">Retrospectives</NavLink>
                     <NavLink to="/teams">Teams</NavLink>
                     <NavLink to="/insights">Insights</NavLink>
+                    <NavLink to="/login">Login</NavLink>
                 </div>
             </NavSection>
         </Wrapper>

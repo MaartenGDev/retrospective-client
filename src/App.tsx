@@ -21,6 +21,7 @@ import TeamInvite from "./components/containers/TeamInvite";
 import TrendInsights from "./components/containers/TeamInsights";
 import TeamMemberInsights from "./components/containers/TeamMemberInsights";
 import DefaultInsights from "./components/containers/DefaultInsights";
+import ManageAccount from "./components/containers/ManageAccount";
 
 
 function App() {
@@ -31,6 +32,9 @@ function App() {
                     <Switch>
                         <Route path="/teams/invites/:code">
                             <TeamInvite/>
+                        </Route>
+                        <Route path="/login">
+                            <ManageAccount/>
                         </Route>
 
                         <Route path="*">

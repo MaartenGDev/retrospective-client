@@ -23,7 +23,6 @@ export const Input = styled.input`
 `
 
 export const TextInput = styled(Input)`
-
   width: calc(100% - 20px);
   min-width: calc(100% - 20px);
   max-width: calc(100% - 20px);

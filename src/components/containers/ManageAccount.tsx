@@ -1,12 +1,13 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useState} from 'react';
 import styled from 'styled-components'
-import loginSvg from '../../assets/login.svg'
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import {RootState} from "../../store/rootReducer";
 import * as teamActions from "../../store/team.actions";
 import {connect, ConnectedProps} from "react-redux";
-import Config from "../../Config";
 import SplitPage from "../presentation/SplitPage";
+import {TextInput} from "../styles/Input";
+import {ButtonRow, SectionTitle} from "../styles/Common";
+import {RoundedButton} from "../styles/Buttons";
 
 const LoginCard = styled.div`
     margin: 20%;
@@ -27,24 +28,11 @@ const LoginOptions = styled.div`
   margin-top: 20px;
 `
 
-const LoginBox = styled.a`
-  margin-top: 10px;
-  border: 1px solid #dad7d7;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  text-decoration: none;
-  color: black;
-`
-
-const LoginLogo = styled.img`
-  height: 30px;
-  width: 30px;
-`
-
-const LoginLabel = styled.span`
-  margin-left: 10px;
+const AlternativeOption = styled.span`
+  color: #4A92E6;
+  display: inline-block;
+  margin-top: 5px;
+  cursor: pointer;
 `
 
 const mapState = (state: RootState) => ({
@@ -58,28 +46,32 @@ const mapDispatch = {
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ code: string }>;
 
-const TeamInvite: FC<IProps> = ({team, loadTeam, match}) => {
-
-    useEffect(() => {
-        loadTeam(match.params.code);
-    }, [match.params.code, loadTeam]);
-
-    const loginUrl = Config.TEAM_INVITE_URL(team?.inviteCode!);
+const ManageAccount: FC<IProps> = ({team, loadTeam, match}) => {
+    const [isLogin, setIsLogin] = useState(true);
 
     return (
         <SplitPage>
             <LoginCard>
-                <LoginHeader>You have been invited to {team?.name}</LoginHeader>
+                <LoginHeader>Let's get you setup!</LoginHeader>
                 <LoginSubHeader>Login with your favorite account to get started.</LoginSubHeader>
 
                 <LoginOptions>
-                    <LoginBox href={loginUrl}>
-                        <LoginLogo src={loginSvg}/><LoginLabel>Login with Microsoft</LoginLabel>
-                    </LoginBox>
+                    <SectionTitle>Email</SectionTitle>
+                    <TextInput type='email' />
+                    <SectionTitle>Password</SectionTitle>
+                    <TextInput type='password' />
                 </LoginOptions>
+
+                <AlternativeOption onClick={() => setIsLogin(!isLogin)}>
+                    {isLogin ? "Don't have an account yet?" : 'Already have an account?'}
+                </AlternativeOption>
+
+                <ButtonRow>
+                    <RoundedButton>{isLogin ? 'Login' : 'Register'}</RoundedButton>
+                </ButtonRow>
             </LoginCard>
         </SplitPage>
     );
 }
 
-export default withRouter(connector(TeamInvite));
+export default withRouter(connector(ManageAccount));

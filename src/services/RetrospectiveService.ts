@@ -26,7 +26,7 @@ export class RetrospectiveService {
         return http.patch(`evaluations/${evaluation.id!}`, evaluation);
     }
 
-    getReport(retrospectiveId: number): Promise<IRetrospectiveReport> {
+    getReport(retrospectiveId: number|string): Promise<IRetrospectiveReport> {
         return http.get(`retrospectives/${retrospectiveId}/report`);
     }
 }

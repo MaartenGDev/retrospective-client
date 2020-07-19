@@ -11,6 +11,7 @@ import {Text, TextHeader} from "../styles/Text";
 import {IUser} from "../../models/IUser";
 import {Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
 import {RoundedButtonLink} from "../styles/Buttons";
+import {parseId} from "../../helpers/Uri";
 
 const Content = styled.div`
   padding: 20px;
@@ -45,7 +46,7 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = {
-    loadReport: (retrospectiveId: number) => retrospectiveActions.LoadReport(retrospectiveId)
+    loadReport: (retrospectiveId: number|string) => retrospectiveActions.LoadReport(retrospectiveId)
 }
 
 type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: { [userId: string]: { user: IUser, comments: IComment[] } } } };
@@ -55,7 +56,7 @@ type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ i
 
 
 const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport}) => {
-    const retrospectiveId = parseInt(match.params.id);
+    const retrospectiveId = parseId(match.params.id);
 
 
     useEffect(() => {

@@ -9,6 +9,7 @@ export const RoundedButton = styled.button`
   border: none;
   display: inline-block;
   font-size: inherit;
+  cursor: pointer;
 `
 
 export const RoundedButtonLink = styled(Link)`

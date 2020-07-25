@@ -45,12 +45,12 @@ type PropsFromRedux = ConnectedProps<typeof connector> & IProps;
 
 const InsightTabs: FC<PropsFromRedux> = ({activePath, teams, user}) => {
     const teamMemberFilters = teams
-        .filter(t => t.members.some(m => m.userId === user?.id && m.role.canViewMemberInsights))
+        .filter(t => t.members.some(m => m.user.id === user?.id && m.role.canViewMemberInsights))
         .reduce((acc: IFilterTab[], team: ITeam) => {
             return [...acc, ...team.members.map(m => {
                 return {
                     team: team,
-                    path: `/insights/teams/${team.id}/members/${m.userId}`,
+                    path: `/insights/teams/${team.id}/members/${m.user.id}`,
                     name: `${m.user.fullName} (${team.name})`,
                     defaultVisible: false
                 };
@@ -61,7 +61,7 @@ const InsightTabs: FC<PropsFromRedux> = ({activePath, teams, user}) => {
         ...teams.map(t => ({team: t, path: `/insights/teams/${t.id}/me`, name: `${t.name} (Me)`, defaultVisible: true})),
         ...teams.map(t => ({team: t, path: `/insights/teams/${t.id}/overall`, name: `${t.name} (Overall)`, defaultVisible: true})),
         ...teams
-            .filter(t => t.members.some(m => m.userId === user?.id && m.role.canViewMemberInsights))
+            .filter(t => t.members.some(m => m.user.id === user?.id && m.role.canViewMemberInsights))
             .map(t => ({team: t, path: `/insights/teams/${t.id}/members`, name: `${t.name} (Members)`, defaultVisible: true})),
         ...teamMemberFilters
     ];

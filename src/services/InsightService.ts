@@ -5,11 +5,11 @@ import {ITeamMemberInsight} from "../models/ITeamMemberInsight";
 const http = new HttpClient();
 
 export class InsightService {
-    getWithFilter(teamId: number, filter: string): Promise<IInsight> {
+    getWithFilter(teamId: number|string, filter: string): Promise<IInsight> {
         return http.get(`insights/teams/${teamId}/${filter}`);
     }
 
-    async getForTeamMembers(teamId: number): Promise<ITeamMemberInsight[]>  {
+    async getForTeamMembers(teamId: number|string): Promise<ITeamMemberInsight[]>  {
         return http.get(`insights/teams/${teamId}/members`);
     }
 }

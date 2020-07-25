@@ -2,10 +2,9 @@ import {IUser} from "./IUser";
 import {IRole} from "./IRole";
 
 export interface ITeamMember {
-    id?: number;
+    id?: number|string;
     name: string;
-    userId: number;
     user: IUser;
-    roleId: number;
+    roleId: number|string;
     role: IRole;
 }

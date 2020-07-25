@@ -46,7 +46,7 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = {
-    loadReport: (retrospectiveId: number|string) => retrospectiveActions.LoadReport(retrospectiveId)
+    loadReport: (retrospectiveId: number | string) => retrospectiveActions.LoadReport(retrospectiveId)
 }
 
 type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: { [userId: string]: { user: IUser, comments: IComment[] } } } };
@@ -95,7 +95,11 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
         return acc;
     }, {});
 
-    const canEditRetrospective = teams.some(team => team.id === retrospective.teamId && team.members.some(m => m.userId === user?.id && m.role.canManageRetrospective));
+    teams.some(team => {
+        return team.id === retrospective.team?.id
+    });
+
+    const canEditRetrospective = teams.some(team => team.id === retrospective.team?.id && team.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
 
     return (
         <Container>
@@ -131,7 +135,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
 
                 <Spacer/>
 
-                {retrospective.actions.length > 0&& <>
+                {retrospective.actions.length > 0 && <>
                     <SectionTitle>ACTIONS PREVIOUS SPRINT</SectionTitle>
                     <table>
                         <tbody>
@@ -142,7 +146,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
                         </tr>
                         {retrospective.actions.map(event => {
                             return <tr key={event.id}>
-                                <td><input readOnly type='checkbox' /></td>
+                                <td><input readOnly type='checkbox'/></td>
                                 <td>{event.description}</td>
                                 <td>{event.responsible}</td>
                             </tr>

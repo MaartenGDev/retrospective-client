@@ -9,6 +9,8 @@ import {ITeam} from "../../models/ITeam";
 import Config from "../../Config";
 import {Container, Row, SectionTitle, Title} from "../styles/Common";
 import {RoundedButton, RoundedButtonLink} from "../styles/Buttons";
+import {parseId} from "../../helpers/Uri";
+import {EntityIdentifier} from "../../types";
 
 const Content = styled.div`
   padding: 20px;
@@ -23,27 +25,27 @@ const mapState = (state: RootState) => ({
 
 const mapDispatch = {
     createOrUpdate: (team: ITeam) => teamActions.CreateOrUpdate(team),
-    deleteTeam: (teamId: number) => teamActions.Delete(teamId)
+    deleteTeam: (teamId: EntityIdentifier) => teamActions.Delete(teamId)
 }
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>;
 
 
 const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
-    const team = teams.find(t => t.id === parseInt(match.params.id!));
+    const team = teams.find(t => t.id === parseId(match.params.id!));
     const [redirectToOverview, setShouldRedirect] = useState(false);
 
     if (!team) {
         return <main>Loading..</main>
     }
 
-    const promptDelete = (teamId: number) => {
+    const promptDelete = (teamId: EntityIdentifier) => {
         if (!window.confirm('Are you sure?')) return;
         deleteTeam(teamId);
         setShouldRedirect(true);
     }
 
-    const isAdminOfTeam = team!.members.some(m => m.userId === user?.id && m.role.canManageTeam);
+    const isAdminOfTeam = team!.members.some(m => m.user.id === user?.id && m.role.canManageTeam);
     const showInviteCode = isAdminOfTeam && team.inviteCode;
 
     if (redirectToOverview) {
@@ -71,7 +73,7 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
                         <th>Role</th>
                     </tr>
                     {team.members.map(m => {
-                        return <tr key={m.userId}>
+                        return <tr key={m.user.id}>
                             <td>{m.user.fullName}</td>
                             <td>{m.role.name}</td>
                         </tr>

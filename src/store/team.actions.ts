@@ -2,6 +2,7 @@ import {Action} from "redux";
 import {AppThunk} from "./store";
 import {TeamService} from "../services/TeamService";
 import {ITeam} from "../models/ITeam";
+import {EntityIdentifier} from "../types";
 
 export enum TeamActionTypes {
     LOADED = '[TEAMS] LOADED',
@@ -34,7 +35,7 @@ export class Updated implements Action {
 export class Deleted implements Action {
     public readonly type = TeamActionTypes.DELETED;
 
-    constructor(public teamId: number) {}
+    constructor(public teamId: EntityIdentifier) {}
 }
 
 export class LoadedForInviteCode implements Action {
@@ -62,7 +63,7 @@ export const CreateOrUpdate = (team: ITeam): AppThunk => async dispatch => {
     )
 }
 
-export const Delete = (teamId: number): AppThunk => async dispatch => {
+export const Delete = (teamId: EntityIdentifier): AppThunk => async dispatch => {
     await service.delete(teamId)
 
     dispatch(new Deleted(teamId));

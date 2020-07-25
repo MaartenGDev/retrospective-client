@@ -1,6 +1,6 @@
 import React from 'react';
 import {Provider} from 'react-redux'
-import Header from "./components/presentation/Header";
+import Header from "./components/containers/Header";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Retrospectives from "./components/containers/Retrospectives";
 import Retrospective from "./components/containers/Retrospective";
@@ -33,7 +33,7 @@ function App() {
                         <Route path="/teams/invites/:code">
                             <TeamInvite/>
                         </Route>
-                        <Route path="/login">
+                        <Route path="/account/login">
                             <ManageAccount/>
                         </Route>
 

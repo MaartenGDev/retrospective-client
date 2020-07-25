@@ -3,8 +3,8 @@ import {ITimeUsage} from "./ITimeUsage";
 import {IUser} from "./IUser";
 
 export interface IEvaluation {
-    id?: number;
-    retrospectiveId: number;
+    id?: number|string;
+    retrospectiveId: number|string;
     sprintRating: number;
     suggestedActions: string;
     suggestedTopics: string;

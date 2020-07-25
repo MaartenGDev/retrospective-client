@@ -9,6 +9,7 @@ import {ColorHelper} from "../../helpers/ColorHelper";
 import {Container} from "../styles/Common";
 import {RouteComponentProps, withRouter} from "react-router-dom";
 import InsightTabs from "./InsightTabs";
+import {parseId} from "../../helpers/Uri";
 
 
 const TileRow = styled.div`
@@ -29,7 +30,7 @@ const mapState = (state: RootState) => ({
 
 
 const mapDispatch = {
-    loadForFilter: (teamId: number, filter: string) => insightActions.LoadWithFilter(teamId, filter)
+    loadForFilter: (teamId: number|string, filter: string) => insightActions.LoadWithFilter(teamId, filter)
 }
 
 const connector = connect(mapState, mapDispatch)
@@ -46,7 +47,7 @@ const TrendInsights: FC<PropsFromRedux> = ({insight, loadForFilter, match}) => {
             ? `members/${userId!}`
             : filter!;
 
-        loadForFilter(parseInt(teamId), finalFilter);
+        loadForFilter(parseId(teamId), finalFilter);
     }, [match])
 
     if (!insight) {

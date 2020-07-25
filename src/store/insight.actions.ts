@@ -23,12 +23,12 @@ export class LoadedForTeamMembers implements Action {
     constructor(public teamMemberInsights: ITeamMemberInsight[]) {}
 }
 
-export const LoadWithFilter = (teamId: number, filter: string): AppThunk => async dispatch => {
+export const LoadWithFilter = (teamId: number|string, filter: string): AppThunk => async dispatch => {
     const teams = await service.getWithFilter(teamId, filter)
     dispatch(new Loaded(teams))
 }
 
-export const LoadForTeamMembers = (teamId: number): AppThunk => async dispatch => {
+export const LoadForTeamMembers = (teamId: number|string): AppThunk => async dispatch => {
     const teams = await service.getForTeamMembers(teamId)
     dispatch(new LoadedForTeamMembers(teams))
 }

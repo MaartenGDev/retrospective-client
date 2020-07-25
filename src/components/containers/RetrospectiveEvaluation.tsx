@@ -16,6 +16,7 @@ import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 import {Icon} from "../styles/Icons";
 import {ButtonRow, Container} from "../styles/Common";
+import {parseId} from "../../helpers/Uri";
 
 const Content = styled.div`
   padding: 20px;
@@ -58,7 +59,6 @@ const mapDispatch = {
     createOrUpdate: (evaluation: IEvaluation) => retrospectiveActions.CreateOrUpdateEvaluation(evaluation),
 }
 
-
 const connector = connect(mapState, mapDispatch)
 
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>;
@@ -66,7 +66,7 @@ type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ i
 interface IState {
     evaluation: IEvaluation,
     retrospective: IUserRetrospective,
-    commentsById: { [id: number]: IComment },
+    commentsById: { [id: string]: IComment },
     finishedEditing: boolean,
 }
 
@@ -100,7 +100,7 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
     private loadEvaluation() {
         const {retrospective: initialRetrospective, evaluation: initialEvaluation} = this.state
         const {match, retrospectives, commentCategories} = this.props
-        const retrospectiveId = parseInt(match.params.id);
+        const retrospectiveId = parseId(match.params.id);
 
         const retrospective: IUserRetrospective = retrospectives.find(r => r.id === retrospectiveId) || initialRetrospective;
         const hasProvidedEvaluation = retrospective && retrospective.evaluation;
@@ -156,7 +156,7 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         })
     }
 
-    private handleCommentsChange = (commentId: number, event: ChangeEvent<HTMLInputElement>) => {
+    private handleCommentsChange = (commentId: number|string, event: ChangeEvent<HTMLInputElement>) => {
         const {commentsById} = this.state
 
         const commentToUpdate = commentsById[commentId];

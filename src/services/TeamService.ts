@@ -1,5 +1,6 @@
 import {HttpClient} from "./HttpClient";
 import {ITeam} from "../models/ITeam";
+import {EntityIdentifier} from "../types";
 
 const http = new HttpClient();
 
@@ -16,7 +17,7 @@ export class TeamService {
         return http.patch(`teams/${team.id}`, team);
     }
 
-    delete(teamId: number): Promise<void> {
+    delete(teamId: EntityIdentifier): Promise<void> {
         return http.delete(`teams/${teamId}`);
     }
 

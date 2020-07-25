@@ -1,7 +1,7 @@
 import {ITeamMember} from "./ITeamMember";
 
 export interface ITeam {
-    id?: number;
+    id?: number|string;
     name: string;
     inviteCode: string;
     members: ITeamMember[];

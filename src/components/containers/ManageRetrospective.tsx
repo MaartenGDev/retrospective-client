@@ -11,6 +11,7 @@ import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
 import {ButtonRow, Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
 import {IAction} from "../../models/IAction";
+import {parseId} from "../../helpers/Uri";
 
 const Content = styled.div`
   padding: 20px;
@@ -105,10 +106,10 @@ class ManageRetrospective extends Component<IProps, IState> {
         const {teams, match, retrospectives, user} = this.props;
 
         const nextRetrospective = match.params.id && retrospectives.length
-            ? {...retrospective, ...retrospectives.find(r => r.id === parseInt(match.params.id!))!}
+            ? {...retrospective, ...retrospectives.find(r => r.id === parseId(match.params.id!))!}
             : retrospective;
 
-        const possibleTeams = teams.filter(t => t.members.some(m => m.userId === user?.id && m.role.canManageRetrospective));
+        const possibleTeams = teams.filter(t => t.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
 
         const nextTeamId = possibleTeams.length
             ? possibleTeams[0].id!
@@ -269,7 +270,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     render() {
         const {retrospective, topic, action, topicBeingEdited, actionBeingEdited,finishedEditing, selectedSprintDuration} = this.state
         const {teams, user} = this.props
-        const teamsWhereUserIdAdmin = teams.filter(t => t.members.some(m => m.userId === user?.id && m.role.canManageRetrospective))
+        const teamsWhereUserIsAdmin = teams.filter(t => t.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective))
 
 
         const canAddTopic = topic.description.length > 0;
@@ -297,7 +298,7 @@ class ManageRetrospective extends Component<IProps, IState> {
 
                     <SectionTitle>TEAM</SectionTitle>
                     <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
-                        {teamsWhereUserIdAdmin.map(t => <option value={t.id} key={t.id}>{t.name}</option>)}
+                        {teamsWhereUserIsAdmin.map(t => <option value={t.id} key={t.id}>{t.name}</option>)}
                     </Select>
                     <SectionTitle>SPRINT</SectionTitle>
 

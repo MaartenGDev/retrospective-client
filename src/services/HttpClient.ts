@@ -1,7 +1,7 @@
 import Config from "../Config";
 
 export class HttpClient {
-    private readonly anonymousLaunchUrlParts = ['/teams/invites/'];
+    private readonly anonymousLaunchUrlParts = ['/teams/invites/', '/account/login'];
     private readonly HTTP_METHODS_WITH_BODY = ['POST', 'PATCH'];
 
     public async get<T>(url: string): Promise<T> {
@@ -23,13 +23,16 @@ export class HttpClient {
     private async request<T>(url: string, body?: any, method = 'GET'): Promise<T> {
         const absoluteUrl = this.getAbsoluteUrl(url);
 
+        const token = localStorage.getItem(Config.AUTH_TOKEN_NAME);
+
         const requestConfig: any = {
             credentials: "include",
             method: method,
             redirect: "manual",
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: body ? JSON.stringify(body) : undefined
         };
@@ -55,7 +58,7 @@ export class HttpClient {
         }
 
         if(!hasLaunchedFromAnonymousPath){
-            window.location.href = `${Config.API_URL}account/login`
+            window.location.href = Config.LOGIN_URL;
         }
 
         return Promise.reject('Unauthorized');

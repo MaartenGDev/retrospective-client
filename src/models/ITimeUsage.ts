@@ -1,5 +1,5 @@
 export interface ITimeUsage {
-    id?: number;
+    id?: number|string;
     percentage: number;
     categoryId: number;
 }

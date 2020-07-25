@@ -1,13 +1,14 @@
 import React, {FC, useState} from 'react';
 import styled from 'styled-components'
-import {RouteComponentProps, withRouter} from "react-router-dom";
+import {RouteComponentProps, withRouter, Redirect} from "react-router-dom";
 import {RootState} from "../../store/rootReducer";
-import * as teamActions from "../../store/team.actions";
+import * as authenticationActions from "../../store/authentication.actions";
 import {connect, ConnectedProps} from "react-redux";
 import SplitPage from "../presentation/SplitPage";
 import {TextInput} from "../styles/Input";
 import {ButtonRow, SectionTitle} from "../styles/Common";
 import {RoundedButton} from "../styles/Buttons";
+import {ICredentials} from "../../models/dto/ICredentials";
 
 const LoginCard = styled.div`
     margin: 20%;
@@ -36,18 +37,23 @@ const AlternativeOption = styled.span`
 `
 
 const mapState = (state: RootState) => ({
-    team: state.teamReducer.teamForInviteCode,
+    user: state.authenticationReducer.user,
 });
 
 const mapDispatch = {
-    loadTeam: (inviteCode: string) => teamActions.FindByInviteCode(inviteCode)
+    login: (credentials: ICredentials) => authenticationActions.Login(credentials),
 }
 
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ code: string }>;
 
-const ManageAccount: FC<IProps> = ({team, loadTeam, match}) => {
+const ManageAccount: FC<IProps> = ({user, login, match}) => {
+    const [credentials, setCredentials] = useState<ICredentials>({email: '', password: ''})
     const [isLogin, setIsLogin] = useState(true);
+
+    if(user){
+        return <Redirect to='/' />
+    }
 
     return (
         <SplitPage>
@@ -57,9 +63,9 @@ const ManageAccount: FC<IProps> = ({team, loadTeam, match}) => {
 
                 <LoginOptions>
                     <SectionTitle>Email</SectionTitle>
-                    <TextInput type='email' />
+                    <TextInput type='email' onChange={e => setCredentials({...credentials, email: e.target.value})}/>
                     <SectionTitle>Password</SectionTitle>
-                    <TextInput type='password' />
+                    <TextInput type='password' onChange={e => setCredentials({...credentials, password: e.target.value})} />
                 </LoginOptions>
 
                 <AlternativeOption onClick={() => setIsLogin(!isLogin)}>
@@ -67,7 +73,7 @@ const ManageAccount: FC<IProps> = ({team, loadTeam, match}) => {
                 </AlternativeOption>
 
                 <ButtonRow>
-                    <RoundedButton>{isLogin ? 'Login' : 'Register'}</RoundedButton>
+                    <RoundedButton onClick={() => login(credentials)}>{isLogin ? 'Login' : 'Register'}</RoundedButton>
                 </ButtonRow>
             </LoginCard>
         </SplitPage>

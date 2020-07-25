@@ -1,5 +1,5 @@
 export interface ICommentCategory {
-    id: number;
+    id: number|string;
     name: string;
     description: string;
     iconLabel: string;

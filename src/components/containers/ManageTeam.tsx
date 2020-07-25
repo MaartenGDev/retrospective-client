@@ -8,6 +8,7 @@ import * as teamActions from "../../store/team.actions";
 import {RoundedButton} from "../styles/Buttons";
 import {ITeam} from "../../models/ITeam";
 import {ButtonRow, Container, SectionTitle} from "../styles/Common";
+import {parseId} from "../../helpers/Uri";
 
 const Content = styled.div`
   padding: 20px;
@@ -58,7 +59,7 @@ class ManageTeam extends Component<IProps, IState> {
 
 
         this.setState({
-            team: teams.find(t => t.id === parseInt(match.params.id!))!
+            team: teams.find(t => t.id === parseId(match.params.id!))!
         });
     }
 
@@ -78,11 +79,13 @@ class ManageTeam extends Component<IProps, IState> {
         }))
     }
 
-    handleTeamMemberRoleChange = (memberId: number, nextRoleId: number) => {
+    handleTeamMemberRoleChange = (memberId: number|string, nextRoleId: number|string) => {
         const {team} = this.state
+        const {teamMemberRoles} = this.props
+
         const updatedMembers = team.members.map(m => {
            if(m.id === memberId){
-               return {...m, roleId: nextRoleId}
+               return {...m, roleId: nextRoleId, role: teamMemberRoles.find(r => r.id === nextRoleId)!}
            }
            return m;
         });
@@ -112,9 +115,9 @@ class ManageTeam extends Component<IProps, IState> {
                             <th>Role</th>
                         </tr>
                         {team.members.map(m => {
-                            return <tr key={m.userId}>
+                            return <tr key={m.user.id}>
                                 <td>{m.user.fullName}</td>
-                                <td><Select value={m.roleId} onChange={e => this.handleTeamMemberRoleChange(m.id!, parseInt(e.target.value))}>
+                                <td><Select value={m.role.id} onChange={e => this.handleTeamMemberRoleChange(m.id!, parseId(e.target.value))}>
                                     {teamMemberRoles.map(role => <option key={role.id} value={role.id}>{role.name}</option>)}
                                 </Select></td>
                             </tr>

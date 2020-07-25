@@ -1,5 +1,3 @@
-import {IMetric} from "./IMetric";
-import {IMetricHistory} from "./IMetricHistory";
 import {ITimeUsageCategory} from "./ITimeUsageCategory";
 
 export interface ITeamMemberInsight {

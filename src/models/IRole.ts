@@ -1,5 +1,5 @@
 export interface IRole {
-    id: number;
+    id: number|string;
     name: string;
     canManageTeam: boolean;
     canManageRetrospective: boolean;

@@ -4,13 +4,13 @@ import {IEvaluation} from "./IEvaluation";
 import {ITeam} from "./ITeam";
 
 export interface IUserRetrospective {
-    id?: number;
+    id?: number|string;
     name: string;
     startDate: string;
     endDate: string;
     topics: ITopic[];
     actions: IAction[];
     evaluation?: IEvaluation;
-    teamId: number;
+    teamId: number|string;
     team?: ITeam;
 }

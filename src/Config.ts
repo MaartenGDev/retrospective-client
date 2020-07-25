@@ -1,9 +1,13 @@
 const localUrl = `${window.location.origin}/`;
 const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001/';
 
+const useExternalAuth = process.env.REACT_APP_USE_EXTERNAL_AUTH || false;
+
 export default {
+    AUTH_TOKEN_NAME: 'access_token',
+    USE_EXTERNAL_AUTH: useExternalAuth,
     API_URL: apiUrl,
-    EXTERNAL_LOGIN_URL: `${apiUrl}account/login`,
+    LOGIN_URL: `${useExternalAuth ? apiUrl : localUrl}account/login`,
     TEAM_INVITE_URL: (code: string) => `${apiUrl}teams/invites/${code}`,
     LOCAL_TEAM_INVITE_URL: (code: string) => `${localUrl}teams/invites/${code}`,
 }

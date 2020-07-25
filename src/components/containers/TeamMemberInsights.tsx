@@ -8,6 +8,7 @@ import InsightTabs from "./InsightTabs";
 import {Container} from "../styles/Common";
 import {TableLink} from "../styles/Text";
 import ChangeLabel from "../presentation/common/data/ChangeLabel";
+import {parseId} from "../../helpers/Uri";
 
 const TableSection = styled.main`
   margin-top: 30px;
@@ -28,7 +29,7 @@ const mapState = (state: RootState) => ({
 
 
 const mapDispatch = {
-    loadForTeamMembers: (teamId: number) => insightActions.LoadForTeamMembers(teamId)
+    loadForTeamMembers: (teamId: number|string) => insightActions.LoadForTeamMembers(teamId)
 }
 
 const connector = connect(mapState, mapDispatch)
@@ -37,7 +38,7 @@ const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ teamId: string }>;
 
 const TeamMemberInsights: FC<PropsFromRedux> = ({loadForTeamMembers, match, teamMemberInsights}) => {
-    const teamId = parseInt(match.params.teamId);
+    const teamId = parseId(match.params.teamId);
     useEffect(() => {
         loadForTeamMembers(teamId);
     }, [])

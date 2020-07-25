@@ -46,7 +46,7 @@ const Teams: FC<PropsFromRedux> = ({teams, user}) => {
                         <th>VIEW</th>
                     </tr>
                     {teams.map(team => {
-                        const currentUser = team.members.find(m => m.userId === user?.id);
+                        const currentUser = team.members.find(m => m.user.id === user?.id);
 
                         return <tr key={team.id}>
                             <td>{team.name}</td>

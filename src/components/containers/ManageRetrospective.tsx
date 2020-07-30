@@ -139,6 +139,8 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.setState({
             retrospective: {...retrospective, topics: retrospective.topics.filter(t => t.id !== topic.id)}
         });
+
+        this.queueSave();
     }
 
     private toggleTopicEditing = (topic: ITopic, index: number) => {
@@ -171,6 +173,8 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.setState({
             retrospective: {...retrospective, actions: retrospective.actions.filter(t => t.id !== action.id)}
         });
+
+        this.queueSave();
     }
 
     private toggleActionEditing = (action: IAction, index: number) => {
@@ -227,6 +231,8 @@ class ManageRetrospective extends Component<IProps, IState> {
             topic: this._defaultTopic,
             nextTopicId: nextTopicId - 1
         });
+
+        this.queueSave();
     }
 
     private addAction = (action: IAction) => {
@@ -239,6 +245,8 @@ class ManageRetrospective extends Component<IProps, IState> {
             action: this._defaultAction,
             nextActionId: nextActionId - 1
         });
+
+        this.queueSave();
     }
 
     private createOrUpdate = () => {

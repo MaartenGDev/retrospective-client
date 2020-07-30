@@ -95,10 +95,6 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
         return acc;
     }, {});
 
-    teams.some(team => {
-        return team.id === retrospective.team?.id
-    });
-
     const canEditRetrospective = teams.some(team => team.id === retrospective.team?.id && team.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
 
     return (

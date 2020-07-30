@@ -2,18 +2,21 @@ import React, {ChangeEvent, Component} from 'react';
 import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
-import {RouteComponentProps, withRouter, Redirect} from 'react-router-dom';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {IUserRetrospective} from "../../models/IUserRetrospective";
-import {Input, Select, TextInput} from "../styles/Input";
+import {Input, InputDescription, InputLabel, Select, TextInput} from "../styles/Input";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {RoundedButton, TextButton} from "../styles/Buttons";
+import {TextButton} from "../styles/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
-import {ButtonRow, Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
+import {Container, Row, Spacer, Title} from "../styles/Common";
 import {IAction} from "../../models/IAction";
 import {parseId} from "../../helpers/Uri";
+import {QueueHelper} from "../../helpers/QueueHelper";
+import {LoadingBar} from "../presentation/common/LoadingBar";
 
 const Content = styled.div`
+  position: relative;
   padding: 20px;
   background-color: #ffffff;
 `
@@ -42,10 +45,10 @@ interface IState {
     action: IAction,
     topicBeingEdited?: ITopic & { editIndex: number },
     actionBeingEdited?: IAction & { editIndex: number },
-    finishedEditing: boolean,
     selectedSprintDuration: number,
     nextTopicId: number
-    nextActionId: number
+    nextActionId: number,
+    isLoading: boolean,
 }
 
 class ManageRetrospective extends Component<IProps, IState> {
@@ -82,10 +85,10 @@ class ManageRetrospective extends Component<IProps, IState> {
         action: this._defaultAction,
         topicBeingEdited: undefined,
         actionBeingEdited: undefined,
-        finishedEditing: false,
         selectedSprintDuration: 2,
         nextTopicId: -1,
-        nextActionId: -1
+        nextActionId: -1,
+        isLoading: false,
     }
 
     componentDidMount() {
@@ -99,6 +102,16 @@ class ManageRetrospective extends Component<IProps, IState> {
         if (this.props === prevProps) return;
 
         this.decorateRetrospective();
+    }
+
+    private queueSave = (bounceInMs: number = 500) => {
+        QueueHelper.queue(bounceInMs, 500,
+            () => {
+                this.createOrUpdate();
+                this.setState({isLoading: true})
+            },
+            () => this.setState({isLoading: false})
+        );
     }
 
     private decorateRetrospective() {
@@ -144,6 +157,8 @@ class ManageRetrospective extends Component<IProps, IState> {
                 retrospective: {...retrospective, topics: updatedTopics}
             });
 
+            this.queueSave();
+
             return;
         }
 
@@ -173,12 +188,13 @@ class ManageRetrospective extends Component<IProps, IState> {
                 retrospective: {...retrospective, actions: updatedActions}
             });
 
+            this.queueSave();
+
             return;
         }
 
         this.setState({actionBeingEdited: {...action, editIndex: index}});
     }
-
 
 
     private handleSprintDurationChange = (startDate: string, durationInWeeks: number) => {
@@ -189,6 +205,8 @@ class ManageRetrospective extends Component<IProps, IState> {
                 endDate: this.getEndDate(startDate, durationInWeeks)
             }
         }))
+
+        this.queueSave();
     }
 
 
@@ -223,7 +241,8 @@ class ManageRetrospective extends Component<IProps, IState> {
         });
     }
 
-    private createOrUpdate = (retrospective: IUserRetrospective) => {
+    private createOrUpdate = () => {
+        const {retrospective} = this.state
         const {createOrUpdate} = this.props
 
         createOrUpdate({
@@ -231,13 +250,12 @@ class ManageRetrospective extends Component<IProps, IState> {
             topics: this.removeTemporaryIds(retrospective.topics),
             actions: this.removeTemporaryIds(retrospective.actions),
         });
-        this.setState({finishedEditing: true})
     }
 
     private removeTemporaryIds(items: any[]): any {
         return items.map(item => {
             const clone = {...item};
-            if(item.id <= 0){
+            if (item.id <= 0) {
                 delete clone.id;
             }
             return clone;
@@ -265,22 +283,20 @@ class ManageRetrospective extends Component<IProps, IState> {
     private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, mutator: (value: any) => any = value => value) => {
         const {name, value} = event.target
         this.setState({[key]: {...this.state[key] as any, [name]: mutator(value)}} as IState);
+
+        this.queueSave(500);
     }
 
     render() {
-        const {retrospective, topic, action, topicBeingEdited, actionBeingEdited,finishedEditing, selectedSprintDuration} = this.state
+        const {retrospective, topic, action, topicBeingEdited, actionBeingEdited, selectedSprintDuration, isLoading} = this.state
         const {teams, user} = this.props
         const teamsWhereUserIsAdmin = teams.filter(t => t.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective))
 
 
         const canAddTopic = topic.description.length > 0;
-        const canAddAction = action.description.length > 0;
+        const canAddAction = action.description.length > 0 && action.responsible.length > 0;
 
         const isExistingRetrospective = !!retrospective.id;
-
-        if (finishedEditing) {
-            return <Redirect to={'/'}/>
-        }
 
         return (
             <Container>
@@ -289,24 +305,33 @@ class ManageRetrospective extends Component<IProps, IState> {
                 </Row>
 
                 <Content>
-                    <SectionTitle>NAME</SectionTitle>
+                    <LoadingBar isLoading={isLoading} loadingDuration={600}/>
+
+                    <InputLabel isFirstLabel={true}>NAME</InputLabel>
+                    <InputDescription>This will be shown in the sprint overview</InputDescription>
                     <TextInput placeholder='E.g Retrospective #12'
                                value={retrospective.name}
                                name='name'
                                onChange={this.updateRetrospective}
                     />
 
-                    <SectionTitle>TEAM</SectionTitle>
-                    <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId' onChange={this.updateRetrospective}>
+                    <InputLabel>TEAM</InputLabel>
+                    <InputDescription>The chosen team will be able to provide feedback and view the
+                        retrospective.</InputDescription>
+                    <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId'
+                            onChange={this.updateRetrospective}>
                         {teamsWhereUserIsAdmin.map(t => <option value={t.id} key={t.id}>{t.name}</option>)}
                     </Select>
-                    <SectionTitle>SPRINT</SectionTitle>
+
+                    <InputLabel>SPRINT</InputLabel>
+                    <InputDescription>What is the sprint period, team members will be able to provide feedback until the
+                        last day.</InputDescription>
 
                     <InputRow>
                         <Select value={selectedSprintDuration}
                                 onChange={e => this.handleSprintDurationChange(retrospective.startDate, parseInt(e.target.value))}>
                             {this._sprintDurations.map(duration => <option key={duration.value}
-                                value={duration.value}>{duration.name}</option>)}
+                                                                           value={duration.value}>{duration.name}</option>)}
                         </Select>
                         <Input type='date' name='startDate' value={retrospective.startDate}
                                onChange={this.handleSprintStartChange}/>
@@ -314,9 +339,10 @@ class ManageRetrospective extends Component<IProps, IState> {
                                onChange={this.updateRetrospective}/>
                     </InputRow>
 
-                    <Spacer />
+                    <Spacer/>
 
-                    <SectionTitle>TOPICS</SectionTitle>
+                    <InputLabel>TOPICS</InputLabel>
+                    <InputDescription>How is the retrospective organized, what should be discussed.</InputDescription>
                     <table>
                         <tbody>
                         <tr>
@@ -343,7 +369,7 @@ class ManageRetrospective extends Component<IProps, IState> {
                                     onClick={() => this.toggleTopicEditing(event, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
                                 </td>
                                 <td><TextButton color='#e53935'
-                                    onClick={() => this.removeTopic(event, index)}>REMOVE</TextButton>
+                                                onClick={() => this.removeTopic(event, index)}>REMOVE</TextButton>
                                 </td>
                             </tr>
                         })}
@@ -367,7 +393,9 @@ class ManageRetrospective extends Component<IProps, IState> {
 
                     <Spacer/>
 
-                    <SectionTitle>ACTIONS</SectionTitle>
+                    <InputLabel>ACTIONS LAST SPRINT</InputLabel>
+                    <InputDescription>What actions did you plan out to do in previous sprint and should be checked for
+                        progress?</InputDescription>
                     <table>
                         <tbody>
                         <tr>
@@ -404,9 +432,9 @@ class ManageRetrospective extends Component<IProps, IState> {
                                            onChange={e => this.updateState('action', e)}/>
                             </td>
                             <td><TextInput
-                                           value={action.responsible}
-                                           name='responsible'
-                                           onChange={e => this.updateState('action', e)}/>
+                                value={action.responsible}
+                                name='responsible'
+                                onChange={e => this.updateState('action', e)}/>
                             </td>
                             <td colSpan={2}>
                                 <TextButton disabled={!canAddAction}
@@ -415,10 +443,6 @@ class ManageRetrospective extends Component<IProps, IState> {
                         </tr>
                         </tbody>
                     </table>
-
-                    <ButtonRow>
-                        <RoundedButton onClick={() => this.createOrUpdate(retrospective)}>Save</RoundedButton>
-                    </ButtonRow>
                 </Content>
             </Container>
         );

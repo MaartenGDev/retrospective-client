@@ -54,7 +54,10 @@ function App() {
                                     <Teams/>
                                 </Route>
                                 <Route path="/retrospectives/:id/feedback">
-                                    <RetrospectiveFeedback/>
+                                    <RetrospectiveFeedback readonly={false}/>
+                                </Route>
+                                <Route path="/retrospectives/:id/provided-feedback">
+                                    <RetrospectiveFeedback readonly={true}/>
                                 </Route>
                                 <Route path="/retrospectives/create">
                                     <ManageRetrospective/>

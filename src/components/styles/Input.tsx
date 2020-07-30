@@ -27,3 +27,15 @@ export const TextInput = styled(Input)`
   min-width: calc(100% - 20px);
   max-width: calc(100% - 20px);
 `
+
+export const InputLabel = styled.p.attrs((props: {isFirstLabel: boolean}) => ({
+    isFirstLabel: props.isFirstLabel || false,
+}))`
+  font-weight: bold;
+  margin-top: ${props => props.isFirstLabel ? '0' : '10px'};
+  margin-bottom: 0;
+`
+
+export const InputDescription = styled.p`
+  margin-top: 5px;
+`

@@ -1,5 +1,7 @@
+import {EntityIdentifier} from "../types";
+
 export interface ICommentCategory {
-    id: number|string;
+    id: EntityIdentifier;
     name: string;
     description: string;
     iconLabel: string;

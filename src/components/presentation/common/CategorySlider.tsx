@@ -45,6 +45,7 @@ export interface ICategory {
 }
 
 interface IProps {
+    disabled?: boolean,
     categories: ICategory[],
     onCategoriesChange: (categories: ICategory[]) => void
 }
@@ -82,7 +83,7 @@ export class CategorySlider extends Component<IProps, IState> {
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {
-        if(prevProps.categories !== this.props.categories){
+        if (prevProps.categories !== this.props.categories) {
             this.setState({
                 categories: this.props.categories
             });
@@ -90,6 +91,10 @@ export class CategorySlider extends Component<IProps, IState> {
     }
 
     private handleDragStart = (event: Event) => {
+        if (this.props.disabled) {
+            return;
+        }
+
         const categoryIndexToUpdate = parseInt(((event as MouseEvent).target! as HTMLSpanElement).id, 10);
         if (isNaN(categoryIndexToUpdate)) return;
 
@@ -103,12 +108,25 @@ export class CategorySlider extends Component<IProps, IState> {
     };
 
     private handleDragFinished = (event: Event) => {
+        if (this.props.disabled) {
+            return;
+        }
+
         this.updateCategoryWidths(event);
         this.setState({isDragging: false, categoryIndexToUpdate: -1})
-        this.props.onCategoriesChange(this.state.categories);
+
+        const sliderHasChanged = this.props.categories.some(category => category.value !== this.state.categories.find(c => c.id === category.id)?.value);
+
+        if(sliderHasChanged){
+            this.props.onCategoriesChange(this.state.categories);
+        }
     }
 
     private updateCategoryWidths = (event: Event) => {
+        if (this.props.disabled) {
+            return;
+        }
+
         const {categories, isDragging, dragStartX, categoryIndexToUpdate} = this.state
         if (categoryIndexToUpdate === -1 || !isDragging) return;
 

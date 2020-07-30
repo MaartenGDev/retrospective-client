@@ -1,5 +1,7 @@
+import {EntityIdentifier} from "../types";
+
 export interface ITopic {
-    id: number;
+    id: EntityIdentifier;
     description: string;
     durationInMinutes: number;
 }

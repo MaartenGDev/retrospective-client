@@ -17,7 +17,7 @@ steps:
 
   - script: |
       npm install
-      REACT_APP_API_URL=$(ApiUrl) npm run build
+      USE_EXTERNAL_AUTH=true REACT_APP_API_URL=$(ApiUrl) npm run build
     displayName: 'npm install and build'
 
   - task: AzureCLI@2

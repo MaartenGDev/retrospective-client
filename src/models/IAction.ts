@@ -1,5 +1,7 @@
+import {EntityIdentifier} from "../types";
+
 export interface IAction {
-    id: number;
+    id: EntityIdentifier;
     description: string;
     responsible: string;
     isCompleted: boolean;

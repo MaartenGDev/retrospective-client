@@ -36,11 +36,13 @@ const Slider = styled.input`
 
 
 interface IProps {
+    name: string,
+    disabled?: boolean,
     color: string;
     value: number;
     onChange: (value: number) => void
 }
 
-export const ValueSlider: FC<IProps> = ({color, value, onChange}) => {
-    return (<Slider color={color} type="range" min="1" max="100" value={value} onChange={e => onChange(parseInt(e.target.value))}/>);
+export const ValueSlider: FC<IProps> = ({color, disabled = false, value, onChange, name}) => {
+    return (<Slider disabled={disabled} name={name} color={color} type="range" min="1" max="100" value={value} onChange={e => onChange(parseInt(e.target.value))}/>);
 }

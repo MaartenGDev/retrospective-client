@@ -2,24 +2,27 @@ import React, {ChangeEvent, Component} from 'react';
 import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
-import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
+import {RouteComponentProps, withRouter} from 'react-router-dom';
 import {CategorySlider, ICategory} from "../presentation/common/CategorySlider";
 import {ValueSlider} from "../presentation/common/ValueSlider";
 import {IEvaluation} from "../../models/IEvaluation";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {TextArea} from "../styles/Input";
-import {RoundedButton} from "../styles/Buttons";
+import {TextArea, InputLabel, InputDescription} from "../styles/Input";
 import {ICommentCategory} from "../../models/ICommentCategory";
 import {IComment} from "../../models/IComment";
 import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 import {Icon} from "../styles/Icons";
-import {ButtonRow, Container} from "../styles/Common";
+import {Container, Spacer} from "../styles/Common";
 import {parseId} from "../../helpers/Uri";
+import {EntityIdentifier} from "../../types";
+import {LoadingBar} from "../presentation/common/LoadingBar";
+import {QueueHelper} from "../../helpers/QueueHelper";
 
 const Content = styled.div`
   padding: 20px;
+  position: relative;
   background-color: #ffffff;
 `
 
@@ -61,21 +64,26 @@ const mapDispatch = {
 
 const connector = connect(mapState, mapDispatch)
 
-type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>;
+interface IProps {
+    readonly: boolean
+}
+
+type Props = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }> & IProps;
 
 interface IState {
     evaluation: IEvaluation,
     retrospective: IUserRetrospective,
     commentsById: { [id: string]: IComment },
-    finishedEditing: boolean,
+    isLoading: boolean,
 }
 
-class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
+class RetrospectiveEvaluation extends Component<Props, IState> {
     state: IState = {
         evaluation: {
             retrospectiveId: 0,
             timeUsage: [],
             sprintRating: 50,
+            sprintRatingExplanation: '',
             suggestedActions: '',
             suggestedTopics: '',
             comments: [],
@@ -84,17 +92,27 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
             name: ''
         } as IUserRetrospective,
         commentsById: {},
-        finishedEditing: false,
+        isLoading: false,
     }
 
     componentDidMount() {
         this.loadEvaluation();
     }
 
-    componentDidUpdate(prevProps: Readonly<PropsFromRedux>, prevState: Readonly<IState>, snapshot?: any) {
-        if(this.props !== prevProps){
+    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<IState>, snapshot?: any) {
+        if (this.props !== prevProps) {
             this.loadEvaluation();
         }
+    }
+
+    private queueSave = (bounceInMs: number = 500) => {
+        QueueHelper.queue(bounceInMs, 500,
+            () => {
+                this.createOrUpdate();
+                this.setState({isLoading: true});
+            },
+            () => this.setState({isLoading: false})
+        );
     }
 
     private loadEvaluation() {
@@ -134,7 +152,7 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
             return acc;
         }, {});
 
-        return{
+        return {
             commentsById,
             evaluation: {...evaluation, comments: Object.values(commentsById)}
         };
@@ -154,13 +172,15 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         this.setState({
             evaluation: {...evaluation, timeUsage}
         })
+
+        this.queueSave();
     }
 
-    private handleCommentsChange = (commentId: number|string, event: ChangeEvent<HTMLInputElement>) => {
+    private handleCommentsChange = (commentId: EntityIdentifier, event: ChangeEvent<HTMLInputElement>) => {
         const {commentsById} = this.state
 
         const commentToUpdate = commentsById[commentId];
-        const nextComments: {[key: number]: IComment} = {
+        const nextComments: { [key: number]: IComment } = {
             ...commentsById,
             [commentId]: {...commentToUpdate, body: event.target.value}
         };
@@ -168,12 +188,16 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         this.setState({
             commentsById: nextComments
         });
+
+        this.queueSave();
     }
 
     private handleSprintRatingChange = (sprintRating: number) => {
         this.setState(state => ({
             evaluation: {...state.evaluation, sprintRating}
         }));
+
+        this.queueSave();
     }
 
     private handleEvaluationChange = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) => {
@@ -182,6 +206,8 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         this.setState(state => ({
             evaluation: {...state.evaluation, [name]: value}
         }));
+
+        this.queueSave(500);
     }
 
     private createOrUpdate = () => {
@@ -197,14 +223,11 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
         });
 
         createOrUpdate({...evaluation, comments: transformedComments})
-        this.setState({
-            finishedEditing: true
-        })
     }
 
     render() {
-        const {retrospective, evaluation, commentsById, finishedEditing} = this.state
-        const {timeUsageCategories, commentCategories} = this.props
+        const {retrospective, evaluation, commentsById, isLoading} = this.state
+        const {timeUsageCategories, commentCategories, readonly} = this.props
 
         const sliderCategories = timeUsageCategories.map((c: ITimeUsageCategory) => {
             const existingTimeUsage = evaluation.timeUsage.find(t => t.categoryId === c.id);
@@ -216,32 +239,47 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
             return acc;
         }, {})
 
-        if (finishedEditing) {
-            return <Redirect to={`/retrospectives/${retrospective.id}`}/>
-        }
-
         return (
             <Container>
                 <h1>Retrospective: {retrospective.name}</h1>
                 <Content>
+                    <LoadingBar isLoading={isLoading} loadingDuration={600}/>
+
                     <form onSubmit={e => e.preventDefault()}>
-                        <p>TIME USAGE</p>
-                        <p><b>Balance</b></p>
-                        <p>Adjust the slider to indicate how your sprint was spent such as how much time was available
+                        <p style={{marginTop: 0}}>TIME USAGE</p>
+                        <InputLabel>Balance</InputLabel>
+                        <InputDescription>Adjust the slider to indicate how your sprint was spent such as how much time
+                            was available
                             to
-                            focus.</p>
+                            focus.</InputDescription>
                         <CategorySlider categories={sliderCategories}
-                                        onCategoriesChange={this.handleTimeUsageChange}/>
+                                        onCategoriesChange={this.handleTimeUsageChange}
+                                        disabled={readonly}
+                        />
 
-                        <p><b>Sprint rating</b> (<span
+                        <p style={{marginBottom: 0}}><b>Sprint rating</b> (<span
                             style={{fontStyle: 'italic'}}>{evaluation.sprintRating / 10}/10</span>)</p>
-                        <p>What grade would you give this sprint? Base it on the status of your set goals and the
+                        <InputDescription>What grade would you give this sprint? Base it on the status of your set goals
+                            and the
                             achieved
-                            results.</p>
+                            results.</InputDescription>
                         <ValueSlider color='#4AE6AA' value={evaluation.sprintRating}
-                                     onChange={this.handleSprintRatingChange}/>
+                                     name='sprintRating'
+                                     onChange={this.handleSprintRatingChange}
+                                     disabled={readonly}
+                        />
 
-                        <hr/>
+                        <InputLabel>Rating explanation</InputLabel>
+                        <InputDescription>Please describe why you have given this grade (English or
+                            Dutch).</InputDescription>
+                        <TextArea placeholder='Working on example task was great, but I had quite a few meetings.'
+                                  value={evaluation.sprintRatingExplanation}
+                                  name='sprintRatingExplanation'
+                                  onChange={this.handleEvaluationChange}
+                                  disabled={readonly}
+                        />
+
+                        <Spacer/>
                         <p>FEEDBACK</p>
                         <p>Provide at least one positive point and one area where there is room for improvement. Keep
                             the
@@ -254,32 +292,32 @@ class RetrospectiveEvaluation extends Component<PropsFromRedux, IState> {
                                         <Icon style={{backgroundColor: category.iconColor}}>{category.iconLabel}</Icon>
                                         <Input type='text' required={index < category.minimalCommentCount}
                                                value={comment.body} placeholder={category.description}
-                                               onChange={e => this.handleCommentsChange(comment.id, e)}/>
+                                               onChange={e => this.handleCommentsChange(comment.id, e)}
+                                               disabled={readonly}
+                                        />
                                     </InputRow>
                                 ))}
                             </GridColumn>)}
                         </InputGrid>
 
-                        <hr/>
+                        <Spacer/>
                         <p>SUGGESTIONS</p>
                         <p>What actions should be taken for the next sprint?</p>
                         <TextArea placeholder='E.g changing the workflow or appointing a single person to hide it.'
                                   value={evaluation.suggestedActions}
                                   name='suggestedActions'
                                   onChange={this.handleEvaluationChange}
+                                  disabled={readonly}
                         />
-                        <hr/>
+                        <Spacer/>
                         <p>FEEDBACK</p>
                         <p>What should be discussed during the retrospective?</p>
                         <TextArea placeholder='E.g how we handle onboarding'
                                   value={evaluation.suggestedTopics}
                                   name='suggestedTopics'
                                   onChange={this.handleEvaluationChange}
+                                  disabled={readonly}
                         />
-
-                        <ButtonRow>
-                            <RoundedButton onClick={this.createOrUpdate}>Submit</RoundedButton>
-                        </ButtonRow>
                     </form>
                 </Content>
             </Container>

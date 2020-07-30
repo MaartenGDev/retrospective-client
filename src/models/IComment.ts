@@ -1,8 +1,9 @@
 import {ICommentCategory} from "./ICommentCategory";
 import {IEvaluation} from "./IEvaluation";
+import {EntityIdentifier} from "../types";
 
 export interface IComment {
-    id: number|string;
+    id: EntityIdentifier;
     body: string;
     categoryId: number;
     category: ICommentCategory;

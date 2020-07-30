@@ -42,7 +42,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
                     {retrospectives.map(retro => {
                         const isCompleted = new Date(retro.endDate).getTime() < new Date().getTime();
                         const action = isCompleted
-                            ? <PrimaryLink to={'/retrospectives/' + retro.id}>View</PrimaryLink>
+                            ? <PrimaryLink to={'/retrospectives/' + retro.id + '/provided-feedback'}>View feedback</PrimaryLink>
                             : <PrimaryLink to={'/retrospectives/' + retro.id + '/feedback'}>{retro.evaluation ? 'Edit' : 'Give'} feedback</PrimaryLink>;
 
                         return <tr key={retro.id}>

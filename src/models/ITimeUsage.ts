@@ -1,5 +1,7 @@
+import {EntityIdentifier} from "../types";
+
 export interface ITimeUsage {
-    id?: number|string;
+    id?: EntityIdentifier;
     percentage: number;
     categoryId: number;
 }

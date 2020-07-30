@@ -207,7 +207,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
             evaluation: {...state.evaluation, [name]: value}
         }));
 
-        this.queueSave(500);
+        this.queueSave(1500);
     }
 
     private createOrUpdate = () => {

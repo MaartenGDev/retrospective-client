@@ -57,7 +57,8 @@ const Authenticate: FC<IProps> = ({user, login, match}) => {
     }
 
     if(Config.USE_EXTERNAL_AUTH){
-        return <Redirect to={Config.LOGIN_URL} />
+        window.location.href = Config.LOGIN_URL;
+        return null;
     }
 
     return (

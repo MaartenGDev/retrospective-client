@@ -19,6 +19,7 @@ import {parseId} from "../../helpers/Uri";
 import {EntityIdentifier} from "../../types";
 import {LoadingBar} from "../presentation/common/LoadingBar";
 import {QueueHelper} from "../../helpers/QueueHelper";
+import SecureIcon from "../presentation/common/icons/SecureIcon";
 
 const Content = styled.div`
   padding: 20px;
@@ -247,7 +248,8 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
 
                     <form onSubmit={e => e.preventDefault()}>
                         <p style={{marginTop: 0}}>TIME USAGE</p>
-                        <InputLabel>Balance</InputLabel>
+                        <InputLabel>Balance <SecureIcon color='#808080'
+                                                        title='Only used to calculate average in the team overview, visible as raw numbers for scrum-masters and managers.'/></InputLabel>
                         <InputDescription>Adjust the slider to indicate how your sprint was spent such as how much time
                             was available
                             to
@@ -257,8 +259,12 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
                                         disabled={readonly}
                         />
 
-                        <p style={{marginBottom: 0}}><b>Sprint rating</b> (<span
-                            style={{fontStyle: 'italic'}}>{evaluation.sprintRating / 10}/10</span>)</p>
+                        <InputLabel style={{marginBottom: 0}}><b>Sprint rating</b> <SecureIcon color='#808080'
+                                                                                               title='Only used to calculate average in the team overview, visible as raw numbers for scrum-masters and managers.'/>
+                            <span style={{fontWeight: 'normal'}}>
+                                (<span style={{fontStyle: 'italic'}}>{evaluation.sprintRating / 10}/10</span>)
+                            </span>
+                        </InputLabel>
                         <InputDescription>What grade would you give this sprint? Base it on the status of your set goals
                             and the
                             achieved
@@ -269,7 +275,8 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
                                      disabled={readonly}
                         />
 
-                        <InputLabel>Rating explanation</InputLabel>
+                        <InputLabel>Rating explanation <SecureIcon color='#808080'
+                                                                   title='Not visible for your team, only to scrum-masters and managers.'/></InputLabel>
                         <InputDescription>Please describe why you have given this grade (English or
                             Dutch).</InputDescription>
                         <TextArea placeholder='Working on example task was great, but I had quite a few meetings.'

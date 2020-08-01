@@ -282,17 +282,19 @@ class ManageRetrospective extends Component<IProps, IState> {
                 }
             }
         ));
+
+        this.queueSave();
     }
 
     private updateRetrospective = (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
         this.updateState('retrospective', event);
+
+        this.queueSave(500);
     }
 
     private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, mutator: (value: any) => any = value => value) => {
         const {name, value} = event.target
         this.setState({[key]: {...this.state[key] as any, [name]: mutator(value)}} as IState);
-
-        this.queueSave(500);
     }
 
     render() {

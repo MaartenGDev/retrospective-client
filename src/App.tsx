@@ -18,7 +18,7 @@ import Teams from "./components/containers/Teams";
 import ManageTeam from "./components/containers/ManageTeam";
 import Team from "./components/containers/Team";
 import TeamInvite from "./components/containers/TeamInvite";
-import TrendInsights from "./components/containers/TeamInsights";
+import TrendInsights from "./components/containers/TrendInsights";
 import TeamMemberInsights from "./components/containers/TeamMemberInsights";
 import DefaultInsights from "./components/containers/DefaultInsights";
 import ManageAccount from "./components/containers/ManageAccount";

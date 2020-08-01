@@ -77,9 +77,9 @@ export class CategorySlider extends Component<IProps, IState> {
     }
 
     componentWillUnmount() {
-        document.removeEventListener('Event', this.handleDragStart);
-        document.removeEventListener('Event', this.updateCategoryWidths);
-        document.removeEventListener('Event', this.handleDragFinished);
+        document.removeEventListener('mousedown', this.handleDragStart);
+        document.removeEventListener('mousemove', this.updateCategoryWidths);
+        document.removeEventListener('mouseup', this.handleDragFinished);
     }
 
     componentDidUpdate(prevProps: Readonly<IProps>, prevState: Readonly<IState>) {

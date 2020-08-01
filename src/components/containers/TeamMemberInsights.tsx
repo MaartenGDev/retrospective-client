@@ -7,7 +7,7 @@ import {RouteComponentProps, withRouter} from 'react-router-dom';
 import InsightTabs from "./InsightTabs";
 import {Container} from "../styles/Common";
 import {TableLink} from "../styles/Text";
-import ChangeLabel from "../presentation/common/data/ChangeLabel";
+import ChangeLabel from "../presentation/common/charts/ChangeLabel";
 import {parseId} from "../../helpers/Uri";
 
 const TableSection = styled.main`
@@ -41,7 +41,7 @@ const TeamMemberInsights: FC<PropsFromRedux> = ({loadForTeamMembers, match, team
     const teamId = parseId(match.params.teamId);
     useEffect(() => {
         loadForTeamMembers(teamId);
-    }, [])
+    }, [loadForTeamMembers, teamId])
 
     const timeUsageCategories = teamMemberInsights.length > 0 && teamMemberInsights.some(tmi => tmi.timeUsage.length > 0)
         ? teamMemberInsights.find(tmi => tmi.timeUsage.length > 0)!.timeUsage.map(tu => tu.category)

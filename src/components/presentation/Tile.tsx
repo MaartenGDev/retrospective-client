@@ -11,6 +11,7 @@ interface IProps {
 const Card = styled.div`
   border-radius: 3px;
   border: 1px solid #C6C6C6;
+  background-color: white;
 `
 
 const CardBody = styled.div`

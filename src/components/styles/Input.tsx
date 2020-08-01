@@ -34,6 +34,8 @@ export const InputLabel = styled.p.attrs((props: {isFirstLabel: boolean}) => ({
   font-weight: bold;
   margin-top: ${props => props.isFirstLabel ? '0' : '10px'};
   margin-bottom: 0;
+  display: flex;
+  align-items: center;
 `
 
 export const InputDescription = styled.p`

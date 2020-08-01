@@ -2,14 +2,14 @@ import React, {ChangeEvent, Component} from 'react';
 import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
-import {RouteComponentProps, withRouter} from 'react-router-dom';
+import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {Input, InputDescription, InputLabel, Select, TextInput} from "../styles/Input";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {TextButton} from "../styles/Buttons";
+import {RoundedButton, TextButton} from "../styles/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
-import {Container, Row, Spacer, Title} from "../styles/Common";
+import {ButtonRow, Container, Row, Spacer, Title} from "../styles/Common";
 import {IAction} from "../../models/IAction";
 import {parseId} from "../../helpers/Uri";
 import {QueueHelper} from "../../helpers/QueueHelper";
@@ -49,6 +49,8 @@ interface IState {
     nextTopicId: number
     nextActionId: number,
     isLoading: boolean,
+    shouldRedirectToOverview: boolean,
+    isNewRetrospective: boolean
 }
 
 class ManageRetrospective extends Component<IProps, IState> {
@@ -85,16 +87,18 @@ class ManageRetrospective extends Component<IProps, IState> {
         action: this._defaultAction,
         topicBeingEdited: undefined,
         actionBeingEdited: undefined,
-        selectedSprintDuration: 2,
+        selectedSprintDuration: 3,
         nextTopicId: -1,
         nextActionId: -1,
         isLoading: false,
+        shouldRedirectToOverview: false,
+        isNewRetrospective: false,
     }
 
     componentDidMount() {
         const {selectedSprintDuration, retrospective} = this.state
 
-        this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration);
+        this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration, false);
         this.decorateRetrospective();
     }
 
@@ -105,6 +109,13 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     private queueSave = (bounceInMs: number = 500) => {
+        const {isNewRetrospective} = this.state
+
+        // We are not able to retrieve the id of the new retrospective so we cannot update it.
+        if(isNewRetrospective){
+            return;
+        }
+
         QueueHelper.queue(bounceInMs, 500,
             () => {
                 this.createOrUpdate();
@@ -129,7 +140,8 @@ class ManageRetrospective extends Component<IProps, IState> {
             : retrospective.teamId;
 
         this.setState({
-            retrospective: {...nextRetrospective, teamId: nextTeamId}
+            retrospective: {...nextRetrospective, teamId: nextTeamId},
+            isNewRetrospective: !nextRetrospective.id
         });
     }
 
@@ -201,7 +213,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
 
-    private handleSprintDurationChange = (startDate: string, durationInWeeks: number) => {
+    private handleSprintDurationChange = (startDate: string, durationInWeeks: number, shouldTriggerSave = true) => {
         this.setState(state => ({
             selectedSprintDuration: durationInWeeks,
             retrospective: {
@@ -210,7 +222,9 @@ class ManageRetrospective extends Component<IProps, IState> {
             }
         }))
 
-        this.queueSave();
+        if(shouldTriggerSave){
+            this.queueSave();
+        }
     }
 
 
@@ -250,7 +264,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     private createOrUpdate = () => {
-        const {retrospective} = this.state
+        const {retrospective, isNewRetrospective} = this.state
         const {createOrUpdate} = this.props
 
         createOrUpdate({
@@ -258,6 +272,12 @@ class ManageRetrospective extends Component<IProps, IState> {
             topics: this.removeTemporaryIds(retrospective.topics),
             actions: this.removeTemporaryIds(retrospective.actions),
         });
+
+        if(isNewRetrospective){
+            this.setState({
+                shouldRedirectToOverview: true
+            })
+        }
     }
 
     private removeTemporaryIds(items: any[]): any {
@@ -298,7 +318,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     render() {
-        const {retrospective, topic, action, topicBeingEdited, actionBeingEdited, selectedSprintDuration, isLoading} = this.state
+        const {retrospective, topic, action, topicBeingEdited, actionBeingEdited, selectedSprintDuration, isLoading, isNewRetrospective, shouldRedirectToOverview} = this.state
         const {teams, user} = this.props
         const teamsWhereUserIsAdmin = teams.filter(t => t.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective))
 
@@ -306,7 +326,9 @@ class ManageRetrospective extends Component<IProps, IState> {
         const canAddTopic = topic.description.length > 0;
         const canAddAction = action.description.length > 0 && action.responsible.length > 0;
 
-        const isExistingRetrospective = !!retrospective.id;
+        if(shouldRedirectToOverview){
+            return <Redirect to='/retrospectives' />
+        }
 
         return (
             <Container>
@@ -328,7 +350,7 @@ class ManageRetrospective extends Component<IProps, IState> {
                     <InputLabel>TEAM</InputLabel>
                     <InputDescription>The chosen team will be able to provide feedback and view the
                         retrospective.</InputDescription>
-                    <Select disabled={isExistingRetrospective} value={retrospective.teamId} name='teamId'
+                    <Select disabled={!isNewRetrospective} value={retrospective.teamId} name='teamId'
                             onChange={this.updateRetrospective}>
                         {teamsWhereUserIsAdmin.map(t => <option value={t.id} key={t.id}>{t.name}</option>)}
                     </Select>
@@ -453,6 +475,10 @@ class ManageRetrospective extends Component<IProps, IState> {
                         </tr>
                         </tbody>
                     </table>
+
+                    {isNewRetrospective && <ButtonRow>
+                        <RoundedButton onClick={this.createOrUpdate}>Create</RoundedButton>
+                    </ButtonRow>}
                 </Content>
             </Container>
         );

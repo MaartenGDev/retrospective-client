@@ -5,6 +5,7 @@ import {RootState} from "../../store/rootReducer";
 import {RoundedButtonLink} from "../styles/Buttons";
 import {Container, Row, Title} from "../styles/Common";
 import {PrimaryLink} from "../styles/Navigation";
+import {DateHelper} from "../../helpers/DateHelper";
 
 const Content = styled.div`
   background-color: #ffffff;
@@ -40,7 +41,8 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
                         <th>ACTION</th>
                     </tr>
                     {retrospectives.map(retro => {
-                        const isCompleted = new Date(retro.endDate).getTime() < new Date().getTime();
+                        const isCompleted = DateHelper.isAfterDate(new Date(retro.endDate), new Date());
+
                         const action = isCompleted
                             ? <PrimaryLink to={'/retrospectives/' + retro.id + '/provided-feedback'}>View feedback</PrimaryLink>
                             : <PrimaryLink to={'/retrospectives/' + retro.id + '/feedback'}>{retro.evaluation ? 'Edit' : 'Give'} feedback</PrimaryLink>;

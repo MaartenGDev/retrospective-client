@@ -101,7 +101,7 @@ const TrendInsights: FC<PropsFromRedux> = ({insight, loadForFilter, match}) => {
                 </ChartSection>
 
                 {evaluations.length > 0 && <EvaluationSection>
-                    <Spacer />
+                    <Spacer/>
                     <SpacerTitle>Evaluations</SpacerTitle>
 
                     <EvaluationsTable>
@@ -114,7 +114,11 @@ const TrendInsights: FC<PropsFromRedux> = ({insight, loadForFilter, match}) => {
                         </thead>
                         <tbody>
                         {evaluations.map(evaluation => {
-                            return <tr key={evaluation.id}><td>{evaluation.retrospective?.name}</td><td>{evaluation.sprintRating / 10}</td><td>{evaluation.sprintRatingExplanation}</td></tr>
+                            return <tr key={evaluation.id}>
+                                <td>{evaluation.retrospective?.name}</td>
+                                <td>{evaluation.sprintRating / 10}</td>
+                                <td>{evaluation.sprintRatingExplanation}</td>
+                            </tr>
                         })}
                         </tbody>
                     </EvaluationsTable>

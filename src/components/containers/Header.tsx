@@ -48,8 +48,8 @@ const Header: FC<Props> = ({user}) => {
                 <Logo />
                 <div className='flex'>
                     <NavLink to="/retrospectives">Retrospectives</NavLink>
-                    <NavLink to="/teams">Teams</NavLink>
                     <NavLink to="/insights">Insights</NavLink>
+                    <NavLink to="/teams">Teams</NavLink>
                     {!user && <NavLink to="/account/login">Login</NavLink>}
                     {user && <NavItem>{user.fullName}</NavItem>}
                 </div>

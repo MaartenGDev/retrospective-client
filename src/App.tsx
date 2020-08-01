@@ -21,7 +21,7 @@ import TeamInvite from "./components/containers/TeamInvite";
 import TrendInsights from "./components/containers/TrendInsights";
 import TeamMemberInsights from "./components/containers/TeamMemberInsights";
 import DefaultInsights from "./components/containers/DefaultInsights";
-import ManageAccount from "./components/containers/ManageAccount";
+import Authenticate from "./components/containers/Authenticate";
 
 
 function App() {
@@ -34,7 +34,7 @@ function App() {
                             <TeamInvite/>
                         </Route>
                         <Route path="/account/login">
-                            <ManageAccount/>
+                            <Authenticate/>
                         </Route>
 
                         <Route path="*">

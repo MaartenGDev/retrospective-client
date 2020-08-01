@@ -9,6 +9,7 @@ import {TextInput} from "../styles/Input";
 import {ButtonRow, SectionTitle} from "../styles/Common";
 import {RoundedButton} from "../styles/Buttons";
 import {ICredentials} from "../../models/dto/ICredentials";
+import Config from "../../Config";
 
 const LoginCard = styled.div`
     margin: 20%;
@@ -47,12 +48,16 @@ const mapDispatch = {
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ code: string }>;
 
-const ManageAccount: FC<IProps> = ({user, login, match}) => {
+const Authenticate: FC<IProps> = ({user, login, match}) => {
     const [credentials, setCredentials] = useState<ICredentials>({email: '', password: ''})
     const [isLogin, setIsLogin] = useState(true);
 
     if(user){
         return <Redirect to='/' />
+    }
+
+    if(Config.USE_EXTERNAL_AUTH){
+        return <Redirect to={Config.LOGIN_URL} />
     }
 
     return (
@@ -80,4 +85,4 @@ const ManageAccount: FC<IProps> = ({user, login, match}) => {
     );
 }
 
-export default withRouter(connector(ManageAccount));
+export default withRouter(connector(Authenticate));

@@ -9,7 +9,6 @@ export enum RetrospectiveActionTypes {
     LOADED = '[RETROSPECTIVES] LOADED',
     ADDED = '[RETROSPECTIVES] ADDED',
     UPDATED = '[RETROSPECTIVES] UPDATED',
-    ADDED_EVALUATION = '[RETROSPECTIVES] ADDED EVALUATION',
     UPDATED_EVALUATION = '[RETROSPECTIVES] UPDATED EVALUATION',
     LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
 }
@@ -35,13 +34,6 @@ export class Updated implements Action {
 
     constructor(public retrospective: IUserRetrospective) {
     }
-}
-
-
-export class AddedEvaluation implements Action {
-    readonly type = RetrospectiveActionTypes.ADDED_EVALUATION;
-
-    constructor(public evaluation: IEvaluation) {}
 }
 
 export class UpdatedEvaluation implements Action {
@@ -75,16 +67,9 @@ export const CreateOrUpdate = (retrospective: IUserRetrospective): AppThunk => a
 }
 
 export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => async dispatch => {
-    const isExistingEvaluation = !!evaluation.id;
+    const persistedEvaluation = await service.updateEvaluation(evaluation);
 
-    const persistedEvaluation = isExistingEvaluation
-        ? await service.updateEvaluation(evaluation)
-        : await service.addEvaluation(evaluation);
-
-    dispatch(isExistingEvaluation
-        ? new UpdatedEvaluation(persistedEvaluation)
-        : new AddedEvaluation(persistedEvaluation)
-    )
+    dispatch(new UpdatedEvaluation(persistedEvaluation))
 }
 
 export const LoadReport = (retrospectiveId: number|string): AppThunk => async dispatch => {
@@ -96,7 +81,6 @@ export type RetrospectiveTypes
     = Loaded
     | Added
     | Updated
-    | AddedEvaluation
     | UpdatedEvaluation
     | LoadedReport
     ;

@@ -18,12 +18,8 @@ export class RetrospectiveService {
         return http.patch(`retrospectives/${retrospective.id}`, retrospective);
     }
 
-    addEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
-        return http.post(`evaluations`, evaluation);
-    }
-
     updateEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
-        return http.patch(`evaluations/${evaluation.id!}`, evaluation);
+        return http.patch(`retrospectives/${evaluation.retrospectiveId}/evaluation`, evaluation);
     }
 
     getReport(retrospectiveId: number|string): Promise<IRetrospectiveReport> {

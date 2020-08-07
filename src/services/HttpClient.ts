@@ -54,19 +54,15 @@ export class HttpClient {
         const isUnauthenticatedResponse = response.status === 0 || response.status === 401;
         const isErrorResponse = response.status < 200 || response.status >= 300;
 
-        if(isErrorResponse){
-            return Promise.reject(response.statusText);
-        }
-
-        if(!isUnauthenticatedResponse){
+        if(!isErrorResponse){
             return response.json();
         }
 
-        if(!hasLaunchedFromAnonymousPath){
+        if(!hasLaunchedFromAnonymousPath && isUnauthenticatedResponse){
             window.location.href = Config.LOGIN_URL;
         }
 
-        return Promise.reject('Unauthorized');
+        return Promise.reject(response.statusText);
     }
 
     private getAbsoluteUrl(url: string): string{

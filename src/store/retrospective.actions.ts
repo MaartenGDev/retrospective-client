@@ -6,15 +6,20 @@ import {IEvaluation} from "../models/IEvaluation";
 import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 
 export enum RetrospectiveActionTypes {
+    LOADING = '[RETROSPECTIVES] LOADING',
     LOADED = '[RETROSPECTIVES] LOADED',
     ADDED = '[RETROSPECTIVES] ADDED',
     UPDATED = '[RETROSPECTIVES] UPDATED',
     UPDATED_EVALUATION = '[RETROSPECTIVES] UPDATED EVALUATION',
+    LOADING_REPORT = '[RETROSPECTIVES] LOADING REPORT',
     LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
 }
 
 const service = new RetrospectiveService();
 
+export class Loading implements Action {
+    public readonly type = RetrospectiveActionTypes.LOADING;
+}
 
 export class Loaded implements Action {
     public readonly type = RetrospectiveActionTypes.LOADED;
@@ -42,6 +47,10 @@ export class UpdatedEvaluation implements Action {
     constructor(public evaluation: IEvaluation) {}
 }
 
+export class LoadingReport implements Action {
+    public readonly type = RetrospectiveActionTypes.LOADING_REPORT;
+}
+
 export class LoadedReport implements Action {
     public readonly type = RetrospectiveActionTypes.LOADED_REPORT;
 
@@ -50,6 +59,7 @@ export class LoadedReport implements Action {
 
 
 export const LoadAll = (): AppThunk => async dispatch => {
+    dispatch(new Loading());
     const retrospectives = await service.getAll()
     dispatch(new Loaded(retrospectives))
 }
@@ -74,13 +84,16 @@ export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => a
 
 export const LoadReport = (retrospectiveId: number|string): AppThunk => async dispatch => {
     const report = await service.getReport(retrospectiveId)
+
     dispatch(new LoadedReport(report))
 }
 
 export type RetrospectiveTypes
-    = Loaded
+    = Loading
+    | Loaded
     | Added
     | Updated
     | UpdatedEvaluation
+    | LoadingReport
     | LoadedReport
     ;

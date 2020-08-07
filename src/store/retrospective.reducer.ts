@@ -3,12 +3,16 @@ import {IUserRetrospective} from "../models/IUserRetrospective";
 import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 
 export interface IRetrospectivesState {
+    isLoadingRetrospectives: boolean,
     retrospectives: IUserRetrospective[],
+    isLoadingReport: boolean,
     retrospectiveReport?: IRetrospectiveReport
 }
 
 const initialState: IRetrospectivesState = {
+    isLoadingRetrospectives: false,
     retrospectives: [],
+    isLoadingReport: false,
     retrospectiveReport: undefined
 }
 
@@ -18,10 +22,16 @@ const sort = (retrospectives: IUserRetrospective[]) => [...retrospectives]
 
 export function retrospectiveReducer(state: IRetrospectivesState = initialState, action: RetrospectiveTypes) {
     switch (action.type) {
+        case RetrospectiveActionTypes.LOADING:
+            return {
+                ...state,
+                isLoadingRetrospectives: true
+            }
         case RetrospectiveActionTypes.LOADED:
             return {
                 ...state,
-                retrospectives: action.retrospectives
+                retrospectives: action.retrospectives,
+                isLoadingRetrospectives: false
             }
         case RetrospectiveActionTypes.ADDED:
             return {
@@ -42,10 +52,16 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 ...state,
                 retrospectives: sort([...otherRetrospectives, {...retrospectiveToUpdate, evaluation: action.evaluation}])
             }
+        case RetrospectiveActionTypes.LOADING_REPORT:
+            return {
+                ...state,
+                isLoadingReport: true
+            }
         case RetrospectiveActionTypes.LOADED_REPORT:
             return {
                 ...state,
-                retrospectiveReport: action.retrospectiveReport
+                isLoadingReport: false,
+                retrospectiveReport: action.retrospectiveReport,
             }
         default:
             return state

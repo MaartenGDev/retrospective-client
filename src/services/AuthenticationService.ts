@@ -13,4 +13,8 @@ export class AuthenticationService {
     login(login: ICredentials): Promise<ILoginResponse> {
         return http.post('account/login', login);
     }
+
+    logout(): Promise<void> {
+        return http.post('account/logout', {});
+    }
 }

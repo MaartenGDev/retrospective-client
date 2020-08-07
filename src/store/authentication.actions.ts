@@ -7,10 +7,14 @@ import Config from "../Config";
 
 export enum AuthenticationActionTypes {
     LOADED = '[AUTHENTICATION] LOADED',
-    LOGIN = '[AUTHENTICATION] LOGIN',
+    LOGGED_OUT = '[AUTHENTICATION] LOGGED_OUT',
 }
 
 const service = new AuthenticationService();
+
+export class LoggedOut implements Action {
+    public readonly type = AuthenticationActionTypes.LOGGED_OUT;
+}
 
 export class Loaded implements Action {
     public readonly type = AuthenticationActionTypes.LOADED;
@@ -35,6 +39,13 @@ export const Login = (credentials: ICredentials): AppThunk => async dispatch => 
     console.warn('Login failed!')
 }
 
+export const Logout = (): AppThunk => async dispatch => {
+    await service.logout()
+
+    dispatch(new LoggedOut())
+}
+
 export type AuthenticationTypes
     = Loaded
+    | LoggedOut
     ;

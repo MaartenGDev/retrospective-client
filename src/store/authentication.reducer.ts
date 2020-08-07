@@ -16,6 +16,11 @@ export function authenticationReducer(state: IAuthenticationState = initialState
                 ...state,
                 user: action.user
             }
+        case AuthenticationActionTypes.LOGGED_OUT:
+            return {
+                ...state,
+                user: undefined
+            }
         default:
             return state
     }

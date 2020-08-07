@@ -52,6 +52,11 @@ export class HttpClient {
         const hasLaunchedFromAnonymousPath = this.anonymousLaunchUrlParts.some(path => launchUrlPath.startsWith(path))
 
         const isUnauthenticatedResponse = response.status === 0 || response.status === 401;
+        const isErrorResponse = response.status < 200 || response.status >= 300;
+
+        if(isErrorResponse){
+            return Promise.reject(response.statusText);
+        }
 
         if(!isUnauthenticatedResponse){
             return response.json();

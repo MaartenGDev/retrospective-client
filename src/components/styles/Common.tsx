@@ -32,3 +32,9 @@ export const ButtonRow = styled.div`
   justify-content: flex-start;
   margin-top: 20px;
 `
+
+export const Content = styled.div`
+  padding: 20px;
+  position: relative;
+  background-color: #ffffff;
+`

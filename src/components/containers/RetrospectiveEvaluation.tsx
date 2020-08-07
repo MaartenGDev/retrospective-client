@@ -14,18 +14,13 @@ import {ITimeUsage} from "../../models/ITimeUsage";
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {ITimeUsageCategory} from "../../models/ITimeUsageCategory";
 import {Icon} from "../styles/Icons";
-import {Container, Spacer} from "../styles/Common";
+import {Container, Content, Spacer} from "../styles/Common";
 import {parseId} from "../../helpers/Uri";
 import {EntityIdentifier} from "../../types";
 import {LoadingBar} from "../presentation/common/LoadingBar";
 import {QueueHelper} from "../../helpers/QueueHelper";
 import SecureIcon from "../presentation/common/icons/SecureIcon";
-
-const Content = styled.div`
-  padding: 20px;
-  position: relative;
-  background-color: #ffffff;
-`
+import {NotFound} from "../presentation/NotFound";
 
 const InputGrid = styled.div`
   display: flex;
@@ -55,6 +50,7 @@ const InputRow = styled.div`
 
 const mapState = (state: RootState) => ({
     retrospectives: state.retrospectiveReducer.retrospectives,
+    isLoadingRetrospectives: state.retrospectiveReducer.isLoadingRetrospectives,
     commentCategories: state.commentCategoryReducer.commentCategories,
     timeUsageCategories: state.timeUsageCategoryReducer.timeUsageCategories,
 });
@@ -228,7 +224,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
 
     render() {
         const {retrospective, evaluation, commentsById, isLoading} = this.state
-        const {timeUsageCategories, commentCategories, readonly} = this.props
+        const {isLoadingRetrospectives, timeUsageCategories, commentCategories, readonly} = this.props
 
         const sliderCategories = timeUsageCategories.map((c: ITimeUsageCategory) => {
             const existingTimeUsage = evaluation.timeUsage.find(t => t.categoryId === c.id);
@@ -239,6 +235,10 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
             acc[cur.categoryId] = [...acc[cur.categoryId] || [], cur];
             return acc;
         }, {})
+
+        if(!isLoadingRetrospectives && !retrospective.id){
+            return <NotFound message='The retrospective could not be found, are you invited to the team that has invited you for feedback?' />
+        }
 
         return (
             <Container>

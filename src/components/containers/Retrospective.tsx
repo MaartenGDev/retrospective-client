@@ -12,6 +12,7 @@ import {IUser} from "../../models/IUser";
 import {Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
 import {RoundedButtonLink} from "../styles/Buttons";
 import {parseId} from "../../helpers/Uri";
+import {NotFound} from "../presentation/NotFound";
 
 const Content = styled.div`
   padding: 20px;
@@ -41,6 +42,7 @@ align-items: center;
 const mapState = (state: RootState) => ({
     commentCategories: state.commentCategoryReducer.commentCategories,
     retrospectiveReport: state.retrospectiveReducer.retrospectiveReport,
+    isLoadingReport: state.retrospectiveReducer.isLoadingReport,
     teams: state.teamReducer.teams,
     user: state.authenticationReducer.user,
 });
@@ -55,13 +57,17 @@ const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>
 
 
-const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport}) => {
+const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport}) => {
     const retrospectiveId = parseId(match.params.id);
 
 
     useEffect(() => {
         loadReport(retrospectiveId)
     }, [retrospectiveId, loadReport])
+
+    if(!isLoadingReport && !retrospectiveReport){
+        return <NotFound message='The retrospective could not be found, are you invited to the team?' />
+    }
 
     if (!retrospectiveReport || commentCategories.length === 0) {
         return <main>Loading</main>

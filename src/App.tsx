@@ -22,6 +22,8 @@ import TrendInsights from "./components/containers/TrendInsights";
 import TeamMemberInsights from "./components/containers/TeamMemberInsights";
 import DefaultInsights from "./components/containers/DefaultInsights";
 import Authenticate from "./components/containers/Authenticate";
+import Account from "./components/containers/Account";
+import Logout from "./components/containers/Logout";
 
 
 function App() {
@@ -41,6 +43,12 @@ function App() {
                             <Header/>
 
                             <Switch>
+                                <Route path="/account/logout">
+                                    <Logout/>
+                                </Route>
+                                <Route path="/account">
+                                    <Account/>
+                                </Route>
                                 <Route path="/teams/create">
                                     <ManageTeam/>
                                 </Route>

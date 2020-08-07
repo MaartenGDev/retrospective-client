@@ -31,6 +31,32 @@ const NavItem = styled.span`
   font-weight: bold;
   text-decoration: none;
   display: inline-block;
+  position: relative;
+  
+  &:hover :first-child{
+    display: inline-block;
+  } 
+`
+
+const DropdownMenu = styled.ul`
+  display: none;
+  position: absolute;
+  padding-left: 0;
+  margin-left: 20px;
+  background: white;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+  left: 0;
+  top: 30px;
+  z-index: 1;
+`
+
+const DropdownItem = styled.li`
+  padding: 10px 20px;
+`
+
+const DropdownLink = styled(Link)`
+  text-decoration: none;
+  color: #3B4558;
 `
 
 const mapState = (state: RootState) => ({
@@ -51,7 +77,15 @@ const Header: FC<Props> = ({user}) => {
                     <NavLink to="/insights">Insights</NavLink>
                     <NavLink to="/teams">Teams</NavLink>
                     {!user && <NavLink to="/account/login">Login</NavLink>}
-                    {user && <NavItem>{user.fullName}</NavItem>}
+                    {user && (
+                        <NavItem>{user.fullName}
+                            <DropdownMenu>
+                                <DropdownItem><DropdownLink to='/account'>My Account</DropdownLink></DropdownItem>
+                                <DropdownItem><DropdownLink to='/account/logout'>Logout</DropdownLink></DropdownItem>
+                            </DropdownMenu>
+
+                        </NavItem>
+                    )}
                 </div>
             </NavSection>
         </Wrapper>

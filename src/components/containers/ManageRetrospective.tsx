@@ -96,9 +96,6 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     componentDidMount() {
-        const {selectedSprintDuration, retrospective} = this.state
-
-        this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration, false);
         this.decorateRetrospective();
     }
 
@@ -126,7 +123,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     private decorateRetrospective() {
-        const {retrospective} = this.state
+        const {retrospective, selectedSprintDuration} = this.state
         const {teams, match, retrospectives, user} = this.props;
 
         const nextRetrospective = match.params.id && retrospectives.length
@@ -143,6 +140,8 @@ class ManageRetrospective extends Component<IProps, IState> {
             retrospective: {...nextRetrospective, teamId: nextTeamId},
             isNewRetrospective: !nextRetrospective.id
         });
+
+        this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration, false);
     }
 
     private removeTopic = (topic: ITopic, index: number) => {

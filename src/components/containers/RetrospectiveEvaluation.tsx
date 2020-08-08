@@ -114,7 +114,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
 
     private loadEvaluation() {
         const {retrospective: initialRetrospective, evaluation: initialEvaluation} = this.state
-        const {match, retrospectives, commentCategories} = this.props
+        const {match, retrospectives, commentCategories, timeUsageCategories} = this.props
         const retrospectiveId = parseId(match.params.id);
 
         const retrospective: IUserRetrospective = retrospectives.find(r => r.id === retrospectiveId) || initialRetrospective;
@@ -123,15 +123,15 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
         let evaluation = hasProvidedEvaluation ? retrospective!.evaluation! : initialEvaluation;
         evaluation.retrospectiveId = retrospectiveId;
 
-        const commentsState = this.getCommentsState(evaluation, commentCategories);
+        const evaluationState = this.buildEvaluation(evaluation, commentCategories, timeUsageCategories);
 
         this.setState({
-            ...commentsState,
+            ...evaluationState,
             retrospective
         })
     }
 
-    private getCommentsState(evaluation: IEvaluation, commentCategories: ICommentCategory[]) {
+    private buildEvaluation(evaluation: IEvaluation, commentCategories: ICommentCategory[], timeUsageCategories: ITimeUsageCategory[]) {
         const commentCountPerCategory = 3;
 
         const commentsById = commentCategories.reduce((acc: { [key: number]: IComment }, category) => {
@@ -149,23 +149,34 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
             return acc;
         }, {});
 
+        const timeUsage = this.getSliderCategoriesAsTimeUsage(evaluation, this.getAsSliderCategories(evaluation, timeUsageCategories));
+
         return {
             commentsById,
-            evaluation: {...evaluation, comments: Object.values(commentsById)}
+            evaluation: {
+                ...evaluation,
+                comments: Object.values(commentsById),
+                timeUsage
+            }
         };
     }
 
-    private handleTimeUsageChange = (categories: ICategory[]) => {
-        const {evaluation} = this.state;
-        const timeUsage: ITimeUsage[] = categories.map(category => {
+    private getSliderCategoriesAsTimeUsage(evaluation: IEvaluation, categories: ICategory[]): ITimeUsage[] {
+        return categories.map(category => {
             const existingUsage = evaluation.timeUsage.find(t => t.categoryId === category.id);
 
             if (existingUsage) {
                 return {...existingUsage, percentage: category.value}
             }
 
-            return {categoryId: category.id, percentage: category.value};
-        })
+            return {categoryId: category.id, percentage: category.value} as ITimeUsage;
+        });
+    }
+
+    private handleTimeUsageChange = (categories: ICategory[]) => {
+        const {evaluation} = this.state;
+        const timeUsage = this.getSliderCategoriesAsTimeUsage(evaluation, categories);
+
         this.setState({
             evaluation: {...evaluation, timeUsage}
         })
@@ -222,25 +233,30 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
         createOrUpdate({...evaluation, comments: transformedComments})
     }
 
+    private getAsSliderCategories(evaluation: IEvaluation, categories: ITimeUsageCategory[]) {
+        return categories.map((c: ITimeUsageCategory) => {
+            const existingTimeUsage = evaluation.timeUsage.find(t => t.categoryId === c.id);
+            return {...c, value: existingTimeUsage ? existingTimeUsage.percentage : c.initialPercentage};
+        })
+    }
+
     render() {
         const {retrospective, evaluation, commentsById, isLoading} = this.state
         const {isLoadingRetrospectives, timeUsageCategories, commentCategories, readonly} = this.props
 
-        const sliderCategories = timeUsageCategories.map((c: ITimeUsageCategory) => {
-            const existingTimeUsage = evaluation.timeUsage.find(t => t.categoryId === c.id);
-            return {...c, value: existingTimeUsage ? existingTimeUsage.percentage : c.initialPercentage};
-        })
+        const sliderCategories = this.getAsSliderCategories(evaluation, timeUsageCategories);
 
         const commentsByCategory = Object.values(commentsById).reduce((acc: { [key: string]: IComment[] }, cur) => {
             acc[cur.categoryId] = [...acc[cur.categoryId] || [], cur];
             return acc;
         }, {})
 
-        if(!isLoadingRetrospectives && !retrospective.id){
-            return <NotFound message='The retrospective could not be found, are you invited to the team that has invited you for feedback?' />
+        if (!isLoadingRetrospectives && !retrospective.id) {
+            return <NotFound
+                message='The retrospective could not be found, are you invited to the team that has invited you for feedback?'/>
         }
 
-        if(isLoadingRetrospectives){
+        if (isLoadingRetrospectives) {
             return null;
         }
 

@@ -4,7 +4,7 @@ import {IAction} from "./IAction";
 import {ISuggestedTopic} from "./ISuggestedTopic";
 
 export interface IRetrospectiveReport {
-    retrospective?: IUserRetrospective;
+    retrospective: IUserRetrospective;
     comments: IComment[];
     suggestedTopics: ISuggestedTopic[];
     suggestedActions: IAction[];

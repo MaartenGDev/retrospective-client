@@ -240,6 +240,10 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
             return <NotFound message='The retrospective could not be found, are you invited to the team that has invited you for feedback?' />
         }
 
+        if(isLoadingRetrospectives){
+            return null;
+        }
+
         return (
             <Container>
                 <h1>Retrospective: {retrospective.name}</h1>

@@ -13,7 +13,6 @@ import {Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
 import {RoundedButtonLink} from "../styles/Buttons";
 import {parseId} from "../../helpers/Uri";
 import {NotFound} from "../presentation/NotFound";
-import {IRetrospectiveReport} from "../../models/IRetrospectiveReport";
 
 const Content = styled.div`
   padding: 20px;
@@ -57,14 +56,7 @@ type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: {
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>
 
-const defaultReport: IRetrospectiveReport = {
-    comments: [],
-    retrospective: undefined,
-    suggestedTopics: [],
-    suggestedActions: [],
-}
-
-const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport = defaultReport, loadReport, isLoadingReport}) => {
+const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport}) => {
     const retrospectiveId = parseId(match.params.id);
 
 
@@ -72,11 +64,11 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
         loadReport(retrospectiveId)
     }, [retrospectiveId, loadReport])
 
-    if(!isLoadingReport && !retrospectiveReport.retrospective){
+    if(!isLoadingReport && !retrospectiveReport){
         return <NotFound message='The retrospective could not be found, are you invited to the team?' />
     }
 
-    if (!retrospectiveReport || commentCategories.length === 0) {
+    if (isLoadingReport || !retrospectiveReport || commentCategories.length === 0) {
         return null;
     }
 
@@ -108,14 +100,14 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
         return acc;
     }, {});
 
-    const canEditRetrospective = teams.some(team => team.id === retrospective?.team?.id && team.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
+    const canEditRetrospective = teams.some(team => team.id === retrospective.team?.id && team.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
 
     return (
         <Container>
             <Row>
-                <Title>Retrospective: {retrospective?.name}</Title>
+                <Title>Retrospective: {retrospective.name}</Title>
                 {canEditRetrospective &&
-                <RoundedButtonLink to={`/retrospectives/${retrospective?.id}/edit`}>Edit</RoundedButtonLink>}
+                <RoundedButtonLink to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
             </Row>
             <Content>
                 <SectionTitle>AGENDA</SectionTitle>
@@ -126,7 +118,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
                         <th>Duration</th>
                         <th>Type</th>
                     </tr>
-                    {retrospective?.topics.map(topic => {
+                    {retrospective.topics.map(topic => {
                         return <tr key={topic.id}>
                             <td>{topic.description}</td>
                             <td>{topic.durationInMinutes} minutes</td>
@@ -144,7 +136,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
 
                 <Spacer/>
 
-                {!!retrospective && retrospective.actions.length > 0 && <>
+                {retrospective.actions.length > 0 && <>
                     <SectionTitle>ACTIONS PREVIOUS SPRINT</SectionTitle>
                     <table>
                         <tbody>
@@ -153,7 +145,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
                             <th>Description</th>
                             <th>Responsible</th>
                         </tr>
-                        {retrospective?.actions.map(event => {
+                        {retrospective.actions.map(event => {
                             return <tr key={event.id}>
                                 <td><input readOnly type='checkbox'/></td>
                                 <td>{event.description}</td>

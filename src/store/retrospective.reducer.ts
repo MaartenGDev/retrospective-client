@@ -33,6 +33,12 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 retrospectives: action.retrospectives,
                 isLoadingRetrospectives: false
             }
+        case RetrospectiveActionTypes.FAILED_ACTION:
+            return {
+                ...state,
+                isLoadingRetrospectives: false,
+                isLoadingReport: false
+            }
         case RetrospectiveActionTypes.ADDED:
             return {
                 ...state,
@@ -43,6 +49,11 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
             return {
                 ...state,
                 retrospectives: sort([...state.retrospectives.filter(r => r.id !== action.retrospective.id), action.retrospective])
+            }
+        case RetrospectiveActionTypes.DELETED:
+            return {
+                ...state,
+                retrospectives: state.retrospectives.filter(r => r.id !== action.retrospectiveId)
             }
         case RetrospectiveActionTypes.UPDATED_EVALUATION:
             const otherRetrospectives = state.retrospectives.filter(r => r.id !== action.evaluation.retrospectiveId);

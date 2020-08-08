@@ -4,12 +4,15 @@ import {RetrospectiveService} from "../services/RetrospectiveService";
 import {AppThunk} from "./store";
 import {IEvaluation} from "../models/IEvaluation";
 import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
+import {EntityIdentifier} from "../types";
 
 export enum RetrospectiveActionTypes {
     LOADING = '[RETROSPECTIVES] LOADING',
     LOADED = '[RETROSPECTIVES] LOADED',
     ADDED = '[RETROSPECTIVES] ADDED',
     UPDATED = '[RETROSPECTIVES] UPDATED',
+    DELETED = '[RETROSPECTIVES] DELETED',
+    FAILED_ACTION = '[RETROSPECTIVES] FAILED ACTION',
     UPDATED_EVALUATION = '[RETROSPECTIVES] UPDATED EVALUATION',
     LOADING_REPORT = '[RETROSPECTIVES] LOADING REPORT',
     LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
@@ -39,6 +42,18 @@ export class Updated implements Action {
 
     constructor(public retrospective: IUserRetrospective) {
     }
+}
+
+export class Deleted implements Action {
+    readonly type = RetrospectiveActionTypes.DELETED;
+
+    constructor(public retrospectiveId: EntityIdentifier) {}
+}
+
+export class ActionFailed implements Action {
+    readonly type = RetrospectiveActionTypes.FAILED_ACTION;
+
+    constructor() {}
 }
 
 export class UpdatedEvaluation implements Action {
@@ -76,6 +91,12 @@ export const CreateOrUpdate = (retrospective: IUserRetrospective): AppThunk => a
         : new Added(persistedRetrospective));
 }
 
+export const Delete = (retrospectiveId: EntityIdentifier): AppThunk => async dispatch => {
+    await service.delete(retrospectiveId)
+
+    dispatch(new Deleted(retrospectiveId));
+}
+
 export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => async dispatch => {
     const persistedEvaluation = await service.updateEvaluation(evaluation);
 
@@ -84,9 +105,13 @@ export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => a
 
 export const LoadReport = (retrospectiveId: number|string): AppThunk => async dispatch => {
     dispatch(new LoadingReport());
-    const report = await service.getReport(retrospectiveId)
 
-    dispatch(new LoadedReport(report))
+    try{
+        const report = await service.getReport(retrospectiveId)
+        dispatch(new LoadedReport(report))
+    }catch (e){
+        dispatch(new ActionFailed())
+    }
 }
 
 export type RetrospectiveTypes
@@ -94,6 +119,8 @@ export type RetrospectiveTypes
     | Loaded
     | Added
     | Updated
+    | Deleted
+    | ActionFailed
     | UpdatedEvaluation
     | LoadingReport
     | LoadedReport

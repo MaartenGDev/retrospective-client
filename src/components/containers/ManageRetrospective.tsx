@@ -6,7 +6,7 @@ import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {Input, InputDescription, InputLabel, Select, TextInput} from "../styles/Input";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {RoundedButton, TextButton} from "../styles/Buttons";
+import {RoundedButton, RoundedButtonLink, TextButton} from "../styles/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
 import {ButtonRow, Container, Row, Spacer, Title} from "../styles/Common";
@@ -16,6 +16,7 @@ import {QueueHelper} from "../../helpers/QueueHelper";
 import {LoadingBar} from "../presentation/common/LoadingBar";
 import ArrowUpward from "../presentation/common/icons/ArrowUpward";
 import ArrowDownward from "../presentation/common/icons/ArrowDownward";
+import {EntityIdentifier} from "../../types";
 
 const Content = styled.div`
   position: relative;
@@ -36,7 +37,8 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = {
-    createOrUpdate: (retrospective: IUserRetrospective) => retrospectiveActions.CreateOrUpdate(retrospective)
+    createOrUpdate: retrospectiveActions.CreateOrUpdate,
+    deleteRetrospective: retrospectiveActions.Delete,
 }
 const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>
@@ -261,11 +263,11 @@ class ManageRetrospective extends Component<IProps, IState> {
                 ? Math.max(1, topicToMove.order - 1)
                 : Math.min(retrospective.topics.length, topicToMove.order + 1);
 
-            if(moveUp && topic.order === nextOrderOfTopic){
+            if (moveUp && topic.order === nextOrderOfTopic) {
                 item.order = topicToMove.order;
             }
 
-            if(topic.id === topicToMove.id){
+            if (topic.id === topicToMove.id) {
                 return {...topic, order: nextOrderOfTopic}
             }
 
@@ -343,6 +345,15 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.queueSave(500);
     }
 
+    private promptDelete = (retrospectiveId: EntityIdentifier) => {
+        if (!window.confirm('Are you sure?')) return;
+        this.props.deleteRetrospective(retrospectiveId);
+
+        this.setState({
+            shouldRedirectToOverview: true
+        })
+    }
+
     private updateState = (key: keyof IState, event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>, mutator: (value: any) => any = value => value) => {
         const {name, value} = event.target
         this.setState({[key]: {...this.state[key] as any, [name]: mutator(value)}} as IState);
@@ -362,11 +373,15 @@ class ManageRetrospective extends Component<IProps, IState> {
         }
 
         const sortedTopics = [...retrospective.topics].sort((a, b) => a.order - b.order);
+        const canDeleteRetrospective = teams.some(team => team.id === retrospective.team?.id && team.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
 
         return (
             <Container>
                 <Row>
                     <Title>Retrospective: {retrospective.name}</Title>
+                    {canDeleteRetrospective &&
+                    <RoundedButton onClick={() => this.promptDelete(retrospective.id!)}
+                                   color='#e53935'>Remove</RoundedButton>}
                 </Row>
 
                 <Content>

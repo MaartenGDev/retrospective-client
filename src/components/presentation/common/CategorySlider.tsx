@@ -156,6 +156,12 @@ export class CategorySlider extends Component<IProps, IState> {
         updatedCategories[categoryIndexToReduce].value = updatedCategories[categoryIndexToReduce].value - pendingChange;
         updatedCategories[categoryIndexToIncrease].value = updatedCategories[categoryIndexToIncrease].value + pendingChange;
 
+        const totalPercentage = updatedCategories.reduce((acc, cur) => acc + Math.round(cur.value), 0);
+
+        if(totalPercentage !== 100){
+            return;
+        }
+
         this.setState({
             categories: updatedCategories.map(category => ({...category, value: Math.round(category.value)})),
             dragStartX: currentX

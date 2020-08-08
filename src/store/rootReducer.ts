@@ -6,6 +6,7 @@ import {teamReducer} from "./team.reducer";
 import {authenticationReducer} from "./authentication.reducer";
 import {insightReducer} from "./insight.reducer";
 import {teamMemberRoleReducer} from "./team-member-roles.reducer";
+import {notificationReducer} from "./notification.reducer";
 
 const rootReducer = combineReducers({
     retrospectiveReducer,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
     teamReducer,
     authenticationReducer,
     insightReducer,
-    teamMemberRoleReducer
+    teamMemberRoleReducer,
+    notificationReducer
 })
 
 export type RootState = ReturnType<typeof rootReducer>

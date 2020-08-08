@@ -24,6 +24,7 @@ import Authenticate from "./components/containers/Authenticate";
 import Account from "./components/containers/Account";
 import Logout from "./components/containers/Logout";
 import RetrospectiveReport from "./components/containers/RetrospectiveReport";
+import Snackbar from "./components/containers/Snackbar";
 
 
 function App() {
@@ -97,6 +98,7 @@ function App() {
                             </Switch>
                         </Route>
                     </Switch>
+                    <Snackbar />
                 </Provider>
             </div>
         </Router>

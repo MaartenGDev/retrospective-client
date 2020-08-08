@@ -5,6 +5,7 @@ import {AppThunk} from "./store";
 import {IEvaluation} from "../models/IEvaluation";
 import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 import {EntityIdentifier} from "../types";
+import {HttpFailed} from "./notification.actions";
 
 export enum RetrospectiveActionTypes {
     LOADING = '[RETROSPECTIVES] LOADING',
@@ -27,7 +28,8 @@ export class Loading implements Action {
 export class Loaded implements Action {
     public readonly type = RetrospectiveActionTypes.LOADED;
 
-    constructor(public retrospectives: IUserRetrospective[]) {}
+    constructor(public retrospectives: IUserRetrospective[]) {
+    }
 }
 
 export class Added implements Action {
@@ -47,19 +49,22 @@ export class Updated implements Action {
 export class Deleted implements Action {
     readonly type = RetrospectiveActionTypes.DELETED;
 
-    constructor(public retrospectiveId: EntityIdentifier) {}
+    constructor(public retrospectiveId: EntityIdentifier) {
+    }
 }
 
 export class ActionFailed implements Action {
     readonly type = RetrospectiveActionTypes.FAILED_ACTION;
 
-    constructor() {}
+    constructor() {
+    }
 }
 
 export class UpdatedEvaluation implements Action {
     readonly type = RetrospectiveActionTypes.UPDATED_EVALUATION;
 
-    constructor(public evaluation: IEvaluation) {}
+    constructor(public evaluation: IEvaluation) {
+    }
 }
 
 export class LoadingReport implements Action {
@@ -69,7 +74,8 @@ export class LoadingReport implements Action {
 export class LoadedReport implements Action {
     public readonly type = RetrospectiveActionTypes.LOADED_REPORT;
 
-    constructor(public retrospectiveReport: IRetrospectiveReport) {}
+    constructor(public retrospectiveReport: IRetrospectiveReport) {
+    }
 }
 
 
@@ -80,36 +86,47 @@ export const LoadAll = (): AppThunk => async dispatch => {
 }
 
 export const CreateOrUpdate = (retrospective: IUserRetrospective): AppThunk => async dispatch => {
-    const isExistingRetrospective = !!retrospective.id;
+    try {
+        const isExistingRetrospective = !!retrospective.id;
 
-    const persistedRetrospective = isExistingRetrospective
-        ? await service.update(retrospective)
-        : await service.create(retrospective);
+        const persistedRetrospective = isExistingRetrospective
+            ? await service.update(retrospective)
+            : await service.create(retrospective);
 
-    dispatch(isExistingRetrospective
-        ? new Updated(persistedRetrospective)
-        : new Added(persistedRetrospective));
+        dispatch(isExistingRetrospective
+            ? new Updated(persistedRetrospective)
+            : new Added(persistedRetrospective));
+
+    } catch (e) {
+        dispatch(new HttpFailed(e));
+    }
 }
 
 export const Delete = (retrospectiveId: EntityIdentifier): AppThunk => async dispatch => {
-    await service.delete(retrospectiveId)
-
-    dispatch(new Deleted(retrospectiveId));
+    try {
+        await service.delete(retrospectiveId);
+        dispatch(new Deleted(retrospectiveId));
+    } catch (e) {
+        dispatch(new HttpFailed(e));
+    }
 }
 
 export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => async dispatch => {
-    const persistedEvaluation = await service.updateEvaluation(evaluation);
-
-    dispatch(new UpdatedEvaluation(persistedEvaluation))
+    try {
+        const persistedEvaluation = await service.updateEvaluation(evaluation);
+        dispatch(new UpdatedEvaluation(persistedEvaluation))
+    } catch (e) {
+        dispatch(new HttpFailed(e))
+    }
 }
 
-export const LoadReport = (retrospectiveId: number|string): AppThunk => async dispatch => {
+export const LoadReport = (retrospectiveId: number | string): AppThunk => async dispatch => {
     dispatch(new LoadingReport());
 
-    try{
+    try {
         const report = await service.getReport(retrospectiveId)
         dispatch(new LoadedReport(report))
-    }catch (e){
+    } catch (e) {
         dispatch(new ActionFailed())
     }
 }

@@ -62,7 +62,9 @@ export class HttpClient {
             window.location.href = Config.LOGIN_URL;
         }
 
-        return Promise.reject(response.statusText);
+        const responseBody = await response.json();
+
+        return Promise.reject(responseBody.message || responseBody.title);
     }
 
     private getAbsoluteUrl(url: string): string{

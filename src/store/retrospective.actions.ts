@@ -9,13 +9,14 @@ import {HttpFailed} from "./notification.actions";
 
 export enum RetrospectiveActionTypes {
     LOADING = '[RETROSPECTIVES] LOADING',
+    LOADING_RETROSPECTIVES_FAILED = '[RETROSPECTIVES] LOADING RETROSPECTIVES FAILED',
     LOADED = '[RETROSPECTIVES] LOADED',
     ADDED = '[RETROSPECTIVES] ADDED',
     UPDATED = '[RETROSPECTIVES] UPDATED',
     DELETED = '[RETROSPECTIVES] DELETED',
-    FAILED_ACTION = '[RETROSPECTIVES] FAILED ACTION',
     UPDATED_EVALUATION = '[RETROSPECTIVES] UPDATED EVALUATION',
     LOADING_REPORT = '[RETROSPECTIVES] LOADING REPORT',
+    LOADING_REPORT_FAILED = '[RETROSPECTIVES] LOADING REPORT FAILED',
     LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
 }
 
@@ -23,6 +24,10 @@ const service = new RetrospectiveService();
 
 export class Loading implements Action {
     public readonly type = RetrospectiveActionTypes.LOADING;
+}
+
+export class LoadingRetrospectivesFailed implements Action {
+    readonly type = RetrospectiveActionTypes.LOADING_RETROSPECTIVES_FAILED;
 }
 
 export class Loaded implements Action {
@@ -53,13 +58,6 @@ export class Deleted implements Action {
     }
 }
 
-export class ActionFailed implements Action {
-    readonly type = RetrospectiveActionTypes.FAILED_ACTION;
-
-    constructor() {
-    }
-}
-
 export class UpdatedEvaluation implements Action {
     readonly type = RetrospectiveActionTypes.UPDATED_EVALUATION;
 
@@ -71,6 +69,10 @@ export class LoadingReport implements Action {
     public readonly type = RetrospectiveActionTypes.LOADING_REPORT;
 }
 
+export class LoadingReportFailed implements Action {
+    readonly type = RetrospectiveActionTypes.LOADING_REPORT_FAILED;
+}
+
 export class LoadedReport implements Action {
     public readonly type = RetrospectiveActionTypes.LOADED_REPORT;
 
@@ -78,11 +80,15 @@ export class LoadedReport implements Action {
     }
 }
 
-
 export const LoadAll = (): AppThunk => async dispatch => {
-    dispatch(new Loading());
-    const retrospectives = await service.getAll()
-    dispatch(new Loaded(retrospectives))
+    try {
+        dispatch(new Loading());
+        const retrospectives = await service.getAll()
+        dispatch(new Loaded(retrospectives))
+    }catch (e){
+        dispatch(new LoadingReportFailed());
+        dispatch(new HttpFailed(e));
+    }
 }
 
 export const CreateOrUpdate = (retrospective: IUserRetrospective): AppThunk => async dispatch => {
@@ -121,13 +127,13 @@ export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => a
 }
 
 export const LoadReport = (retrospectiveId: number | string): AppThunk => async dispatch => {
-    dispatch(new LoadingReport());
-
     try {
+        dispatch(new LoadingReport());
         const report = await service.getReport(retrospectiveId)
         dispatch(new LoadedReport(report))
     } catch (e) {
-        dispatch(new ActionFailed())
+        dispatch(new LoadingReportFailed())
+        dispatch(new HttpFailed(e))
     }
 }
 
@@ -137,7 +143,7 @@ export type RetrospectiveTypes
     | Added
     | Updated
     | Deleted
-    | ActionFailed
+    | LoadingReportFailed
     | UpdatedEvaluation
     | LoadingReport
     | LoadedReport

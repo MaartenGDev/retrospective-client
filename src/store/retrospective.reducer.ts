@@ -33,7 +33,7 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 retrospectives: action.retrospectives,
                 isLoadingRetrospectives: false
             }
-        case RetrospectiveActionTypes.FAILED_ACTION:
+        case RetrospectiveActionTypes.LOADING_REPORT_FAILED:
             return {
                 ...state,
                 isLoadingRetrospectives: false,

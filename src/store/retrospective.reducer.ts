@@ -10,9 +10,9 @@ export interface IRetrospectivesState {
 }
 
 const initialState: IRetrospectivesState = {
-    isLoadingRetrospectives: false,
+    isLoadingRetrospectives: true,
     retrospectives: [],
-    isLoadingReport: false,
+    isLoadingReport: true,
     retrospectiveReport: undefined
 }
 

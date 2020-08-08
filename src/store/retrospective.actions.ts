@@ -83,6 +83,7 @@ export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => a
 }
 
 export const LoadReport = (retrospectiveId: number|string): AppThunk => async dispatch => {
+    dispatch(new LoadingReport());
     const report = await service.getReport(retrospectiveId)
 
     dispatch(new LoadedReport(report))

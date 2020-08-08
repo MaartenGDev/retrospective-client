@@ -3,7 +3,6 @@ import {Provider} from 'react-redux'
 import Header from "./components/containers/Header";
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import Retrospectives from "./components/containers/Retrospectives";
-import Retrospective from "./components/containers/Retrospective";
 import './App.scss';
 import {store} from "./store/store";
 import * as retrospectiveActions from "./store/retrospective.actions";
@@ -24,6 +23,7 @@ import DefaultInsights from "./components/containers/DefaultInsights";
 import Authenticate from "./components/containers/Authenticate";
 import Account from "./components/containers/Account";
 import Logout from "./components/containers/Logout";
+import RetrospectiveReport from "./components/containers/RetrospectiveReport";
 
 
 function App() {
@@ -74,7 +74,7 @@ function App() {
                                     <ManageRetrospective/>
                                 </Route>
                                 <Route path="/retrospectives/:id">
-                                    <Retrospective/>
+                                    <RetrospectiveReport/>
                                 </Route>
                                 <Route path="/retrospectives">
                                     <Retrospectives/>

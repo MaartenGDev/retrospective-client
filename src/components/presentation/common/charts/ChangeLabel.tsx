@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import styled from 'styled-components'
-import UpwardArrow from "../icons/UpwardArrow";
-import DownwardArrow from "../icons/DownwardArrow";
+import UpwardLeftArrow from "../icons/UpwardLeftArrow";
+import DownwardLeftArrow from "../icons/DownwardLeftArrow";
 
 const PercentageLabel = styled.span.attrs((props: { isPositive: boolean }) => ({
     isPositive: props.isPositive || false,
@@ -35,8 +35,8 @@ const ChangeLabel: FC<IProps> = ({increaseIsPositive, changePercentage}) => {
     return (
         <ChangeSection>(<PercentageLabel
             isPositive={(increaseIsPositive && changePercentage >= 0) || (!increaseIsPositive && changePercentage <= 0)}>
-            {changePercentage  >= 0 ? <UpwardArrow/> :
-                <DownwardArrow/>} {changePercentage}%
+            {changePercentage  >= 0 ? <UpwardLeftArrow/> :
+                <DownwardLeftArrow/>} {changePercentage}%
         </PercentageLabel>)</ChangeSection>
     );
 }

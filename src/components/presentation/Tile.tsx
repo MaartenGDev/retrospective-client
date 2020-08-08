@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import styled from "styled-components";
-import DownwardArrow from "./common/icons/DownwardArrow";
-import UpwardArrow from "./common/icons/UpwardArrow";
+import DownwardLeftArrow from "./common/icons/DownwardLeftArrow";
+import UpwardLeftArrow from "./common/icons/UpwardLeftArrow";
 import {IMetric} from "../../models/IMetric";
 
 interface IProps {
@@ -59,7 +59,7 @@ const Tile: FC<IProps> = ({metric}) => {
             </CardBody>
             <CardFooter>
                     <ChartSection isPositive={(increaseIsPositive && changePercentage >= 0) || (!increaseIsPositive && changePercentage <= 0)}>
-                        {changePercentage >= 0 ? <UpwardArrow /> : <DownwardArrow />} {changePercentage}%
+                        {changePercentage >= 0 ? <UpwardLeftArrow /> : <DownwardLeftArrow />} {changePercentage}%
                     </ChartSection>
                     <span>Since last sprint</span>
             </CardFooter>

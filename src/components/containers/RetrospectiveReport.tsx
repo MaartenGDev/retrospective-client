@@ -56,7 +56,7 @@ type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: {
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>
 
-const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport}) => {
+const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport}) => {
     const retrospectiveId = parseId(match.params.id);
 
 
@@ -102,6 +102,8 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
 
     const canEditRetrospective = teams.some(team => team.id === retrospective.team?.id && team.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective));
 
+    const sortedTopics = [...retrospective.topics].sort((a, b) => a.order - b.order);
+
     return (
         <Container>
             <Row>
@@ -118,7 +120,7 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
                         <th>Duration</th>
                         <th>Type</th>
                     </tr>
-                    {retrospective.topics.map(topic => {
+                    {sortedTopics.map(topic => {
                         return <tr key={topic.id}>
                             <td>{topic.description}</td>
                             <td>{topic.durationInMinutes} minutes</td>
@@ -204,4 +206,4 @@ const Retrospective: FC<PropsFromRedux> = ({commentCategories, teams, user, matc
     );
 }
 
-export default withRouter(connector(Retrospective));
+export default withRouter(connector(RetrospectiveReport));

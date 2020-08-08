@@ -1,13 +1,13 @@
 import React from "react";
 
-const DownwardArrow = () => {
+const UpwardLeftArrow = () => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" enableBackground="new 0 0 24 24" height="24" viewBox="0 0 24 24"
              width="24">
             <rect fill="none" height="24" width="24"/>
-            <path d="M15,19v-2H8.41L20,5.41L18.59,4L7,15.59V9H5v10H15z"/>
+            <path d="M9,5v2h6.59L4,18.59L5.41,20L17,8.41V15h2V5H9z"/>
         </svg>
     );
 }
 
-export default DownwardArrow;
+export default UpwardLeftArrow;

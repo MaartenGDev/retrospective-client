@@ -14,6 +14,8 @@ import {IAction} from "../../models/IAction";
 import {parseId} from "../../helpers/Uri";
 import {QueueHelper} from "../../helpers/QueueHelper";
 import {LoadingBar} from "../presentation/common/LoadingBar";
+import ArrowUpward from "../presentation/common/icons/ArrowUpward";
+import ArrowDownward from "../presentation/common/icons/ArrowDownward";
 
 const Content = styled.div`
   position: relative;
@@ -57,7 +59,8 @@ class ManageRetrospective extends Component<IProps, IState> {
     private _defaultTopic: ITopic = {
         id: 0,
         description: '',
-        durationInMinutes: 0
+        durationInMinutes: 0,
+        order: 0
     }
 
     private _defaultAction: IAction = {
@@ -109,7 +112,7 @@ class ManageRetrospective extends Component<IProps, IState> {
         const {isNewRetrospective} = this.state
 
         // We are not able to retrieve the id of the new retrospective so we cannot update it.
-        if(isNewRetrospective){
+        if (isNewRetrospective) {
             return;
         }
 
@@ -221,7 +224,7 @@ class ManageRetrospective extends Component<IProps, IState> {
             }
         }))
 
-        if(shouldTriggerSave){
+        if (shouldTriggerSave) {
             this.queueSave();
         }
     }
@@ -237,12 +240,41 @@ class ManageRetrospective extends Component<IProps, IState> {
     private addTopic = (topic: ITopic) => {
         const {retrospective, nextTopicId} = this.state;
 
-        const nextTopic = {...topic, id: nextTopicId};
+        const nextTopicOrder = retrospective.topics.length + 1;
+        const nextTopic = {...topic, id: nextTopicId, order: nextTopicOrder};
 
         this.setState({
             retrospective: {...retrospective, topics: [...retrospective.topics, nextTopic]},
-            topic: this._defaultTopic,
+            topic: {...this._defaultTopic, order: 0},
             nextTopicId: nextTopicId - 1
+        });
+
+        this.queueSave();
+    }
+
+    private updateTopicOrder = (topicToMove: ITopic, moveUp: boolean) => {
+        const {retrospective} = this.state
+
+        const updatedTopics = retrospective.topics.map(topic => {
+            const item = {...topic};
+            const nextOrderOfTopic = moveUp
+                ? Math.max(1, topicToMove.order - 1)
+                : Math.min(retrospective.topics.length, topicToMove.order + 1);
+
+            if(moveUp && topic.order === nextOrderOfTopic){
+                item.order = topicToMove.order;
+            }
+
+            if(topic.id === topicToMove.id){
+                return {...topic, order: nextOrderOfTopic}
+            }
+
+            return item;
+        });
+
+        this.setState({
+            topicBeingEdited: undefined,
+            retrospective: {...retrospective, topics: updatedTopics}
         });
 
         this.queueSave();
@@ -272,7 +304,7 @@ class ManageRetrospective extends Component<IProps, IState> {
             actions: this.removeTemporaryIds(retrospective.actions),
         });
 
-        if(isNewRetrospective){
+        if (isNewRetrospective) {
             this.setState({
                 shouldRedirectToOverview: true
             })
@@ -325,9 +357,11 @@ class ManageRetrospective extends Component<IProps, IState> {
         const canAddTopic = topic.description.length > 0;
         const canAddAction = action.description.length > 0 && action.responsible.length > 0;
 
-        if(shouldRedirectToOverview){
-            return <Redirect to='/retrospectives' />
+        if (shouldRedirectToOverview) {
+            return <Redirect to='/retrospectives'/>
         }
+
+        const sortedTopics = [...retrospective.topics].sort((a, b) => a.order - b.order);
 
         return (
             <Container>
@@ -377,37 +411,44 @@ class ManageRetrospective extends Component<IProps, IState> {
                     <table>
                         <tbody>
                         <tr>
+                            <th>Order</th>
                             <th>Description</th>
                             <th>Duration</th>
                             <th>Edit</th>
                             <th>Remove</th>
                         </tr>
-                        {retrospective.topics.map((event, index) => {
+                        {sortedTopics.map((topic, index) => {
                             const isInReadMode = topicBeingEdited?.editIndex !== index;
 
                             return <tr key={index}>
+                                <td>
+                                    {isInReadMode && <>
+                                        <ArrowUpward onClick={() => this.updateTopicOrder(topic, true)}/>
+                                        <ArrowDownward onClick={() => this.updateTopicOrder(topic, false)}/>
+                                    </>}
+                                </td>
                                 <td>{isInReadMode
-                                    ? event.description
+                                    ? topic.description
                                     : <TextInput name='description' value={topicBeingEdited!.description}
                                                  onChange={e => this.updateState('topicBeingEdited', e)}/>
                                 }</td>
                                 <td>{isInReadMode
-                                    ? event.durationInMinutes
+                                    ? topic.durationInMinutes
                                     : <TextInput name='durationInMinutes' value={topicBeingEdited!.durationInMinutes}
                                                  onChange={e => this.updateState('topicBeingEdited', e, parseInt)}/>
                                 }</td>
                                 <td><TextButton
-                                    onClick={() => this.toggleTopicEditing(event, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
+                                    onClick={() => this.toggleTopicEditing(topic, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
                                 </td>
                                 <td><TextButton color='#e53935'
-                                                onClick={() => this.removeTopic(event, index)}>REMOVE</TextButton>
+                                                onClick={() => this.removeTopic(topic, index)}>REMOVE</TextButton>
                                 </td>
                             </tr>
                         })}
                         <tr>
-                            <td><TextInput value={topic.description}
-                                           name='description'
-                                           onChange={e => this.updateState('topic', e)}/>
+                            <td colSpan={2}><TextInput value={topic.description}
+                                                       name='description'
+                                                       onChange={e => this.updateState('topic', e)}/>
                             </td>
                             <td><TextInput type='number'
                                            value={topic.durationInMinutes}

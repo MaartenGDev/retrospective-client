@@ -61,7 +61,9 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
         }
         acc[cur.retrospective.id!].ratings = [...acc[cur.retrospective.id!].ratings, cur];
         return acc;
-    }, {})).sort((a, b) => new Date(b.retrospective.endDate).getTime() - new Date(a.retrospective.endDate).getTime());
+    }, {}))
+        .filter(group => group.ratings.length > 0)
+        .sort((a, b) => new Date(b.retrospective.endDate).getTime() - new Date(a.retrospective.endDate).getTime());
 
     return (
         <Page>

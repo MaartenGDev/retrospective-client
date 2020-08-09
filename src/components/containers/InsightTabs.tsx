@@ -57,12 +57,16 @@ const InsightTabs: FC<PropsFromRedux> = ({activePath, teams, user}) => {
             })];
     }, []);
 
+    const teamsWhereUserCanViewInsights = teams
+        .filter(t => t.members.some(m => m.user.id === user?.id && m.role.canViewMemberInsights));
+
     const teamFilters = [
         ...teams.map(t => ({team: t, path: `/insights/teams/${t.id}/me`, name: `${t.name} (Me)`, defaultVisible: true})),
         ...teams.map(t => ({team: t, path: `/insights/teams/${t.id}/overall`, name: `${t.name} (Overall)`, defaultVisible: true})),
-        ...teams
-            .filter(t => t.members.some(m => m.user.id === user?.id && m.role.canViewMemberInsights))
+        ...teamsWhereUserCanViewInsights
             .map(t => ({team: t, path: `/insights/teams/${t.id}/members`, name: `${t.name} (Members)`, defaultVisible: true})),
+        ...teamsWhereUserCanViewInsights
+            .map(t => ({team: t, path: `/insights/teams/${t.id}/ratings`, name: `${t.name} (Ratings)`, defaultVisible: true})),
         ...teamMemberFilters
     ];
 

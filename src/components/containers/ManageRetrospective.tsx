@@ -6,7 +6,7 @@ import {Redirect, RouteComponentProps, withRouter} from 'react-router-dom';
 import {IUserRetrospective} from "../../models/IUserRetrospective";
 import {Input, InputDescription, InputLabel, Select, TextInput} from "../styles/Input";
 import * as retrospectiveActions from "../../store/retrospective.actions";
-import {RoundedButton, RoundedButtonLink, TextButton} from "../styles/Buttons";
+import {RoundedButton, TextButton} from "../styles/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
 import {ButtonRow, Container, Row, Spacer, Title} from "../styles/Common";

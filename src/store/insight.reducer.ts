@@ -1,15 +1,18 @@
 import {IInsight} from "../models/IInsight";
 import {InsightActionTypes, InsightTypes} from "./insight.actions";
 import {ITeamMemberInsight} from "../models/ITeamMemberInsight";
+import {IRatingInsight} from "../models/IRatingInsight";
 
 export interface IInsightState {
     insight?: IInsight,
-    teamMemberInsights: ITeamMemberInsight[]
+    teamMemberInsights: ITeamMemberInsight[],
+    ratingInsights: IRatingInsight[],
 }
 
 const initialState: IInsightState = {
     insight: undefined,
-    teamMemberInsights: []
+    teamMemberInsights: [],
+    ratingInsights: []
 }
 
 export function insightReducer(state: IInsightState = initialState, action: InsightTypes) {
@@ -23,6 +26,11 @@ export function insightReducer(state: IInsightState = initialState, action: Insi
             return {
                 ...state,
                 teamMemberInsights: action.teamMemberInsights
+            }
+        case InsightActionTypes.LOADED_RATINGS:
+            return {
+                ...state,
+                ratingInsights: action.ratingInsights
             }
         default:
             return state

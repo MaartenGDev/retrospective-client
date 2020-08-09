@@ -40,7 +40,7 @@ const Snackbar: FC<IProps> = ({showNotification, message, dismiss}) => {
                 dismiss();
             }, 5000)
         }
-    }, [showNotification]);
+    }, [showNotification, dismiss]);
 
     return (
         <Toast style={{opacity: showNotification ? 1 : 0}}>

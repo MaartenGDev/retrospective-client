@@ -25,6 +25,7 @@ import Account from "./components/containers/Account";
 import Logout from "./components/containers/Logout";
 import RetrospectiveReport from "./components/containers/RetrospectiveReport";
 import Snackbar from "./components/containers/Snackbar";
+import RatingInsights from "./components/containers/RatingInsights";
 
 
 function App() {
@@ -85,6 +86,9 @@ function App() {
                                 </Route>
                                 <Route path="/insights/teams/:teamId/members">
                                     <TeamMemberInsights />
+                                </Route>
+                                <Route path="/insights/teams/:teamId/ratings">
+                                    <RatingInsights />
                                 </Route>
                                 <Route path="/insights/teams/:teamId/:filter">
                                     <TrendInsights />

@@ -19,9 +19,6 @@ const FlexRow = styled.span`
   align-items: center;
 `
 
-
-
-
 const mapState = (state: RootState) => ({
     teams: state.teamReducer.teams,
     teamMemberInsights: state.insightReducer.teamMemberInsights,
@@ -29,7 +26,7 @@ const mapState = (state: RootState) => ({
 
 
 const mapDispatch = {
-    loadForTeamMembers: (teamId: number|string) => insightActions.LoadForTeamMembers(teamId)
+    loadForTeamMembers: insightActions.LoadForTeamMembers
 }
 
 const connector = connect(mapState, mapDispatch)

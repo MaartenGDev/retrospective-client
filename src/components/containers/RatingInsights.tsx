@@ -57,7 +57,7 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
         }
         acc[cur.retrospective.id!].ratings = [...acc[cur.retrospective.id!].ratings, cur];
         return acc;
-    }, {}));
+    }, {})).sort((a, b) => new Date(b.retrospective.endDate).getTime() - new Date(a.retrospective.endDate).getTime());
 
     return (
         <main>
@@ -77,8 +77,8 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {group.ratings.map(insight => {
-                                        return <tr>
+                                    {group.ratings.map((insight, index) => {
+                                        return <tr key={index}>
                                             <td>{insight.fullName}</td>
                                             <td>{insight.sprintRating}</td>
                                             <td>{insight.sprintRatingExplanation}</td>

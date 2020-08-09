@@ -30,6 +30,10 @@ const DateLabel = styled.span`
   font-style: italic;
 `
 
+const Page = styled.main`
+  margin-bottom: 40px;
+`
+
 const mapState = (state: RootState) => ({
     ratingsInsights: state.insightReducer.ratingInsights,
 });
@@ -60,7 +64,7 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
     }, {})).sort((a, b) => new Date(b.retrospective.endDate).getTime() - new Date(a.retrospective.endDate).getTime());
 
     return (
-        <main>
+        <Page>
             <InsightTabs activePath={match.url}/>
             <Container>
                 {byRetrospectives.map((group, index) => {
@@ -72,7 +76,7 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
                                     <thead>
                                     <tr>
                                         <th>Member</th>
-                                        <th>Sprint rating</th>
+                                        <th>Rating</th>
                                         <th>Rating explanation</th>
                                     </tr>
                                     </thead>
@@ -80,7 +84,7 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
                                     {group.ratings.map((insight, index) => {
                                         return <tr key={index}>
                                             <td>{insight.fullName}</td>
-                                            <td>{insight.sprintRating}</td>
+                                            <td>{insight.sprintRating / 10}</td>
                                             <td>{insight.sprintRatingExplanation}</td>
                                         </tr>
                                     })}
@@ -90,7 +94,7 @@ const RatingInsights: FC<PropsFromRedux> = ({loadRatings, match, ratingsInsights
                         </RatingGroup>)
                 })}
             </Container>
-        </main>
+        </Page>
     );
 }
 

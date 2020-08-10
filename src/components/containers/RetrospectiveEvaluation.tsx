@@ -118,7 +118,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
         const retrospectiveId = parseId(match.params.id);
 
         const retrospective: IUserRetrospective = retrospectives.find(r => r.id === retrospectiveId) || initialRetrospective;
-        const hasProvidedEvaluation = retrospective && retrospective.evaluation;
+        const hasProvidedEvaluation = retrospective && !!retrospective.evaluation;
 
         let evaluation = hasProvidedEvaluation ? retrospective!.evaluation! : initialEvaluation;
         evaluation.retrospectiveId = retrospectiveId;
@@ -134,17 +134,20 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
     private buildEvaluation(evaluation: IEvaluation, commentCategories: ICommentCategory[], timeUsageCategories: ITimeUsageCategory[]) {
         const commentCountPerCategory = 3;
 
-        const commentsById = commentCategories.reduce((acc: { [key: number]: IComment }, category) => {
-            const existingComments = Object.values(evaluation.comments).filter(e => e.categoryId === category.id);
+        const commentsById = commentCategories.reduce((acc: { [key: number]: IComment }, category, categoryIndex) => {
+            const existingComments = Object.values(evaluation.comments).filter(e => (e.categoryId || e.category.id) === category.id);
             const amountOfMissingComments = commentCountPerCategory - existingComments.length;
 
-            [
+            const nextComments = [
                 ...existingComments,
-                ...Array(amountOfMissingComments).fill({categoryId: category.id, body: ''}).map((c, i) => ({
-                    ...c,
-                    id: c.id || (parseInt(category.id + '' + i) * -1)
-                }))
-            ].forEach(c => acc[c.id] = c);
+                ...Array(amountOfMissingComments).fill({categoryId: category.id, body: ''})
+            ].map((c, i) => ({
+                ...c,
+                categoryId: c.categoryId || c.category.id,
+                id: c.id || (parseInt(categoryIndex + '' + i) * -1)
+            }));
+
+            nextComments.forEach(c => acc[c.id] = c);
 
             return acc;
         }, {});

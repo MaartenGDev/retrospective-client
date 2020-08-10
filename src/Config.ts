@@ -1,7 +1,7 @@
 const localUrl = `${window.location.origin}/`;
 const apiUrl = process.env.REACT_APP_API_URL || 'https://localhost:5001/';
 
-const useExternalAuth = process.env.REACT_APP_USE_EXTERNAL_AUTH || false;
+const useExternalAuth = process.env.REACT_APP_USE_EXTERNAL_AUTH === 'true' || false;
 
 export default {
     AUTH_TOKEN_NAME: 'access_token',

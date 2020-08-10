@@ -56,8 +56,8 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 retrospectives: state.retrospectives.filter(r => r.id !== action.retrospectiveId)
             }
         case RetrospectiveActionTypes.UPDATED_EVALUATION:
-            const otherRetrospectives = state.retrospectives.filter(r => r.id !== action.evaluation.retrospectiveId);
-            const retrospectiveToUpdate = state.retrospectives.find(r => r.id === action.evaluation.retrospectiveId)!;
+            const otherRetrospectives = state.retrospectives.filter(r => r.id !== action.evaluation.retrospective?.id);
+            const retrospectiveToUpdate = state.retrospectives.find(r => r.id === action.evaluation.retrospective?.id)!;
 
             return {
                 ...state,

@@ -4,6 +4,7 @@ import {AuthenticationService} from "../services/AuthenticationService";
 import {IUser} from "../models/IUser";
 import {ICredentials} from "../models/dto/ICredentials";
 import Config from "../Config";
+import {HttpFailed} from "./notification.actions";
 
 export enum AuthenticationActionTypes {
     LOADED = '[AUTHENTICATION] LOADED',
@@ -19,7 +20,8 @@ export class LoggedOut implements Action {
 export class Loaded implements Action {
     public readonly type = AuthenticationActionTypes.LOADED;
 
-    constructor(public user: IUser) {}
+    constructor(public user: IUser) {
+    }
 }
 
 export const Load = (): AppThunk => async dispatch => {
@@ -28,15 +30,13 @@ export const Load = (): AppThunk => async dispatch => {
 }
 
 export const Login = (credentials: ICredentials): AppThunk => async dispatch => {
-    const response = await service.login(credentials)
-
-    if(response.success){
+    try {
+        const response = await service.login(credentials)
         localStorage.setItem(Config.AUTH_TOKEN_NAME, response.token);
         dispatch(new Loaded(response.user))
-        return;
+    } catch (e) {
+        dispatch(new HttpFailed(e))
     }
-
-    console.warn('Login failed!')
 }
 
 export const Logout = (): AppThunk => async dispatch => {

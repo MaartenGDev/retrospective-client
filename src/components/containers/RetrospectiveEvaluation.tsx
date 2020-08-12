@@ -238,7 +238,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
 
     private getAsSliderCategories(evaluation: IEvaluation, categories: ITimeUsageCategory[]) {
         return categories.map((c: ITimeUsageCategory) => {
-            const existingTimeUsage = evaluation.timeUsage.find(t => t.categoryId === c.id);
+            const existingTimeUsage = evaluation.timeUsage.find(t => (t.categoryId || t.category.id) === c.id);
             return {...c, value: existingTimeUsage ? existingTimeUsage.percentage : c.initialPercentage};
         })
     }

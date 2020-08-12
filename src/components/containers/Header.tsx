@@ -78,7 +78,7 @@ const Header: FC<Props> = ({user}) => {
                     <NavLink to="/teams">Teams</NavLink>
                     {!user && <NavLink to="/account/login">Login</NavLink>}
                     {user && (
-                        <NavItem>{user.fullName}
+                        <NavItem><span data-testid='account-label'>{user.fullName}</span>
                             <DropdownMenu>
                                 <DropdownItem><DropdownLink to='/account'>My Account</DropdownLink></DropdownItem>
                                 <DropdownItem><DropdownLink to='/account/logout'>Logout</DropdownLink></DropdownItem>

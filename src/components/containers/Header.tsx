@@ -83,7 +83,6 @@ const Header: FC<Props> = ({user}) => {
                                 <DropdownItem><DropdownLink to='/account'>My Account</DropdownLink></DropdownItem>
                                 <DropdownItem><DropdownLink to='/account/logout'>Logout</DropdownLink></DropdownItem>
                             </DropdownMenu>
-
                         </NavItem>
                     )}
                 </div>

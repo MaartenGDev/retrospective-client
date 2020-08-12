@@ -21,7 +21,7 @@ steps:
     displayName: 'npm install and build'
 
   - script: |
-      npm test
+      CI=true npm test
     displayName: 'Run tests'
 
   - task: AzureCLI@2

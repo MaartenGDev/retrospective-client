@@ -24,7 +24,13 @@ export class RetrospectiveService {
     }
 
     updateEvaluation(evaluation: IEvaluation): Promise<IEvaluation> {
-        return http.patch(`retrospectives/${evaluation.retrospectiveId}/evaluation`, evaluation);
+        const transformedEvaluation: IEvaluation = {
+            ...evaluation, comments: evaluation.comments.map(c => {
+                delete c.category;
+                return c;
+            })
+        }
+        return http.patch(`retrospectives/${evaluation.retrospectiveId}/evaluation`, transformedEvaluation);
     }
 
     getReport(retrospectiveId: EntityIdentifier): Promise<IRetrospectiveReport> {

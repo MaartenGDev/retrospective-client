@@ -9,13 +9,22 @@ const clazzActions: Middleware = _ => (next) => (action) => {
     next(isActionType ? {...action} : action);
 };
 
+export const createStoreWithState = (state : RootState) => createStore(
+    rootReducer,
+    state,
+    applyMiddleware<DispatchFunctionType, RootState>(
+        thunkMiddleware,
+        clazzActions,
+    ),
+)
+
 
 export const store = createStore(
     rootReducer,
     applyMiddleware<DispatchFunctionType, RootState>(
         thunkMiddleware,
         clazzActions,
-    )
+    ),
 )
 export type AppThunk<ReturnType = void> = ThunkAction<
     ReturnType,

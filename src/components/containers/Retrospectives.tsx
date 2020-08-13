@@ -27,7 +27,7 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
         <Container>
             <Row>
                 <Title>Retrospectives</Title>
-                {canCreateRetrospective && <RoundedButtonLink to='/retrospectives/create'>Create</RoundedButtonLink>}
+                {canCreateRetrospective && <RoundedButtonLink data-testid='create-action' to='/retrospectives/create'>Create</RoundedButtonLink>}
             </Row>
             <Content>
                 <table>
@@ -44,13 +44,13 @@ const Retrospectives: FC<PropsFromRedux> = ({retrospectives, teams, user}) => {
                         const isCompleted = DateHelper.isAfterDate(new Date(retro.endDate), new Date());
 
                         const action = isCompleted
-                            ? <PrimaryLink to={'/retrospectives/' + retro.id + '/provided-feedback'}>View feedback</PrimaryLink>
-                            : <PrimaryLink to={'/retrospectives/' + retro.id + '/feedback'}>{retro.evaluation ? 'Edit' : 'Give'} feedback</PrimaryLink>;
+                            ? <PrimaryLink data-testid='feedback-action' to={'/retrospectives/' + retro.id + '/provided-feedback'}>View feedback</PrimaryLink>
+                            : <PrimaryLink data-testid='feedback-action' to={'/retrospectives/' + retro.id + '/feedback'}>{retro.evaluation ? 'Edit' : 'Give'} feedback</PrimaryLink>;
 
                         return <tr key={retro.id}>
                             <td>{retro.name}</td>
                             <td>{retro.team?.name}</td>
-                            <td>{isCompleted ? 'COMPLETED' : 'OPEN'}</td>
+                            <td data-testid='retrospective-status'>{isCompleted ? 'COMPLETED' : 'OPEN'}</td>
                             <td>{new Date(retro.startDate).toDateString()} - {new Date(retro.endDate).toDateString()}</td>
                             <td><PrimaryLink to={'/retrospectives/' + retro.id}>View</PrimaryLink></td>
                             <td>{action}</td>

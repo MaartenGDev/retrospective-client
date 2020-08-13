@@ -59,9 +59,10 @@ type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ i
 const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport}) => {
     const retrospectiveId = parseId(match.params.id);
 
-
     useEffect(() => {
-        loadReport(retrospectiveId)
+        if(retrospectiveId){
+            loadReport(retrospectiveId)
+        }
     }, [retrospectiveId, loadReport])
 
     if(!isLoadingReport && !retrospectiveReport){
@@ -82,7 +83,7 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
     const commentsByCategoryAndUser = retrospectiveReport.comments.reduce((acc: ICommentsByCategoryAndUser, comment: IComment) => {
         if (!acc.hasOwnProperty(comment.categoryId)) {
             acc[comment.categoryId] = {
-                id: comment.categoryId,
+                id: comment.category.id,
                 users: {}
             }
         }

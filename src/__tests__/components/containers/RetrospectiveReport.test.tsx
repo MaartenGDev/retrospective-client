@@ -133,12 +133,13 @@ test('Should show the data from the retrospective report', () => {
     ] as IComment[];
 
     const suggestedTopics = [
-        {id: 1, description: 'hello world', suggestedBy: {id: 1, fullName: 'User 1'}},
-        {id: 2, description: 'hello world', suggestedBy: {id: 2, fullName: 'User 2'}},
+        {description: 'hello world', suggestedBy: {id: 1, fullName: 'User 1'}},
+        {description: 'hello world', suggestedBy: {id: 2, fullName: 'User 2'}},
     ] as ISuggestedTopic[];
 
     const suggestedActions = [
-        {id: 1, description: 'Suggested 1', suggestedBy: {id: 1, fullName: 'User 1'}}
+        {description: 'Suggested 1', suggestedBy: {id: 1, fullName: 'User 1'}},
+        {description: 'Suggested 2', suggestedBy: {id: 1, fullName: 'User 2'}},
     ] as ISuggestedAction[]
 
     const topics = [
@@ -184,9 +185,9 @@ test('Should show the data from the retrospective report', () => {
         expect(screen.getByTestId(`topic-duration-by-index-${index}`)).toHaveTextContent(`${topic.durationInMinutes} minutes`);
     })
 
-    suggestedTopics.forEach(topic => {
-        expect(screen.getByTestId(`suggested-topic-${topic.id}-description`)).toHaveTextContent(topic.description);
-        expect(screen.getByTestId(`suggested-topic-${topic.id}-suggested-by`)).toHaveTextContent(`Suggested (By ${topic.suggestedBy.fullName})`);
+    suggestedTopics.forEach((topic, index) => {
+        expect(screen.getByTestId(`suggested-topic-${index}-description`)).toHaveTextContent(topic.description);
+        expect(screen.getByTestId(`suggested-topic-${index}-suggested-by`)).toHaveTextContent(`Suggested (By ${topic.suggestedBy.fullName})`);
     })
 
     actions.forEach(action => {
@@ -199,8 +200,8 @@ test('Should show the data from the retrospective report', () => {
         expect(screen.getByTestId(`action-${action.id}-responsible`)).toHaveTextContent(action.responsible);
     })
 
-    suggestedActions.forEach(action => {
-        expect(screen.getByTestId(`suggested-action-${action.id}-description`)).toHaveTextContent(action.description);
-        expect(screen.getByTestId(`suggested-action-${action.id}-suggested-by`)).toHaveTextContent(action.suggestedBy.fullName);
+    suggestedActions.forEach((action, index) => {
+        expect(screen.getByTestId(`suggested-action-${index}-description`)).toHaveTextContent(action.description);
+        expect(screen.getByTestId(`suggested-action-${index}-suggested-by`)).toHaveTextContent(action.suggestedBy.fullName);
     })
 })

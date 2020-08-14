@@ -130,8 +130,8 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                     })}
                     {retrospectiveReport.suggestedTopics.map((topic, index) => {
                         return <tr key={-index} style={{backgroundColor: '#f1f1f1'}}>
-                            <td data-testid={`suggested-topic-${topic.id}-description`}>{topic.description}</td>
-                            <td data-testid={`suggested-topic-${topic.id}-suggested-by`} colSpan={2}>Suggested (By {topic.suggestedBy.fullName})</td>
+                            <td data-testid={`suggested-topic-${index}-description`}>{topic.description}</td>
+                            <td data-testid={`suggested-topic-${index}-suggested-by`} colSpan={2}>Suggested (By {topic.suggestedBy.fullName})</td>
                         </tr>
                     })}
                     </tbody>
@@ -195,9 +195,9 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                         <th>Suggested by</th>
                     </tr>
                     {retrospectiveReport.suggestedActions.map((action, index) => {
-                        return <tr key={-index}>
-                            <td data-testid={`suggested-action-${action.id}-description`}>{action.description}</td>
-                            <td data-testid={`suggested-action-${action.id}-suggested-by`}>{action.suggestedBy.fullName}</td>
+                        return <tr key={index}>
+                            <td data-testid={`suggested-action-${index}-description`}>{action.description}</td>
+                            <td data-testid={`suggested-action-${index}-suggested-by`}>{action.suggestedBy.fullName}</td>
                             <td>Suggested</td>
                         </tr>
                     })}

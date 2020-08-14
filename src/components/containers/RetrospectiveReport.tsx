@@ -121,17 +121,17 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                         <th>Duration</th>
                         <th>Type</th>
                     </tr>
-                    {sortedTopics.map(topic => {
+                    {sortedTopics.map((topic, index) => {
                         return <tr key={topic.id}>
-                            <td>{topic.description}</td>
-                            <td>{topic.durationInMinutes} minutes</td>
+                            <td data-testid={`topic-description-by-index-${index}`}>{topic.description}</td>
+                            <td data-testid={`topic-duration-by-index-${index}`}>{topic.durationInMinutes} minutes</td>
                             <td>Provided</td>
                         </tr>
                     })}
                     {retrospectiveReport.suggestedTopics.map((topic, index) => {
                         return <tr key={-index} style={{backgroundColor: '#f1f1f1'}}>
-                            <td>{topic.description}</td>
-                            <td colSpan={2}>Suggested (By {topic.suggestedBy.fullName})</td>
+                            <td data-testid={`suggested-topic-${topic.id}-description`}>{topic.description}</td>
+                            <td data-testid={`suggested-topic-${topic.id}-suggested-by`} colSpan={2}>Suggested (By {topic.suggestedBy.fullName})</td>
                         </tr>
                     })}
                     </tbody>
@@ -175,7 +175,7 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                                             style={{
                                                 backgroundColor: category.iconColor,
                                                 marginRight: '5px'
-                                            }}>{category.iconLabel}</Icon> {c.body}
+                                            }}>{category.iconLabel}</Icon> <span data-testid={`comment-${c.id}-value`}>{c.body}</span>
                                         </CommentRow>)}
                                     </div>
                                 </CommentGroup>)}

@@ -24,7 +24,9 @@ const FilterTab = styled(Link).attrs((props: { selected: boolean }) => ({
 
 const mapState = (state: RootState) => ({
     teams: state.teamReducer.teams,
-    user: state.authenticationReducer.user
+    isLoadingTeams: state.teamReducer.isLoadingTeams,
+    user: state.authenticationReducer.user,
+    isLoadingUser: state.authenticationReducer.isLoadingUser,
 });
 
 
@@ -43,7 +45,7 @@ interface IFilterTab {
 
 type PropsFromRedux = ConnectedProps<typeof connector> & IProps;
 
-const InsightTabs: FC<PropsFromRedux> = ({activePath, teams, user}) => {
+const InsightTabs: FC<PropsFromRedux> = ({activePath, teams, user, isLoadingTeams, isLoadingUser}) => {
     const teamMemberFilters = teams
         .filter(t => t.members.some(m => m.user.id === user?.id && m.role.canViewMemberInsights))
         .reduce((acc: IFilterTab[], team: ITeam) => {
@@ -70,7 +72,8 @@ const InsightTabs: FC<PropsFromRedux> = ({activePath, teams, user}) => {
         ...teamMemberFilters
     ];
 
-    const noTabMatched = teamFilters.length > 0 && teamFilters.every(filter => filter.path !== activePath);
+
+    const noTabMatched = !isLoadingTeams && !isLoadingUser && teamFilters.every(filter => filter.path !== activePath);
 
     if (noTabMatched) {
         return <Redirect to={teamFilters[0].path}/>

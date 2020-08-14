@@ -5,6 +5,7 @@ import {ITeam} from "../models/ITeam";
 import {EntityIdentifier} from "../types";
 
 export enum TeamActionTypes {
+    LOADING = '[TEAMS] LOADING',
     LOADED = '[TEAMS] LOADED',
     ADDED = '[TEAMS] ADDED',
     UPDATED = '[TEAMS] UPDATED',
@@ -13,6 +14,10 @@ export enum TeamActionTypes {
 }
 
 const service = new TeamService();
+
+export class Loading implements Action {
+    public readonly type = TeamActionTypes.LOADING;
+}
 
 export class Loaded implements Action {
     public readonly type = TeamActionTypes.LOADED;
@@ -46,6 +51,7 @@ export class LoadedForInviteCode implements Action {
 
 
 export const LoadAll = (): AppThunk => async dispatch => {
+    dispatch(new Loading())
     const teams = await service.getAll()
     dispatch(new Loaded(teams))
 }
@@ -76,7 +82,8 @@ export const FindByInviteCode = (inviteCode: string): AppThunk => async dispatch
 }
 
 export type TeamTypes
-    = Loaded
+    = Loading
+    | Loaded
     | Added
     | Updated
     | Deleted

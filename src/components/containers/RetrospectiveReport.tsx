@@ -110,7 +110,7 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
             <Row>
                 <Title>Retrospective: {retrospective.name}</Title>
                 {canEditRetrospective &&
-                <RoundedButtonLink to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
+                <RoundedButtonLink data-testid='edit-action' to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
             </Row>
             <Content>
                 <SectionTitle>AGENDA</SectionTitle>
@@ -150,9 +150,9 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                         </tr>
                         {retrospective.actions.map(event => {
                             return <tr key={event.id}>
-                                <td><input readOnly type='checkbox'/></td>
-                                <td>{event.description}</td>
-                                <td>{event.responsible}</td>
+                                <td><input data-testid={`action-${event.id}-completed`} readOnly type='checkbox' checked={event.isCompleted}/></td>
+                                <td data-testid={`action-${event.id}-description`}>{event.description}</td>
+                                <td data-testid={`action-${event.id}-responsible`}>{event.responsible}</td>
                             </tr>
                         })}
                         </tbody>
@@ -192,10 +192,12 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                     <tr>
                         <th>Description</th>
                         <th>Type</th>
+                        <th>Suggested by</th>
                     </tr>
                     {retrospectiveReport.suggestedActions.map((action, index) => {
                         return <tr key={-index}>
-                            <td>{action.description}</td>
+                            <td data-testid={`suggested-action-${action.id}-description`}>{action.description}</td>
+                            <td data-testid={`suggested-action-${action.id}-suggested-by`}>{action.suggestedBy.fullName}</td>
                             <td>Suggested</td>
                         </tr>
                     })}

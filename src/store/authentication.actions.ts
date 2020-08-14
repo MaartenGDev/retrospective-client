@@ -7,6 +7,7 @@ import Config from "../Config";
 import {HttpFailed} from "./notification.actions";
 
 export enum AuthenticationActionTypes {
+    LOADING = '[AUTHENTICATION] LOADING',
     LOADED = '[AUTHENTICATION] LOADED',
     LOGGED_OUT = '[AUTHENTICATION] LOGGED_OUT',
 }
@@ -17,6 +18,11 @@ export class LoggedOut implements Action {
     public readonly type = AuthenticationActionTypes.LOGGED_OUT;
 }
 
+export class Loading implements Action {
+    public readonly type = AuthenticationActionTypes.LOADING;
+}
+
+
 export class Loaded implements Action {
     public readonly type = AuthenticationActionTypes.LOADED;
 
@@ -25,6 +31,7 @@ export class Loaded implements Action {
 }
 
 export const Load = (): AppThunk => async dispatch => {
+    dispatch(new Loading())
     const teams = await service.me()
     dispatch(new Loaded(teams))
 }
@@ -46,6 +53,7 @@ export const Logout = (): AppThunk => async dispatch => {
 }
 
 export type AuthenticationTypes
-    = Loaded
+    = Loading
+    | Loaded
     | LoggedOut
     ;

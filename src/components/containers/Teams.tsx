@@ -49,8 +49,8 @@ const Teams: FC<PropsFromRedux> = ({teams, user}) => {
                         const currentUser = team.members.find(m => m.user.id === user?.id);
 
                         return <tr key={team.id}>
-                            <td>{team.name}</td>
-                            <td>{currentUser ? currentUser!.role.name : ''}</td>
+                            <td data-testid={`team-${team.id}-name`}>{team.name}</td>
+                            <td data-testid={`team-${team.id}-user-role`}>{currentUser ? currentUser!.role.name : ''}</td>
                             <td><TableLink to={`/teams/${team.id}`}>View</TableLink></td>
                         </tr>
                     })}

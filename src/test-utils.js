@@ -8,13 +8,13 @@ function render(
     ui,
     {
         initialState = {},
+        route = '/',
         store = createStoreWithState(initialState),
         ...renderOptions
     } = {}
 ) {
-
     function Wrapper({ children }) {
-        return (<MemoryRouter>
+        return (<MemoryRouter initialEntries={[route]} initialIndex={0}>
             <Provider store={store}>{children}</Provider>
         </MemoryRouter>)
     }

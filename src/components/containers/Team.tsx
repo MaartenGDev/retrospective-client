@@ -11,6 +11,7 @@ import {Container, Row, SectionTitle, Title} from "../styles/Common";
 import {RoundedButton, RoundedButtonLink} from "../styles/Buttons";
 import {parseId} from "../../helpers/Uri";
 import {EntityIdentifier} from "../../types";
+import {NotFound} from "../presentation/NotFound";
 
 const Content = styled.div`
   padding: 20px;
@@ -20,6 +21,7 @@ const Content = styled.div`
 const mapState = (state: RootState) => ({
     retrospectives: state.retrospectiveReducer.retrospectives,
     teams: state.teamReducer.teams,
+    isLoadingTeams: state.teamReducer.isLoadingTeams,
     user: state.authenticationReducer.user,
 });
 
@@ -31,12 +33,16 @@ const connector = connect(mapState, mapDispatch)
 type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: string }>;
 
 
-const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
+const Team: FC<IProps> = ({isLoadingTeams, teams, user, deleteTeam, match}) => {
     const team = teams.find(t => t.id === parseId(match.params.id!));
     const [redirectToOverview, setShouldRedirect] = useState(false);
 
+    if (isLoadingTeams) {
+        return <Container><Content><p>Loading..</p></Content></Container>
+    }
+
     if (!team) {
-        return <main>Loading..</main>
+        return <NotFound message='Team not found, are you invited to the team?'/>
     }
 
     const promptDelete = (teamId: EntityIdentifier) => {
@@ -58,9 +64,9 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
                 <Title>Team: {team.name}</Title>
 
                 {isAdminOfTeam && <div>
-                    <RoundedButton style={{marginRight: '10px'}} onClick={e => promptDelete(team.id!)}
+                    <RoundedButton data-testid='delete-action' style={{marginRight: '10px'}} onClick={e => promptDelete(team.id!)}
                                    color='#e53935'>Remove</RoundedButton>
-                    <RoundedButtonLink to={`/teams/${team.id}/edit`}>Edit</RoundedButtonLink>
+                    <RoundedButtonLink data-testid='edit-action' to={`/teams/${team.id}/edit`}>Edit</RoundedButtonLink>
                 </div>}
             </Row>
 
@@ -74,17 +80,17 @@ const Team: FC<IProps> = ({teams, user, deleteTeam, match}) => {
                     </tr>
                     {team.members.map(m => {
                         return <tr key={m.user.id}>
-                            <td>{m.user.fullName}</td>
-                            <td>{m.role.name}</td>
+                            <td data-testid={`member-${m.user.id}-name`}>{m.user.fullName}</td>
+                            <td data-testid={`member-${m.user.id}-role`}>{m.role.name}</td>
                         </tr>
                     })}
                     </tbody>
                 </table>
 
-                {showInviteCode && <React.Fragment>
+                {showInviteCode && <>
                     <SectionTitle>Invite Link</SectionTitle>
-                    <TextInput disabled={true} value={Config.LOCAL_TEAM_INVITE_URL(team.inviteCode)}/>
-                </React.Fragment>}
+                    <TextInput data-testid='invite-code' disabled={true} value={Config.LOCAL_TEAM_INVITE_URL(team.inviteCode)}/>
+                </>}
             </Content>
         </Container>
     );

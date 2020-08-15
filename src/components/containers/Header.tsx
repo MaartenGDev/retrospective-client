@@ -33,7 +33,7 @@ const NavItem = styled.span`
   display: inline-block;
   position: relative;
   
-  &:hover :first-child{
+  &:hover ul:first-of-type{
     display: inline-block;
   } 
 `

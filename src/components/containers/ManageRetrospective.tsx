@@ -146,7 +146,7 @@ class ManageRetrospective extends Component<IProps, IState> {
             isNewRetrospective: !nextRetrospective.id
         });
 
-        this.handleSprintDurationChange(retrospective.startDate, selectedSprintDuration, false);
+        this.handleSprintDurationChange(nextRetrospective, selectedSprintDuration, false);
     }
 
     private removeTopic = (topic: ITopic, index: number) => {
@@ -217,12 +217,14 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
 
-    private handleSprintDurationChange = (startDate: string, durationInWeeks: number, shouldTriggerSave = true) => {
+    private handleSprintDurationChange = (retrospective: IUserRetrospective, durationInWeeks: number, shouldTriggerSave = true) => {
+        const shouldOverrideEndDate = retrospective.startDate === retrospective.endDate;
+
         this.setState(state => ({
             selectedSprintDuration: durationInWeeks,
             retrospective: {
                 ...state.retrospective,
-                endDate: this.getEndDate(startDate, durationInWeeks)
+                endDate: shouldOverrideEndDate ? this.getEndDate(retrospective.startDate, durationInWeeks) : retrospective.endDate
             }
         }))
 
@@ -409,7 +411,7 @@ class ManageRetrospective extends Component<IProps, IState> {
 
                     <InputRow>
                         <Select value={selectedSprintDuration}
-                                onChange={e => this.handleSprintDurationChange(retrospective.startDate, parseInt(e.target.value))}>
+                                onChange={e => this.handleSprintDurationChange(retrospective, parseInt(e.target.value))}>
                             {this._sprintDurations.map(duration => <option key={duration.value}
                                                                            value={duration.value}>{duration.name}</option>)}
                         </Select>

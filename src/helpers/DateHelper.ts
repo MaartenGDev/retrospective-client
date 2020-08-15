@@ -14,7 +14,7 @@ export class DateHelper {
             return true;
         }
 
-        if(date.getDate() > afterDate.getDate()){
+        if(date.getMonth() === afterDate.getMonth() && date.getDate() > afterDate.getDate()){
             return true;
         }
 

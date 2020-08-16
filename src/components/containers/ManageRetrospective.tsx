@@ -183,7 +183,7 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.setState({topicBeingEdited: {...topic, editIndex: index}});
     }
 
-    private removeAction = (action: IAction, index: number) => {
+    private removeAction = (action: IAction) => {
         const {retrospective} = this.state
 
         this.setState({
@@ -511,7 +511,7 @@ class ManageRetrospective extends Component<IProps, IState> {
                                     onClick={() => this.toggleActionEditing(action, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
                                 </td>
                                 <td><TextButton color='#e53935'
-                                                onClick={() => this.removeAction(action, index)}>REMOVE</TextButton>
+                                                onClick={() => this.removeAction(action)}>REMOVE</TextButton>
                                 </td>
                             </tr>
                         })}

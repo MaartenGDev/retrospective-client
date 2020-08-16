@@ -1,6 +1,6 @@
 import React, {FC, useState} from 'react';
 import styled from 'styled-components'
-import {RouteComponentProps, withRouter, Redirect} from "react-router-dom";
+import {withRouter, Redirect} from "react-router-dom";
 import {RootState} from "../../store/rootReducer";
 import * as authenticationActions from "../../store/authentication.actions";
 import {connect, ConnectedProps} from "react-redux";
@@ -10,6 +10,7 @@ import {ButtonRow, SectionTitle} from "../styles/Common";
 import {RoundedButton} from "../styles/Buttons";
 import {ICredentials} from "../../models/dto/ICredentials";
 import Config from "../../Config";
+import {IRegistrationRequest} from "../../models/dto/IRegistrationRequest";
 
 const LoginCard = styled.div`
     margin: 20%;
@@ -42,21 +43,26 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = {
-    login: (credentials: ICredentials) => authenticationActions.Login(credentials),
+    login: authenticationActions.Login,
+    register: authenticationActions.Register,
 }
 
 const connector = connect(mapState, mapDispatch)
-type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ code: string }>;
+type IProps = ConnectedProps<typeof connector>;
 
-const Authenticate: FC<IProps> = ({user, login, match}) => {
-    const [credentials, setCredentials] = useState<ICredentials>({email: '', password: ''})
+const Authenticate: FC<IProps> = ({user, login, register}) => {
+    const [request, setRequest] = useState<ICredentials | IRegistrationRequest>({
+        email: '',
+        password: '',
+        fullName: ''
+    })
     const [isLogin, setIsLogin] = useState(true);
 
-    if(user){
-        return <Redirect to='/' />
+    if (user) {
+        return <Redirect to='/'/>
     }
 
-    if(Config.USE_EXTERNAL_AUTH){
+    if (Config.USE_EXTERNAL_AUTH) {
         window.location.href = Config.LOGIN_URL;
         return null;
     }
@@ -68,10 +74,16 @@ const Authenticate: FC<IProps> = ({user, login, match}) => {
                 <LoginSubHeader>Login with your favorite account to get started.</LoginSubHeader>
 
                 <LoginOptions>
+                    {!isLogin && <>
+                        <SectionTitle>Name</SectionTitle>
+                        <TextInput type='text'
+                                   onChange={e => setRequest({...request, fullName: e.target.value})}/>
+                    </>}
                     <SectionTitle>Email</SectionTitle>
-                    <TextInput type='email' onChange={e => setCredentials({...credentials, email: e.target.value})}/>
+                    <TextInput type='email' onChange={e => setRequest({...request, email: e.target.value})}/>
                     <SectionTitle>Password</SectionTitle>
-                    <TextInput type='password' onChange={e => setCredentials({...credentials, password: e.target.value})} />
+                    <TextInput type='password'
+                               onChange={e => setRequest({...request, password: e.target.value})}/>
                 </LoginOptions>
 
                 <AlternativeOption onClick={() => setIsLogin(!isLogin)}>
@@ -79,7 +91,8 @@ const Authenticate: FC<IProps> = ({user, login, match}) => {
                 </AlternativeOption>
 
                 <ButtonRow>
-                    <RoundedButton onClick={() => login(credentials)}>{isLogin ? 'Login' : 'Register'}</RoundedButton>
+                    <RoundedButton
+                        onClick={() => isLogin ? login(request) : register(request)}>{isLogin ? 'Login' : 'Register'}</RoundedButton>
                 </ButtonRow>
             </LoginCard>
         </SplitPage>

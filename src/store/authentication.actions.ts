@@ -32,8 +32,8 @@ export class Loaded implements Action {
 
 export const Load = (): AppThunk => async dispatch => {
     dispatch(new Loading())
-    const teams = await service.me()
-    dispatch(new Loaded(teams))
+    const user = await service.me()
+    dispatch(new Loaded(user))
 }
 
 export const Login = (credentials: ICredentials): AppThunk => async dispatch => {
@@ -46,8 +46,19 @@ export const Login = (credentials: ICredentials): AppThunk => async dispatch => 
     }
 }
 
+export const Register = (credentials: ICredentials): AppThunk => async dispatch => {
+    try {
+        const response = await service.register(credentials)
+        localStorage.setItem(Config.AUTH_TOKEN_NAME, response.token);
+        dispatch(new Loaded(response.user))
+    } catch (e) {
+        dispatch(new HttpFailed(e))
+    }
+}
+
 export const Logout = (): AppThunk => async dispatch => {
     await service.logout()
+    localStorage.removeItem(Config.AUTH_TOKEN_NAME);
 
     dispatch(new LoggedOut())
 }

@@ -15,3 +15,6 @@ Client for retrospective [server](https://github.com/MaartenGDev/dwa-server)
 ## Stack
 - React
 - Redux
+- Typescript
+- [Jest](https://jestjs.io/)
+- [Styled components](https://styled-components.com/)

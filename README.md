@@ -6,7 +6,7 @@ Client for retrospective [server](https://github.com/MaartenGDev/dwa-server)
 ![Structured feedback](./docs/structured_feedback.png)
 
 ##### Insights
-![Insights](./docs/insights.png)
+![Insights](./docs/actionable_insights.png)
 
 ## Setup
 1. `npm i`

@@ -136,7 +136,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
 
         const commentsById = commentCategories.reduce((acc: { [key: number]: IComment }, category, categoryIndex) => {
             const existingComments = Object.values(evaluation.comments).filter(e => (e.categoryId || e.category.id) === category.id);
-            const amountOfMissingComments = commentCountPerCategory - existingComments.length;
+            const amountOfMissingComments = Math.max(0, commentCountPerCategory - existingComments.length);
 
             const nextComments = [
                 ...existingComments,
@@ -200,7 +200,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
             commentsById: nextComments
         });
 
-        this.queueSave();
+        this.queueSave(2000);
     }
 
     private handleSprintRatingChange = (sprintRating: number) => {
@@ -323,6 +323,7 @@ class RetrospectiveEvaluation extends Component<Props, IState> {
                                         <Input type='text' required={index < category.minimalCommentCount}
                                                value={comment.body} placeholder={category.description}
                                                onChange={e => this.handleCommentsChange(comment.id, e)}
+                                               onBlur={() => this.queueSave(0)}
                                                disabled={readonly}
                                         />
                                     </InputRow>

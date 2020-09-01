@@ -10,11 +10,11 @@ export class DateHelper {
             return true;
         }
 
-        if(date.getMonth() > afterDate.getMonth()){
+        if(date.getFullYear() >= afterDate.getFullYear() && date.getMonth() > afterDate.getMonth()){
             return true;
         }
 
-        if(date.getMonth() === afterDate.getMonth() && date.getDate() > afterDate.getDate()){
+        if(date.getFullYear() >= afterDate.getFullYear() && date.getMonth() >= afterDate.getMonth() && date.getDate() > afterDate.getDate()){
             return true;
         }
 

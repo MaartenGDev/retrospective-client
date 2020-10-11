@@ -6,10 +6,8 @@ import { SliderRail, KeyboardHandle, Track } from './slider/Parts'
 const SliderSection = styled.div`
   width: 100%;
   padding-top: 15px;
-  height: 20px;
+  height: 25px;
 `;
-
-
 
 export interface ICategory {
     id: number,

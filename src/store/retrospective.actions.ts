@@ -6,6 +6,7 @@ import {IEvaluation} from "../models/IEvaluation";
 import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 import {EntityIdentifier} from "../types";
 import {HttpFailed} from "./notification.actions";
+import {IAction} from "../models/IAction";
 
 export enum RetrospectiveActionTypes {
     LOADING = '[RETROSPECTIVES] LOADING',
@@ -18,6 +19,9 @@ export enum RetrospectiveActionTypes {
     LOADING_REPORT = '[RETROSPECTIVES] LOADING REPORT',
     LOADING_REPORT_FAILED = '[RETROSPECTIVES] LOADING REPORT FAILED',
     LOADED_REPORT = '[RETROSPECTIVES] LOADED REPORT',
+    ADDED_ACTION = '[RETROSPECTIVES] ADDED ACTION',
+    UPDATED_ACTION = '[RETROSPECTIVES] UPDATED ACTION',
+    COMPLETED_ACTION = '[RETROSPECTIVES] COMPLETED ACTION',
 }
 
 const service = new RetrospectiveService();
@@ -80,6 +84,25 @@ export class LoadedReport implements Action {
     }
 }
 
+export class AddedAction implements Action {
+    public readonly type = RetrospectiveActionTypes.ADDED_ACTION;
+
+    constructor(public action: IAction) {
+    }
+}
+
+export class UpdatedAction implements Action {
+    public readonly type = RetrospectiveActionTypes.UPDATED_ACTION;
+
+    constructor(public payload: IAction) {}
+}
+
+export class CompletedAction implements Action {
+    public readonly type = RetrospectiveActionTypes.COMPLETED_ACTION;
+
+    constructor(public payload: IAction) {}
+}
+
 export const LoadAll = (): AppThunk => async dispatch => {
     try {
         dispatch(new Loading());
@@ -126,7 +149,7 @@ export const CreateOrUpdateEvaluation = (evaluation: IEvaluation): AppThunk => a
     }
 }
 
-export const LoadReport = (retrospectiveId: number | string): AppThunk => async dispatch => {
+export const LoadReport = (retrospectiveId: EntityIdentifier): AppThunk => async dispatch => {
     try {
         dispatch(new LoadingReport());
         const report = await service.getReport(retrospectiveId)
@@ -136,6 +159,35 @@ export const LoadReport = (retrospectiveId: number | string): AppThunk => async 
         dispatch(new HttpFailed(e))
     }
 }
+
+export const AddAction = (retrospectiveId: EntityIdentifier, action: IAction): AppThunk => async dispatch => {
+    try {
+        const persistedAction = await service.addAction(retrospectiveId, action);
+        dispatch(new AddedAction(persistedAction))
+    } catch (e) {
+        dispatch(new HttpFailed(e))
+    }
+}
+
+export const UpdateAction = (retrospectiveId: EntityIdentifier, action: IAction): AppThunk => async dispatch => {
+    try {
+        const persistedAction = await service.updateAction(retrospectiveId, action);
+        dispatch(new UpdatedAction(persistedAction))
+    } catch (e) {
+        dispatch(new HttpFailed(e))
+    }
+}
+
+export const CompleteAction = (retrospectiveId: EntityIdentifier, actionId: EntityIdentifier): AppThunk => async dispatch => {
+    try {
+        const persistedAction = await service.completeAction(retrospectiveId, actionId);
+        dispatch(new CompletedAction(persistedAction))
+    } catch (e) {
+        dispatch(new HttpFailed(e))
+    }
+}
+
+
 
 export type RetrospectiveTypes
     = Loading
@@ -147,4 +199,7 @@ export type RetrospectiveTypes
     | UpdatedEvaluation
     | LoadingReport
     | LoadedReport
+    | AddedAction
+    | UpdatedAction
+    | CompletedAction
     ;

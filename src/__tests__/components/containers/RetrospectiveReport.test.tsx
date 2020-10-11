@@ -148,8 +148,8 @@ test('Should show the data from the retrospective report', () => {
     ] as ITopic[];
 
     const actions = [
-        {id: 1, description: 'Say hello 1', responsible: 'User 1', isCompleted: false},
-        {id: 2, description: 'Say hello 2', responsible: 'User 2', isCompleted: true},
+        {id: 1, description: 'Say hello 1', responsible: 'User 1'},
+        {id: 2, description: 'Say hello 2', responsible: 'User 2'},
     ] as IAction[];
 
     const state = {
@@ -191,11 +191,6 @@ test('Should show the data from the retrospective report', () => {
     })
 
     actions.forEach(action => {
-        const checkElem = screen.getByTestId(`action-${action.id}-completed`);
-        action.isCompleted
-            ? expect(checkElem).toBeChecked()
-            : expect(checkElem).not.toBeChecked();
-
         expect(screen.getByTestId(`action-${action.id}-description`)).toHaveTextContent(action.description);
         expect(screen.getByTestId(`action-${action.id}-responsible`)).toHaveTextContent(action.responsible);
     })

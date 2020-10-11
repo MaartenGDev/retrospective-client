@@ -68,8 +68,7 @@ class ManageRetrospective extends Component<IProps, IState> {
     private _defaultAction: IAction = {
         id: 0,
         description: '',
-        responsible: '',
-        isCompleted: false
+        responsible: ''
     }
 
     private _sprintDurations = [

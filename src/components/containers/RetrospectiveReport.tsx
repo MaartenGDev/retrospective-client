@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import styled from "styled-components";
 import {RootState} from "../../store/rootReducer";
 import {connect, ConnectedProps} from "react-redux";
@@ -10,9 +10,11 @@ import {Icon} from "../styles/Icons";
 import {Text, TextHeader} from "../styles/Text";
 import {IUser} from "../../models/IUser";
 import {Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
-import {RoundedButtonLink} from "../styles/Buttons";
+import {RoundedButtonLink, TextButton} from "../styles/Buttons";
 import {parseId} from "../../helpers/Uri";
 import {NotFound} from "../presentation/NotFound";
+import {IAction} from "../../models/IAction";
+import {TextInput} from "../styles/Input";
 
 const Content = styled.div`
   padding: 20px;
@@ -48,7 +50,10 @@ const mapState = (state: RootState) => ({
 });
 
 const mapDispatch = {
-    loadReport: (retrospectiveId: number | string) => retrospectiveActions.LoadReport(retrospectiveId)
+    loadReport: retrospectiveActions.LoadReport,
+    addAction: retrospectiveActions.AddAction,
+    updateAction: retrospectiveActions.UpdateAction,
+    completeAction: retrospectiveActions.CompleteAction,
 }
 
 type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: { [userId: string]: { user: IUser, comments: IComment[] } } } };
@@ -56,8 +61,13 @@ type ICommentsByCategoryAndUser = { [categoryId: number]: { id: number, users: {
 const connector = connect(mapState, mapDispatch)
 type PropsFromRedux = ConnectedProps<typeof connector> & RouteComponentProps<{ id: string }>
 
-const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport}) => {
+
+const defaultAction = {description: '', responsible: ''};
+
+const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user, match, retrospectiveReport, loadReport, isLoadingReport, addAction, updateAction, completeAction}) => {
     const retrospectiveId = parseId(match.params.id);
+
+    const [actionBeingEdited, setActionBeingEdited] = useState<IAction>(defaultAction);
 
     useEffect(() => {
         if(retrospectiveId){
@@ -140,20 +150,44 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                 <Spacer/>
 
                 {retrospective.actions.length > 0 && <>
-                    <SectionTitle>ACTIONS PREVIOUS SPRINT</SectionTitle>
+                    <SectionTitle>ACTIONS</SectionTitle>
                     <table>
                         <tbody>
                         <tr>
-                            <th>Done</th>
                             <th>Description</th>
                             <th>Responsible</th>
+                            <th>Edit</th>
+                            <th>Complete</th>
                         </tr>
-                        {retrospective.actions.map(event => {
-                            return <tr key={event.id}>
-                                <td><input data-testid={`action-${event.id}-completed`} readOnly type='checkbox' checked={event.isCompleted}/></td>
-                                <td data-testid={`action-${event.id}-description`}>{event.description}</td>
-                                <td data-testid={`action-${event.id}-responsible`}>{event.responsible}</td>
-                            </tr>
+                        {retrospectiveReport.actions.map(action => {
+                            const isInReadMode = actionBeingEdited.id !== action.id;
+
+                            return (
+                                <tr key={action.id}>
+                                    <td data-testid={`action-${action.id}-description`}>{isInReadMode
+                                        ? action.description
+                                        : <TextInput name='description' value={actionBeingEdited.description}
+                                                     onChange={e => setActionBeingEdited({...actionBeingEdited, description: e.target.value})}/>
+                                    }</td>
+                                    <td>{isInReadMode
+                                        ? action.responsible
+                                        : <TextInput name='responsible' value={actionBeingEdited.responsible}
+                                                     onChange={e => setActionBeingEdited({...actionBeingEdited, responsible: e.target.value})}/>
+                                    }</td>
+                                    <td><TextButton
+                                        onClick={() => {
+                                            if(!isInReadMode){
+                                                updateAction(retrospectiveId, actionBeingEdited);
+                                            }
+
+                                            setActionBeingEdited(isInReadMode ? action : defaultAction);
+                                        }}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
+                                    </td>
+                                    <td><TextButton color='#3B4558'
+                                                    onClick={() => completeAction(action.retrospectiveId!, action.id!)}>COMPLETE</TextButton>
+                                    </td>
+                                </tr>
+                            )
                         })}
                         </tbody>
                     </table>
@@ -186,19 +220,19 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
 
                 <Spacer/>
 
-                <SectionTitle>ACTIONS NEXT SPRINT</SectionTitle>
+                <SectionTitle>SUGGESTED ACTIONS</SectionTitle>
                 <table>
                     <tbody>
                     <tr>
                         <th>Description</th>
-                        <th>Type</th>
                         <th>Suggested by</th>
+                        <th>Action</th>
                     </tr>
-                    {retrospectiveReport.suggestedActions.map((action, index) => {
+                    {retrospectiveReport.suggestedActions.map((suggestedAction, index) => {
                         return <tr key={index}>
-                            <td data-testid={`suggested-action-${index}-description`}>{action.description}</td>
-                            <td data-testid={`suggested-action-${index}-suggested-by`}>{action.suggestedBy.fullName}</td>
-                            <td>Suggested</td>
+                            <td data-testid={`suggested-action-${index}-description`}>{suggestedAction.description}</td>
+                            <td data-testid={`suggested-action-${index}-suggested-by`}>{suggestedAction.suggestedBy.fullName}</td>
+                            <td><TextButton onClick={() => addAction(retrospectiveId, {description: suggestedAction.description, responsible: suggestedAction.suggestedBy.fullName, retrospectiveId: retrospective.id!})}>ADD</TextButton></td>
                         </tr>
                     })}
                     </tbody>

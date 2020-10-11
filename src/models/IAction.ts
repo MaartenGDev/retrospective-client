@@ -1,8 +1,8 @@
 import {EntityIdentifier} from "../types";
 
 export interface IAction {
-    id: EntityIdentifier;
+    id?: EntityIdentifier;
     description: string;
     responsible: string;
-    isCompleted: boolean;
+    retrospectiveId?: EntityIdentifier;
 }

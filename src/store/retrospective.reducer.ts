@@ -74,6 +74,39 @@ export function retrospectiveReducer(state: IRetrospectivesState = initialState,
                 isLoadingReport: false,
                 retrospectiveReport: action.retrospectiveReport,
             }
+        case RetrospectiveActionTypes.ADDED_ACTION:
+            const updatedReportAfterAdd = {
+                ...state.retrospectiveReport!,
+                actions: [...state.retrospectiveReport?.actions!, action.action]
+            }
+
+            return {
+                ...state,
+                isLoadingReport: false,
+                retrospectiveReport: updatedReportAfterAdd,
+            }
+        case RetrospectiveActionTypes.UPDATED_ACTION:
+            const updatedReportAfterUpdate = {
+                ...state.retrospectiveReport!,
+                actions: state.retrospectiveReport?.actions!.map(ac => ac.id === action.payload.id ? action.payload : ac)
+            }
+
+            return {
+                ...state,
+                isLoadingReport: false,
+                retrospectiveReport: updatedReportAfterUpdate,
+            }
+        case RetrospectiveActionTypes.COMPLETED_ACTION:
+            const updatedReportAfterComplete = {
+                ...state.retrospectiveReport!,
+                actions: state.retrospectiveReport?.actions!.filter(a => a.id !== action.payload.id)
+            }
+
+            return {
+                ...state,
+                isLoadingReport: false,
+                retrospectiveReport: updatedReportAfterComplete,
+            }
         default:
             return state
     }

@@ -3,6 +3,7 @@ import {HttpClient} from "./HttpClient";
 import {IEvaluation} from "../models/IEvaluation";
 import {IRetrospectiveReport} from "../models/IRetrospectiveReport";
 import {EntityIdentifier} from "../types";
+import {IAction} from "../models/IAction";
 
 const http = new HttpClient();
 
@@ -35,5 +36,17 @@ export class RetrospectiveService {
 
     getReport(retrospectiveId: EntityIdentifier): Promise<IRetrospectiveReport> {
         return http.get(`retrospectives/${retrospectiveId}/report`);
+    }
+
+    addAction(retrospectiveId: EntityIdentifier, action: IAction): Promise<IAction> {
+        return http.post(`retrospectives/${retrospectiveId}/actions`, action);
+    }
+
+    updateAction(retrospectiveId: EntityIdentifier, action: IAction): Promise<IAction> {
+        return http.patch(`retrospectives/${retrospectiveId}/actions/${action.id}`, action);
+    }
+
+    completeAction(retrospectiveId: EntityIdentifier, actionId: EntityIdentifier): Promise<IAction> {
+        return http.patch(`retrospectives/${retrospectiveId}/actions/${actionId}/completed`, {});
     }
 }

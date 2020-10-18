@@ -60,6 +60,7 @@ test('Should show edit action if user can manage retrospective', () => {
                     actions: [] as IAction[],
                     team: {id: teamId}
                 },
+                actions: [] as IAction[],
                 suggestedTopics: [] as ISuggestedTopic[],
                 suggestedActions: [] as ISuggestedAction[],
                 comments: [] as IComment[]
@@ -98,6 +99,7 @@ test('Should hide edit action if user cannot manage retrospective', () => {
                     actions: [] as IAction[],
                     team: {id: 2}
                 },
+                actions: [] as IAction[],
                 suggestedTopics: [] as ISuggestedTopic[],
                 suggestedActions: [] as ISuggestedAction[],
                 comments: [] as IComment[]
@@ -160,6 +162,7 @@ test('Should show the data from the retrospective report', () => {
                     topics: topics,
                     actions: actions
                 },
+                actions: [] as IAction[],
                 suggestedTopics,
                 suggestedActions: suggestedActions,
                 comments
@@ -188,11 +191,6 @@ test('Should show the data from the retrospective report', () => {
     suggestedTopics.forEach((topic, index) => {
         expect(screen.getByTestId(`suggested-topic-${index}-description`)).toHaveTextContent(topic.description);
         expect(screen.getByTestId(`suggested-topic-${index}-suggested-by`)).toHaveTextContent(`Suggested (By ${topic.suggestedBy.fullName})`);
-    })
-
-    actions.forEach(action => {
-        expect(screen.getByTestId(`action-${action.id}-description`)).toHaveTextContent(action.description);
-        expect(screen.getByTestId(`action-${action.id}-responsible`)).toHaveTextContent(action.responsible);
     })
 
     suggestedActions.forEach((action, index) => {

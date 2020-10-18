@@ -16,6 +16,7 @@ import {NotFound} from "../presentation/NotFound";
 import {IAction} from "../../models/IAction";
 import {TextInput} from "../styles/Input";
 import VisibilityIcon from "../presentation/common/icons/VisibilityIcon";
+import {DateHelper} from "../../helpers/DateHelper";
 
 const Content = styled.div`
   padding: 20px;
@@ -102,6 +103,8 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
     }, {})
 
     const retrospective = retrospectiveReport.retrospective;
+    const retrospectiveIsCompleted = DateHelper.isAfterDate(new Date(retrospective.endDate), new Date());
+
 
     const commentsByCategoryAndUser = retrospectiveReport.comments.reduce((acc: ICommentsByCategoryAndUser, comment: IComment) => {
         if (!acc.hasOwnProperty(comment.categoryId)) {
@@ -133,7 +136,10 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
             <Row>
                 <Title>Retrospective: {retrospective.name}</Title>
                 {canEditRetrospective && <ButtonGroup>
-                    <ActionModeButton onClick={() => setActionModeIsActive(!actionModeIsActive)} color='#3B4558'>{actionModeIsActive && <><VisibilityIcon color='white' />&nbsp;</>}Action mode</ActionModeButton>
+                    {!retrospectiveIsCompleted && <ActionModeButton
+                        onClick={() => setActionModeIsActive(!actionModeIsActive)}
+                        color='#3B4558'>{actionModeIsActive && <><VisibilityIcon color='white' />&nbsp;</>}Action mode
+                    </ActionModeButton>}
 
                     <RoundedButtonLink data-testid='edit-action'
                                        to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>

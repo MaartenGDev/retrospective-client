@@ -10,11 +10,12 @@ import {Icon} from "../styles/Icons";
 import {Text, TextHeader} from "../styles/Text";
 import {IUser} from "../../models/IUser";
 import {Container, Row, SectionTitle, Spacer, Title} from "../styles/Common";
-import {RoundedButtonLink, TextButton} from "../styles/Buttons";
+import {RoundedButton, RoundedButtonLink, TextButton} from "../styles/Buttons";
 import {parseId} from "../../helpers/Uri";
 import {NotFound} from "../presentation/NotFound";
 import {IAction} from "../../models/IAction";
 import {TextInput} from "../styles/Input";
+import VisibilityIcon from "../presentation/common/icons/VisibilityIcon";
 
 const Content = styled.div`
   padding: 20px;
@@ -39,6 +40,16 @@ const CommentRow = styled.div`
 display: flex;
 margin-top: 5px;
 align-items: center;
+`
+
+const ButtonGroup = styled.div`
+  display: flex;
+`
+
+const ActionModeButton = styled(RoundedButton)`
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
 `
 
 const mapState = (state: RootState) => ({
@@ -68,15 +79,17 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
     const retrospectiveId = parseId(match.params.id);
 
     const [actionBeingEdited, setActionBeingEdited] = useState<IAction>(defaultAction);
+    const [newAction, setNewAction] = useState<IAction>(defaultAction);
+    const [actionModeIsActive, setActionModeIsActive] = useState(false);
 
     useEffect(() => {
-        if(retrospectiveId){
+        if (retrospectiveId) {
             loadReport(retrospectiveId)
         }
     }, [retrospectiveId, loadReport])
 
-    if(!isLoadingReport && !retrospectiveReport){
-        return <NotFound message='The retrospective could not be found, are you invited to the team?' />
+    if (!isLoadingReport && !retrospectiveReport) {
+        return <NotFound message='The retrospective could not be found, are you invited to the team?'/>
     }
 
     if (isLoadingReport || !retrospectiveReport || commentCategories.length === 0) {
@@ -119,8 +132,12 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
         <Container>
             <Row>
                 <Title>Retrospective: {retrospective.name}</Title>
-                {canEditRetrospective &&
-                <RoundedButtonLink data-testid='edit-action' to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>}
+                {canEditRetrospective && <ButtonGroup>
+                    <ActionModeButton onClick={() => setActionModeIsActive(!actionModeIsActive)} color='#3B4558'>{actionModeIsActive && <><VisibilityIcon color='white' />&nbsp;</>}Action mode</ActionModeButton>
+
+                    <RoundedButtonLink data-testid='edit-action'
+                                       to={`/retrospectives/${retrospective.id}/edit`}>Edit</RoundedButtonLink>
+                </ButtonGroup>}
             </Row>
             <Content>
                 <SectionTitle>AGENDA</SectionTitle>
@@ -141,7 +158,9 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                     {retrospectiveReport.suggestedTopics.map((topic, index) => {
                         return <tr key={-index} style={{backgroundColor: '#f1f1f1'}}>
                             <td data-testid={`suggested-topic-${index}-description`}>{topic.description}</td>
-                            <td data-testid={`suggested-topic-${index}-suggested-by`} colSpan={2}>Suggested (By {topic.suggestedBy.fullName})</td>
+                            <td data-testid={`suggested-topic-${index}-suggested-by`} colSpan={2}>Suggested
+                                (By {topic.suggestedBy.fullName})
+                            </td>
                         </tr>
                     })}
                     </tbody>
@@ -149,51 +168,74 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
 
                 <Spacer/>
 
-                {retrospective.actions.length > 0 && <>
-                    <SectionTitle>ACTIONS</SectionTitle>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <th>Description</th>
-                            <th>Responsible</th>
-                            <th>Edit</th>
-                            <th>Complete</th>
-                        </tr>
-                        {retrospectiveReport.actions.map(action => {
-                            const isInReadMode = actionBeingEdited.id !== action.id;
+                <SectionTitle>ACTIONS</SectionTitle>
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>Description</th>
+                        <th>Responsible</th>
+                        {actionModeIsActive && <th>Edit</th>}
+                        {actionModeIsActive && <th>Complete</th>}
+                    </tr>
+                    {retrospectiveReport.actions.map(action => {
+                        const isInReadMode = actionBeingEdited.id !== action.id;
 
-                            return (
-                                <tr key={action.id}>
-                                    <td data-testid={`action-${action.id}-description`}>{isInReadMode
-                                        ? action.description
-                                        : <TextInput name='description' value={actionBeingEdited.description}
-                                                     onChange={e => setActionBeingEdited({...actionBeingEdited, description: e.target.value})}/>
-                                    }</td>
-                                    <td>{isInReadMode
-                                        ? action.responsible
-                                        : <TextInput name='responsible' value={actionBeingEdited.responsible}
-                                                     onChange={e => setActionBeingEdited({...actionBeingEdited, responsible: e.target.value})}/>
-                                    }</td>
-                                    <td><TextButton
+                        return (
+                            <tr key={action.id}>
+                                <td data-testid={`action-${action.id}-description`}>{isInReadMode
+                                    ? action.description
+                                    : <TextInput name='description' value={actionBeingEdited.description}
+                                                 onChange={e => setActionBeingEdited({
+                                                     ...actionBeingEdited,
+                                                     description: e.target.value
+                                                 })}/>
+                                }</td>
+                                <td>{isInReadMode
+                                    ? action.responsible
+                                    : <TextInput name='responsible' value={actionBeingEdited.responsible}
+                                                 onChange={e => setActionBeingEdited({
+                                                     ...actionBeingEdited,
+                                                     responsible: e.target.value
+                                                 })}/>
+                                }</td>
+                                {actionModeIsActive && <td><TextButton
+                                    onClick={() => {
+                                        if (!isInReadMode) {
+                                            updateAction(retrospectiveId, actionBeingEdited);
+                                        }
+
+                                        setActionBeingEdited(isInReadMode ? action : defaultAction);
+                                    }}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
+                                </td>}
+                                {actionModeIsActive && <td><TextButton color='#3B4558'
+                                                onClick={() => completeAction(action.retrospectiveId!, action.id!)}>COMPLETE</TextButton>
+                                </td>}
+                            </tr>
+                        )
+                    })}
+                    {actionModeIsActive && <tr>
+                        <td><TextInput value={newAction.description}
+                                                   onChange={e => setNewAction({
+                                                       ...newAction,
+                                                       description: e.target.value
+                                                   })}/>
+                        </td>
+                        <td><TextInput
+                            value={newAction.responsible}
+                            onChange={e => setNewAction({...newAction, responsible: e.target.value})}/>
+                        </td>
+                        <td colSpan={2}>
+                            <TextButton disabled={newAction.description.length === 0 || newAction.responsible.length === 0}
                                         onClick={() => {
-                                            if(!isInReadMode){
-                                                updateAction(retrospectiveId, actionBeingEdited);
-                                            }
+                                            addAction(retrospectiveId, newAction);
+                                            setNewAction(defaultAction);
+                                        }}>ADD</TextButton>
+                        </td>
+                    </tr>}
+                    </tbody>
+                </table>
 
-                                            setActionBeingEdited(isInReadMode ? action : defaultAction);
-                                        }}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
-                                    </td>
-                                    <td><TextButton color='#3B4558'
-                                                    onClick={() => completeAction(action.retrospectiveId!, action.id!)}>COMPLETE</TextButton>
-                                    </td>
-                                </tr>
-                            )
-                        })}
-                        </tbody>
-                    </table>
-
-                    <Spacer/>
-                </>}
+                <Spacer/>
 
                 <SectionTitle>TO DISCUSS</SectionTitle>
                 {Object.values(commentsByCategoryAndUser).map(categoryGroup => {
@@ -209,7 +251,8 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                                             style={{
                                                 backgroundColor: category.iconColor,
                                                 marginRight: '5px'
-                                            }}>{category.iconLabel}</Icon> <span data-testid={`comment-${c.id}-value`}>{c.body}</span>
+                                            }}>{category.iconLabel}</Icon> <span
+                                            data-testid={`comment-${c.id}-value`}>{c.body}</span>
                                         </CommentRow>)}
                                     </div>
                                 </CommentGroup>)}
@@ -232,7 +275,11 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                         return <tr key={index}>
                             <td data-testid={`suggested-action-${index}-description`}>{suggestedAction.description}</td>
                             <td data-testid={`suggested-action-${index}-suggested-by`}>{suggestedAction.suggestedBy.fullName}</td>
-                            <td><TextButton onClick={() => addAction(retrospectiveId, {description: suggestedAction.description, responsible: suggestedAction.suggestedBy.fullName, retrospectiveId: retrospective.id!})}>ADD</TextButton></td>
+                            <td><TextButton onClick={() => addAction(retrospectiveId, {
+                                description: suggestedAction.description,
+                                responsible: suggestedAction.suggestedBy.fullName,
+                                retrospectiveId: retrospective.id!
+                            })}>ADD</TextButton></td>
                         </tr>
                     })}
                     </tbody>

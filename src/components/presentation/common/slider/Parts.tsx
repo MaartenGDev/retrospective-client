@@ -158,6 +158,8 @@ export function Track({source, target, isFirst, isLast, attributes, getTrackProp
         borderBottomRightRadius: "10px",
     } : {};
 
+    const percentageLabel = `${attributes.name} (${Math.round(target.percent - source.percent)}%)`;
+
     return (
         <div
             style={{
@@ -171,8 +173,9 @@ export function Track({source, target, isFirst, isLast, attributes, getTrackProp
                 width: `${target.percent - source.percent}%`,
                 ...borderRadius
             }}
+            title={percentageLabel}
             {...getTrackProps()}
-        ><span style={{whiteSpace: "nowrap",color: "white", padding: "10px 0 10px 15px", display: "inline-block"}}>{attributes.name} ({Math.round(target.percent - source.percent)}%)</span></div>
+        ><span style={{whiteSpace: "nowrap",color: "white", padding: "10px 0 10px 15px", display: "inline-block"}}>{percentageLabel}</span></div>
     )
 }
 

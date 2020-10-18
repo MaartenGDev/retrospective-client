@@ -10,7 +10,6 @@ import {RoundedButton, TextButton} from "../styles/Buttons";
 import {ITopic} from "../../models/ITopic";
 import {DateHelper} from "../../helpers/DateHelper";
 import {ButtonRow, Container, Row, Spacer, Title} from "../styles/Common";
-import {IAction} from "../../models/IAction";
 import {parseId} from "../../helpers/Uri";
 import {QueueHelper} from "../../helpers/QueueHelper";
 import {LoadingBar} from "../presentation/common/LoadingBar";
@@ -46,12 +45,9 @@ type IProps = ConnectedProps<typeof connector> & RouteComponentProps<{ id?: stri
 interface IState {
     retrospective: IUserRetrospective,
     topic: ITopic,
-    action: IAction,
     topicBeingEdited?: ITopic & { editIndex: number },
-    actionBeingEdited?: IAction & { editIndex: number },
     selectedSprintDuration: number,
     nextTopicId: number
-    nextActionId: number,
     isLoading: boolean,
     shouldRedirectToOverview: boolean,
     isNewRetrospective: boolean
@@ -63,12 +59,6 @@ class ManageRetrospective extends Component<IProps, IState> {
         description: '',
         durationInMinutes: 0,
         order: 0
-    }
-
-    private _defaultAction: IAction = {
-        id: 0,
-        description: '',
-        responsible: ''
     }
 
     private _sprintDurations = [
@@ -88,12 +78,9 @@ class ManageRetrospective extends Component<IProps, IState> {
             teamId: 0
         },
         topic: this._defaultTopic,
-        action: this._defaultAction,
         topicBeingEdited: undefined,
-        actionBeingEdited: undefined,
         selectedSprintDuration: 3,
         nextTopicId: -1,
-        nextActionId: -1,
         isLoading: false,
         shouldRedirectToOverview: false,
         isNewRetrospective: false,
@@ -182,40 +169,6 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.setState({topicBeingEdited: {...topic, editIndex: index}});
     }
 
-    private removeAction = (action: IAction) => {
-        const {retrospective} = this.state
-
-        this.setState({
-            retrospective: {...retrospective, actions: retrospective.actions.filter(t => t.id !== action.id)}
-        });
-
-        this.queueSave();
-    }
-
-    private toggleActionEditing = (action: IAction, index: number) => {
-        const {actionBeingEdited, retrospective} = this.state
-        const isInEditMode = actionBeingEdited?.editIndex === index;
-
-        if (isInEditMode) {
-            const updatedActions = [...retrospective.actions];
-            delete actionBeingEdited?.editIndex;
-
-            updatedActions[index] = actionBeingEdited!;
-
-            this.setState({
-                topicBeingEdited: undefined,
-                retrospective: {...retrospective, actions: updatedActions}
-            });
-
-            this.queueSave();
-
-            return;
-        }
-
-        this.setState({actionBeingEdited: {...action, editIndex: index}});
-    }
-
-
     private handleSprintDurationChange = (retrospective: IUserRetrospective, durationInWeeks: number, shouldTriggerSave = true) => {
         const shouldOverrideEndDate = retrospective.startDate === retrospective.endDate;
 
@@ -283,19 +236,6 @@ class ManageRetrospective extends Component<IProps, IState> {
         this.queueSave();
     }
 
-    private addAction = (action: IAction) => {
-        const {retrospective, nextActionId} = this.state;
-
-        const nextAction = {...action, id: nextActionId};
-
-        this.setState({
-            retrospective: {...retrospective, actions: [...retrospective.actions, nextAction]},
-            action: this._defaultAction,
-            nextActionId: nextActionId - 1
-        });
-
-        this.queueSave();
-    }
 
     private createOrUpdate = () => {
         const {retrospective, isNewRetrospective} = this.state
@@ -361,13 +301,12 @@ class ManageRetrospective extends Component<IProps, IState> {
     }
 
     render() {
-        const {retrospective, topic, action, topicBeingEdited, actionBeingEdited, selectedSprintDuration, isLoading, isNewRetrospective, shouldRedirectToOverview} = this.state
+        const {retrospective, topic, topicBeingEdited, selectedSprintDuration, isLoading, isNewRetrospective, shouldRedirectToOverview} = this.state
         const {teams, user} = this.props
         const teamsWhereUserIsAdmin = teams.filter(t => t.members.some(m => m.user.id === user?.id && m.role.canManageRetrospective))
 
 
         const canAddTopic = topic.description.length > 0;
-        const canAddAction = action.description.length > 0 && action.responsible.length > 0;
 
         if (shouldRedirectToOverview) {
             return <Redirect to='/retrospectives'/>
@@ -474,59 +413,6 @@ class ManageRetrospective extends Component<IProps, IState> {
                             <td colSpan={2}>
                                 <TextButton disabled={!canAddTopic}
                                             onClick={() => this.addTopic(topic)}>ADD</TextButton>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-
-                    <Spacer/>
-
-                    <InputLabel>ACTIONS LAST SPRINT</InputLabel>
-                    <InputDescription>What actions did you plan out to do in previous sprint and should be checked for
-                        progress?</InputDescription>
-                    <table>
-                        <tbody>
-                        <tr>
-                            <th>Description</th>
-                            <th>Responsible</th>
-                            <th>Edit</th>
-                            <th>Remove</th>
-                        </tr>
-                        {retrospective.actions.map((action, index) => {
-                            const isInReadMode = actionBeingEdited?.editIndex !== index;
-
-                            return <tr key={index}>
-                                <td>{isInReadMode
-                                    ? action.description
-                                    : <TextInput name='description' value={actionBeingEdited!.description}
-                                                 onChange={e => this.updateState('actionBeingEdited', e)}/>
-                                }</td>
-                                <td>{isInReadMode
-                                    ? action.responsible
-                                    : <TextInput name='responsible' value={actionBeingEdited!.responsible}
-                                                 onChange={e => this.updateState('actionBeingEdited', e)}/>
-                                }</td>
-                                <td><TextButton
-                                    onClick={() => this.toggleActionEditing(action, index)}>{isInReadMode ? 'EDIT' : 'SAVE'}</TextButton>
-                                </td>
-                                <td><TextButton color='#e53935'
-                                                onClick={() => this.removeAction(action)}>REMOVE</TextButton>
-                                </td>
-                            </tr>
-                        })}
-                        <tr>
-                            <td><TextInput value={action.description}
-                                           name='description'
-                                           onChange={e => this.updateState('action', e)}/>
-                            </td>
-                            <td><TextInput
-                                value={action.responsible}
-                                name='responsible'
-                                onChange={e => this.updateState('action', e)}/>
-                            </td>
-                            <td colSpan={2}>
-                                <TextButton disabled={!canAddAction}
-                                            onClick={() => this.addAction(action)}>ADD</TextButton>
                             </td>
                         </tr>
                         </tbody>

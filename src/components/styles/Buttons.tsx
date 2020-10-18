@@ -7,9 +7,10 @@ export const RoundedButton = styled.button`
   border-radius: 25px;
   padding: 8px 15px;
   border: none;
-  display: inline-block;
   font-size: inherit;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 `
 
 export const RoundedButtonLink = styled(Link)`
@@ -18,8 +19,9 @@ export const RoundedButtonLink = styled(Link)`
   border-radius: 25px;
   padding: 8px 15px;
   border: none;
-  display: inline-block;
   text-decoration: none;
+  display: flex;
+  align-items: center;
 `
 
 export const TextButton = styled.button`

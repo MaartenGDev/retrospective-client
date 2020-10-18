@@ -269,17 +269,17 @@ const RetrospectiveReport: FC<PropsFromRedux> = ({commentCategories, teams, user
                     <tr>
                         <th>Description</th>
                         <th>Suggested by</th>
-                        <th>Action</th>
+                        {actionModeIsActive && <th>Action</th>}
                     </tr>
                     {retrospectiveReport.suggestedActions.map((suggestedAction, index) => {
                         return <tr key={index}>
                             <td data-testid={`suggested-action-${index}-description`}>{suggestedAction.description}</td>
                             <td data-testid={`suggested-action-${index}-suggested-by`}>{suggestedAction.suggestedBy.fullName}</td>
-                            <td><TextButton onClick={() => addAction(retrospectiveId, {
+                            {actionModeIsActive && <td><TextButton onClick={() => addAction(retrospectiveId, {
                                 description: suggestedAction.description,
                                 responsible: suggestedAction.suggestedBy.fullName,
                                 retrospectiveId: retrospective.id!
-                            })}>ADD</TextButton></td>
+                            })}>ADD</TextButton></td>}
                         </tr>
                     })}
                     </tbody>

@@ -1,5 +1,5 @@
 # Retrospective Client
-Client for retrospective [server](https://github.com/MaartenGDev/dwa-server)
+Client for retrospective [server](https://github.com/MaartenGDev/retrospective-server)
 
 ## Preview
 ##### Feedback
